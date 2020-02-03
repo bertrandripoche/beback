@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/login_activity_linear_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".LoginActivity">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal|top"
+            android:padding="20dp"
+            android:orientation="vertical"
+            android:background="@color/primaryColor"
+            >
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/app_name"
+                android:textSize="@dimen/max_title_size"
+                android:textStyle="bold"
+                android:textColor="@color/primaryDarkColor"
+                android:shadowColor="@color/secondaryColor"
+                android:elevation="2dp"/>
+
+<!--        <ImageView-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="@drawable/logo"-->
+<!--                android:layout_margin="10dp"-->
+<!--                android:elevation="2dp"/>-->
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/login_description"
+                android:textAlignment="center"
+                android:gravity="top"
+                android:textSize="@dimen/default_title_size_small"
+                android:textColor="@color/black"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="bottom"
+            android:orientation="vertical"
+            android:background="@drawable/bg"
+            android:scaleType="centerCrop"
+            >
+
+        <Button
+                android:id="@+id/buttonMailLogin"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="@string/sign_in_mail"
+                android:textColor="@color/white"
+                android:textSize="@dimen/default_text_size"
+                android:textAllCaps="false"
+                android:background="@drawable/button_radius_mail"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_margin="@dimen/default_margin"
+                android:padding="@dimen/default_large_margin"
+                android:elevation="2dp"
+                android:drawableStart="@drawable/ic_mail"/>
+
+        <Button
+                android:id="@+id/buttonFacebookLogin"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="@string/sign_in_facebook"
+                android:textColor="@color/white"
+                android:textSize="@dimen/default_text_size"
+                android:textAllCaps="false"
+                android:background="@drawable/button_radius_facebook"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_margin="@dimen/default_margin"
+                android:padding="@dimen/default_large_margin"
+                android:elevation="2dp"
+                android:drawableStart="@drawable/ic_facebook"/>
+
+        <Button
+                android:id="@+id/buttonGoogleLogin"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:text="@string/sign_in_google"
+                android:textColor="@color/white"
+                android:textSize="@dimen/default_text_size"
+                android:textAllCaps="false"
+                android:background="@drawable/button_radius_google"
+                style="?android:attr/borderlessButtonStyle"
+                android:layout_margin="@dimen/default_margin"
+                android:padding="@dimen/default_large_margin"
+                android:elevation="2dp"
+                android:drawableStart="@drawable/ic_google" />
+    </LinearLayout>
+
+</LinearLayout>

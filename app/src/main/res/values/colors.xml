@@ -8,4 +8,16 @@
     <color name="secondaryDarkColor">#c77800</color>
     <color name="primaryTextColor">#000000</color>
     <color name="secondaryTextColor">#000000</color>
+
+    <color name="white">#FFFFFF</color>
+    <color name="light_grey">#CCC</color>
+    <color name="switch_gray">#aaaaaaaa</color>
+    <color name="orange">#FF5722</color>
+    <color name="light_orange">#FF8A50</color>
+    <color name="black">#000000</color>
+
+    <color name="mail">#78A15F</color>
+    <color name="twitter">#1DA1F2</color>
+    <color name="facebook">#4A68B0</color>
+    <color name="google">#FF3E30</color>
 </resources>

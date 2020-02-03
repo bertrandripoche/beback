@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Be Back</string>
+
+    <string name="login_description">Always know from/to who you borrowed/lended</string>
+    <string name="sign_in_facebook">Sign in with Facebook</string>
+    <string name="sign_in_google">Sign in with Google</string>
+    <string name="sign_in_mail">Sign in with your mail</string>
+
+    <string name="error_authentication_canceled">Not us ! \n You cancelled the process</string>
+    <string name="error_no_internet">Looks like you are only\n connected to the real world</string>
+    <string name="error_unknown_error">Oops, looks like an unknown error.\nTry again.</string>
+    <string name="error_undefined_error">Damned... we hit an undefined error !</string>
+    <string name="google">google</string>
+    <string name="facebook">facebook</string>
+
 </resources>
