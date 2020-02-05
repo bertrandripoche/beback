@@ -10,5 +10,5 @@
         android:theme="@style/ToolbarTheme"
         app:titleTextAppearance="@style/Toolbar.TitleText"
         android:elevation="10dp"
-        android:background="@color/secondaryColor">
+        android:background="@color/primaryColor">
 </androidx.appcompat.widget.Toolbar>

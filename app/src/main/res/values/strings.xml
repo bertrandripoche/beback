@@ -12,5 +12,8 @@
     <string name="error_undefined_error">Damned... we hit an undefined error !</string>
     <string name="google">google</string>
     <string name="facebook">facebook</string>
+    <string name="profile">Profile</string>
+    <string name="archive">Archive</string>
+    <string name="gradient_angle">270</string>
 
 </resources>

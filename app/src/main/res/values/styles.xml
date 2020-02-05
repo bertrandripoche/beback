@@ -10,9 +10,9 @@
 
     <!-- Toolbar -->
     <style name="ToolbarTheme" parent="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
-        <item name="android:textColorPrimary">@color/primaryColor</item>
+        <item name="android:textColorPrimary">@color/black</item>
         <item name="android:itemBackground">@color/secondaryColor</item>
-        <item name="android:textColor">@color/primaryColor</item>
+        <item name="android:textColor">@color/black</item>
     </style>
 
     <!-- Toolbar title-->

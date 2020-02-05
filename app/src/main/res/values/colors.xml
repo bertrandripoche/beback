@@ -1,23 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primaryColor">#64b5f6</color>
-    <color name="primaryLightColor">#9be7ff</color>
-    <color name="primaryDarkColor">#2286c3</color>
+    <color name="primaryColor">#84b1d4</color>
+    <color name="primaryLightColor">#e9eff3</color>
+    <color name="primaryDarkColor">#3c77a4</color>
     <color name="secondaryColor">#ffa726</color>
     <color name="secondaryLightColor">#ffd95b</color>
     <color name="secondaryDarkColor">#c77800</color>
     <color name="primaryTextColor">#000000</color>
     <color name="secondaryTextColor">#000000</color>
 
-    <color name="white">#FFFFFF</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="white_transparent">#00FFFFFF</color>
     <color name="light_grey">#CCC</color>
-    <color name="switch_gray">#aaaaaaaa</color>
+    <color name="dark_grey">#666</color>
+    <color name="green">#78A15F</color>
     <color name="orange">#FF5722</color>
     <color name="light_orange">#FF8A50</color>
+    <color name="red">#DF2F2E</color>
     <color name="black">#000000</color>
 
     <color name="mail">#78A15F</color>
-    <color name="twitter">#1DA1F2</color>
     <color name="facebook">#4A68B0</color>
     <color name="google">#FF3E30</color>
 </resources>
