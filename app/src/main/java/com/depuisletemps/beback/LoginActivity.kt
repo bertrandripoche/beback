@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.LinearLayout
-import android.widget.Toast
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.AuthUI.IdpConfig
 import com.firebase.ui.auth.AuthUI.IdpConfig.*
@@ -12,6 +11,8 @@ import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
 
@@ -74,8 +75,7 @@ class LoginActivity : BaseActivity() {
             val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
-                val user = FirebaseAuth.getInstance().currentUser
-//                val user = getCurrentUser()
+                createUserInFirestore()
                 startLoanActivity()
             } else {
                 if (response == null) {
@@ -84,9 +84,9 @@ class LoginActivity : BaseActivity() {
                 } else if (response.error!!.errorCode == ErrorCodes.NO_NETWORK) {
                     showSnackBar(login_activity_linear_layout, getString(R.string.error_no_internet))
                 } else if (response.error!!.errorCode == ErrorCodes.UNKNOWN_ERROR) {
-                    showSnackBar(login_activity_linear_layout, getString(R.string.error_unknown_error))
+                    showSnackBar(login_activity_linear_layout, getString(R.string.error_unknown))
                 } else {
-                    showSnackBar(login_activity_linear_layout, getString(R.string.error_undefined_error))
+                    showSnackBar(login_activity_linear_layout, getString(R.string.error_undefined))
                 }
             }
         }
@@ -100,6 +100,29 @@ class LoginActivity : BaseActivity() {
     fun showSnackBar(linearLayout: LinearLayout, message: String) {
         Snackbar.make(linearLayout, message, Snackbar.LENGTH_SHORT).show()
     }
+
+     /**
+     * This method create a user entry in the Firebase database "employees" collection, only if needed (thanks to merge option)
+     */
+    private fun createUserInFirestore(){
+        val user: FirebaseUser? = getCurrentUser()
+
+        val id:String = user?.uid ?: ""
+        val mail:String = user?.email ?: ""
+        val pic:String = user?.photoUrl.toString() ?: ""
+        val displayName:String = user?.displayName ?: ""
+        val firstname:String = displayName.split(" ")[0]
+        val lastname:String = displayName.split(" ")[1]
+
+        var docData: HashMap<String, Any> = HashMap<String, Any>()
+        docData.put("id", id)
+        docData.put("mail", mail)
+        docData.put("pic", pic)
+        docData.put("firstname", firstname)
+        docData.put("lastname", lastname)
+
+        mDb.collection("users").document(id).set(docData, SetOptions.merge())
+     }
 
     companion object {
         private const val RC_SIGN_IN = 123

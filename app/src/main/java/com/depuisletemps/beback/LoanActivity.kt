@@ -5,20 +5,23 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.Query
 
 class LoanActivity: BaseActivity() {
 
     lateinit var mToolbar: Toolbar
     lateinit var mArchiveButton: MenuItem
     lateinit var mProfileButton: MenuItem
+    lateinit var mLoansRef: CollectionReference
+    val mUser: FirebaseUser? = getCurrentUser()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loan)
-
-        var user: FirebaseUser? = getCurrentUser()
-        println(user)
 
         configureToolbar()
     }
@@ -66,4 +69,21 @@ class LoanActivity: BaseActivity() {
             super.onOptionsItemSelected(item)
         }
     }
+
+//    private fun configureRecyclerView() {
+//        mLoansRef = mDb.collection("loans")
+//        val requestor_id: String = if (mUser != null) mUser.uid
+//        val query: Query = mLoansRef.whereEqualTo("requestor_id", requestor_id)
+//
+//        val options: FirestoreRecyclerOptions<Attendee> =
+//            FirestoreRecyclerOptions.Builder<Attendee>()
+//                .setQuery(query, Attendee::class.java)
+//                .build()
+//        mAdapter = AttendeesAdapter(options)
+//        if (mRecyclerView != null) {
+//            mRecyclerView.setHasFixedSize(true)
+//            mRecyclerView.setLayoutManager(LinearLayoutManager(applicationContext))
+//            mRecyclerView.setAdapter(mAdapter)
+//        }
+//    }
 }
