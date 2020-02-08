@@ -1,4 +1,4 @@
-package com.depuisletemps.beback
+package com.depuisletemps.beback.ui.view
 
 import android.os.Bundle
 import android.view.Menu
@@ -6,10 +6,14 @@ import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.depuisletemps.beback.R
+import com.depuisletemps.beback.model.Loan
+import com.depuisletemps.beback.ui.recyclerview.LoanAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.Query
+import kotlinx.android.synthetic.main.activity_loan.*
 
 class LoanActivity: BaseActivity() {
 
@@ -17,13 +21,18 @@ class LoanActivity: BaseActivity() {
     lateinit var mArchiveButton: MenuItem
     lateinit var mProfileButton: MenuItem
     lateinit var mLoansRef: CollectionReference
-    val mUser: FirebaseUser? = getCurrentUser()
+    private var mAdapter: LoanAdapter? = null
+    private var mLoanList: List<Loan>? = null
+    var mUser: FirebaseUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loan)
 
         configureToolbar()
+
+        configureRecyclerView()
+
     }
     /**
      * This method overrides the onBackPressed method to change the behavior of the Back button
@@ -70,20 +79,22 @@ class LoanActivity: BaseActivity() {
         }
     }
 
-//    private fun configureRecyclerView() {
-//        mLoansRef = mDb.collection("loans")
-//        val requestor_id: String = if (mUser != null) mUser.uid
-//        val query: Query = mLoansRef.whereEqualTo("requestor_id", requestor_id)
-//
-//        val options: FirestoreRecyclerOptions<Attendee> =
-//            FirestoreRecyclerOptions.Builder<Attendee>()
-//                .setQuery(query, Attendee::class.java)
-//                .build()
-//        mAdapter = AttendeesAdapter(options)
-//        if (mRecyclerView != null) {
-//            mRecyclerView.setHasFixedSize(true)
-//            mRecyclerView.setLayoutManager(LinearLayoutManager(applicationContext))
-//            mRecyclerView.setAdapter(mAdapter)
-//        }
-//    }
+    /**
+     * This method configure the recycler view for loan entries
+     */
+    private fun configureRecyclerView() {
+        mUser = getCurrentUser()
+        val requesterId: String = mUser?.uid ?: ""
+        mLoansRef = mDb.collection("loans")
+        val query: Query = mLoansRef.whereEqualTo("requestor_id", requesterId)
+
+        val options = FirestoreRecyclerOptions.Builder<Loan>().setQuery(query, Loan::class.java).build()
+        mAdapter = LoanAdapter(options)
+
+        if (activity_loan_recycler_view != null) {
+            activity_loan_recycler_view.setHasFixedSize(true)
+            activity_loan_recycler_view.setLayoutManager(LinearLayoutManager(applicationContext))
+            activity_loan_recycler_view.setAdapter(mAdapter)
+        }
+    }
 }

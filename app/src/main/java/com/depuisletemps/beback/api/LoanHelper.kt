@@ -16,7 +16,7 @@ class LoanHelper {
     }
 
     // CREATE
-    fun createLoan(id:String, requestor_id:String, recipient_id:String, type:String, product:String, product_category:String, creation_date : Date, due_date:Date, returned_date:Date): Task<Void>{
+    fun createLoan(id:String, requestor_id:String, recipient_id:String, type:String, product:String, product_category:String, creation_date : String, due_date:String, returned_date:String): Task<Void>{
         val loanToCreate = Loan(id, requestor_id, recipient_id, type, product, product_category, creation_date, due_date, returned_date)
         return getLoansCollection().document(id).set(loanToCreate)
     }

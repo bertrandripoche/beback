@@ -20,4 +20,17 @@
     <string name="archive">Archive</string>
     <string name="gradient_angle">270</string>
 
+<!--    PRODUCT CATEGORY-->
+    <string-array name="product_category">
+        <item>Appliance</item>
+        <item>Books</item>
+        <item>Clothes</item>
+        <item>Games</item>
+        <item>Miscellaneous</item>
+        <item>Money</item>
+        <item>Sport</item>
+        <item>Tools</item>
+        <item>Utensil</item>
+    </string-array>
+
 </resources>

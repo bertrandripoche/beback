@@ -8,7 +8,7 @@
         android:layout_height="80dp">
 
     <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/item_object_type_pic"
+            android:id="@+id/item_product_category"
             android:layout_width="80dp"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
@@ -17,7 +17,7 @@
             app:layout_constraintLeft_toLeftOf="parent"/>
 
     <TextView
-            android:id="@+id/item_object"
+            android:id="@+id/item_product"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
@@ -28,7 +28,7 @@
             android:text="Corde à sauter"
             android:textColor="@color/black"
             android:paddingStart="@dimen/middle"
-            app:layout_constraintBottom_toTopOf="@+id/item_to_from_person"
+            app:layout_constraintBottom_toTopOf="@+id/item_to_from"
             app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
@@ -38,14 +38,15 @@
             android:gravity="center_vertical"
             android:textSize="@dimen/text_size"
             android:textStyle="italic"
+            android:paddingEnd="@dimen/basic"
             android:text="Emprunté à"
             android:textColor="@color/red"
-            app:layout_constraintRight_toLeftOf="@+id/item_to_from_person"
-            app:layout_constraintTop_toBottomOf="@id/item_object"
+            app:layout_constraintRight_toLeftOf="@+id/item_recipient"
+            app:layout_constraintTop_toBottomOf="@id/item_product"
             app:layout_constraintBottom_toBottomOf="parent"/>
 
         <TextView
-                android:id="@+id/item_to_from_person"
+                android:id="@+id/item_recipient"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center_vertical"
@@ -53,19 +54,19 @@
                 android:textStyle="italic"
                 android:text="Jean-Pierre"
                 android:textColor="@color/red"
-                app:layout_constraintRight_toLeftOf="@+id/item_loan_pic"
-                app:layout_constraintTop_toBottomOf="@id/item_object"
+                app:layout_constraintRight_toLeftOf="@+id/item_loan_type"
+                app:layout_constraintTop_toBottomOf="@id/item_product"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
         <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/item_loan_pic"
+                android:id="@+id/item_loan_type"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_borrowing"
                 android:layout_margin="@dimen/middle"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/item_object"
+                app:layout_constraintTop_toBottomOf="@id/item_product"
                 app:layout_constraintRight_toLeftOf="@id/item_return_date"/>
 
 

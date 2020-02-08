@@ -1,16 +1,16 @@
-package com.depuisletemps.beback
+package com.depuisletemps.beback.ui.view
 
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.LinearLayout
+import com.depuisletemps.beback.R
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.AuthUI.IdpConfig
 import com.firebase.ui.auth.AuthUI.IdpConfig.*
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_login.*
@@ -65,9 +65,13 @@ class LoginActivity : BaseActivity() {
                 .createSignInIntentBuilder()
                 .setAvailableProviders(Arrays.asList(provider))
                 .build(),
-            RC_SIGN_IN)
+            RC_SIGN_IN
+        )
     }
 
+    /**
+     * This method manages the action once the login procedure finished - well or not
+     */
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
@@ -120,6 +124,7 @@ class LoginActivity : BaseActivity() {
         docData.put("pic", pic)
         docData.put("firstname", firstname)
         docData.put("lastname", lastname)
+        docData.put("pseudo", "")
 
         mDb.collection("users").document(id).set(docData, SetOptions.merge())
      }
