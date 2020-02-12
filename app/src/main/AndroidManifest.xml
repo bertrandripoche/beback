@@ -23,6 +23,13 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity
+                android:name="com.depuisletemps.beback.ui.view.AddLoanActivity"
+                android:parentActivityName="com.depuisletemps.beback.ui.view.LoanActivity">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.depuisletemps.beback.ui.view.LoanActivity" />
+        </activity>
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>

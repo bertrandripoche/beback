@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/primaryColor"
+        android:orientation="vertical"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+        <androidx.appcompat.widget.AppCompatTextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center_vertical"
+                android:background="@color/primaryDarkColor"
+                android:textAlignment="center"
+                android:textColor="@color/white"
+                android:text="@string/loan_choice"
+                android:textStyle="bold"
+                android:padding="@dimen/basic"
+                android:layout_marginBottom="@dimen/middle"
+                android:textSize="@dimen/title_size" />
+
+        <Button
+                android:id="@+id/btn_loaner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/round_green_button"
+                android:drawableStart="@drawable/ic_loan_black"
+                android:padding="@dimen/basic"
+                android:layout_margin="@dimen/basic"
+                android:text="@string/lend_title"
+                android:textColor="@color/white"/>
+
+        <Button
+                android:id="@+id/btn_borrower"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/round_red_button"
+                android:drawableStart="@drawable/ic_borrowing_black"
+                android:padding="@dimen/basic"
+                android:layout_margin="@dimen/basic"
+                android:text="@string/borrow_title"
+                android:textColor="@color/white"/>
+
+        <Button
+                android:id="@+id/btn_cancel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/round_primary_light_color_button"
+                android:drawableStart="@drawable/ic_cancel"
+                android:padding="@dimen/basic"
+                android:layout_margin="@dimen/basic"
+                android:text="@string/cancel"
+                android:textColor="@color/black"/>
+
+</LinearLayout>

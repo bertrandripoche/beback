@@ -59,10 +59,9 @@
         android:focusable="true"
         android:src="@drawable/ic_filter"
         app:fabSize="normal"
-        app:maxImageSize="30dp"
+        app:maxImageSize="40dp"
         app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal"
         app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_left"/>
-    />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/mBtnAdd"
@@ -74,9 +73,8 @@
             android:src="@drawable/ic_add"
             app:fabSize="normal"
             app:layout_anchorGravity="bottom|right|end"
-            app:maxImageSize="30dp"
+            app:maxImageSize="40dp"
             app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal"
             app:layout_constraintRight_toLeftOf="@+id/guideline_vertical_right"/>
-    />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,5 +1,7 @@
 package com.depuisletemps.beback.ui.view
 
+import android.app.Activity
+import android.content.Intent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.tasks.OnFailureListener

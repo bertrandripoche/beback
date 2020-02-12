@@ -10,5 +10,6 @@ class Loan (
     var product:String,
     var product_category:String,
     var creation_date : String,
-    var due_date:String,
-    var returned_date:String)
+    var due_date:String?,
+    var returned_date:String?
+)

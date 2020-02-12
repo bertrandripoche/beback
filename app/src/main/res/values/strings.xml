@@ -19,8 +19,14 @@
     <string name="profile">Profile</string>
     <string name="archive">Archive</string>
     <string name="gradient_angle">270</string>
+    <string name="loan_choice">Loan choice</string>
+    <string name="i_lend">I lend…</string>
+    <string name="i_borrow">I borrow…</string>
+    <string name="lend_title">Generous donator</string>
+    <string name="borrow_title">Humble borrower</string>
+    <string name="cancel">Forget it</string>
 
-<!--    PRODUCT CATEGORY-->
+    <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">
         <item>Appliance</item>
         <item>Books</item>
