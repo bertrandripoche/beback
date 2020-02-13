@@ -3,7 +3,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/activity_add_loan_container"
-        android:background="@color/primaryLightColor"
+        android:background="@color/primaryColor"
         xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <include layout="@layout/toolbar"
@@ -21,6 +21,173 @@
             app:layout_constraintTop_toBottomOf="@+id/toolbar"
             />
 
+    <TextView
+            android:id="@+id/loan_recipient_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/extra"
+            android:textSize="@dimen/text_size_max"
+            android:textAllCaps="true"
+            android:textAlignment="center"
+            android:gravity="center_vertical"
+            android:text="@string/whom"
+            app:layout_constraintTop_toBottomOf="@+id/loan_type"
+            app:layout_constraintBottom_toTopOf="@+id/loan_product"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="@+id/guideline_vertical_left"
+            />
+
+    <EditText
+            android:id="@+id/loan_recipient"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/extra"
+            android:layout_margin="@dimen/basic"
+            android:hint="@string/recipient_hint"
+            android:background="@color/primaryLightColor"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@+id/loan_type"
+            app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_left"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+
+    <TextView
+            android:id="@+id/loan_product_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/extra"
+            android:textSize="@dimen/text_size_max"
+            android:textAllCaps="true"
+            android:textAlignment="center"
+            android:gravity="center_vertical"
+            android:text="@string/what"
+            app:layout_constraintTop_toBottomOf="@+id/loan_recipient"
+            app:layout_constraintBottom_toTopOf="@+id/spinner_loan_categories"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="@+id/guideline_vertical_left"
+            />
+
+    <EditText
+            android:id="@+id/loan_product"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/extra"
+            android:layout_margin="@dimen/basic"
+            android:hint="@string/product_hint"
+            android:background="@color/primaryLightColor"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@+id/loan_recipient"
+            app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_left"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+
+    <TextView
+            android:id="@+id/loan_spinner_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/extra"
+            android:layout_margin="@dimen/basic"
+            android:textSize="@dimen/text_size_max"
+            android:textAllCaps="true"
+            android:textAlignment="center"
+            android:gravity="center_vertical"
+            android:text="@string/type"
+            app:layout_constraintTop_toBottomOf="@+id/loan_product"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="@+id/guideline_vertical_left"
+            />
+
+    <Spinner
+            android:id="@+id/spinner_loan_categories"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/basic"
+            android:layout_margin="@dimen/basic"
+            android:background="@color/primaryLightColor"
+            app:layout_constraintTop_toBottomOf="@+id/loan_product"
+            app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_left"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+
+    <TextView
+            android:id="@+id/loan_return_date_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/extra"
+            android:layout_margin="@dimen/basic"
+            android:textSize="@dimen/text_size_max"
+            android:textAllCaps="true"
+            android:textAlignment="center"
+            android:gravity="center_vertical"
+            android:text="@string/when"
+            app:layout_constraintTop_toBottomOf="@+id/spinner_loan_categories"
+            app:layout_constraintBottom_toBottomOf="@id/loan_return_date"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="@+id/guideline_vertical_left"
+            />
+
+    <TextView
+            android:id="@+id/loan_return_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/extra"
+            android:layout_margin="@dimen/basic"
+            android:hint="@string/return_date_hint"
+            android:background="@color/primaryLightColor"
+            android:textSize="@dimen/text_size_max"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@+id/spinner_loan_categories"
+            app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_left"
+            app:layout_constraintRight_toLeftOf="@+id/mBtnCancelDate"
+            />
+
+    <ImageButton
+            android:id="@+id/mBtnCancelDate"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:background="@color/secondaryColor"
+            android:onClick="cancelDate"
+            android:paddingEnd="@dimen/basic"
+            android:paddingStart="@dimen/basic"
+            android:src="@drawable/ic_cancel"
+            android:visibility="gone"
+            android:contentDescription="@string/cancel"
+            app:layout_constraintTop_toTopOf="@+id/loan_return_date"
+            app:layout_constraintBottom_toBottomOf="@+id/loan_return_date"
+            app:layout_constraintLeft_toRightOf="@+id/loan_return_date"
+            app:layout_constraintRight_toLeftOf="@id/mBtnPick"/>
+
+    <Button
+            android:id="@+id/mBtnPick"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:background="@color/secondaryColor"
+            android:layout_marginStart="@dimen/basic"
+            android:layout_marginEnd="@dimen/basic"
+            android:text="@string/pick"
+            android:onClick="clickDataPicker"
+            app:layout_constraintTop_toTopOf="@+id/loan_return_date"
+            app:layout_constraintBottom_toBottomOf="@+id/loan_return_date"
+            app:layout_constraintLeft_toRightOf="@+id/mBtnCancelDate"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/middle"
+            android:textStyle="italic"
+            android:textColor="@color/black"
+            android:text="@string/mandatory_information"
+            android:textSize="@dimen/text_size"
+            android:gravity="center_vertical"
+            android:background="@color/light_pink"
+            android:padding="@dimen/middle"
+            android:drawablePadding="@dimen/middle"
+            android:drawableStart="@drawable/ic_warning_pink"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+
+
     <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_vertical_right"
             android:layout_width="1dp"
@@ -32,7 +199,7 @@
             android:layout_width="1dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.05"/>
+            app:layout_constraintGuide_percent="0.2"/>
     <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_horizontal_middle"
             android:layout_width="wrap_content"
@@ -50,7 +217,6 @@
             android:id="@+id/mBtnSubmit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/primaryColor"
             android:clickable="true"
             android:focusable="true"
             android:src="@drawable/ic_submit"

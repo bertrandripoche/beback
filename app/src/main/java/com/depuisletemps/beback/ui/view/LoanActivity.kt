@@ -35,6 +35,7 @@ class LoanActivity: BaseActivity() {
 
         configureToolbar()
         configureRecyclerView()
+
         mBtnAdd.setOnClickListener(View.OnClickListener {
             createLoanAlertDialog()
         })
@@ -105,8 +106,6 @@ class LoanActivity: BaseActivity() {
             activity_loan_recycler_view.setAdapter(mAdapter)
         }
     }
-
-
 
     /**
      * Create the loan alertDialog popup

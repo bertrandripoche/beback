@@ -17,6 +17,8 @@
     <color name="orange">#FF5722</color>
     <color name="light_orange">#FF8A50</color>
     <color name="red">#DF2F2E</color>
+    <color name="light_pink">#FC99AF</color>
+    <color name="pink">#C20044</color>
     <color name="black">#000000</color>
 
     <color name="mail">#78A15F</color>

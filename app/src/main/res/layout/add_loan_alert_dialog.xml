@@ -8,14 +8,14 @@
 
         <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
                 android:background="@color/primaryDarkColor"
                 android:textAlignment="center"
                 android:textColor="@color/white"
                 android:text="@string/loan_choice"
                 android:textStyle="bold"
-                android:padding="@dimen/basic"
+                android:padding="@dimen/middle"
                 android:layout_marginBottom="@dimen/middle"
                 android:textSize="@dimen/title_size" />
 
@@ -28,6 +28,7 @@
                 android:padding="@dimen/basic"
                 android:layout_margin="@dimen/basic"
                 android:text="@string/lend_title"
+                android:textSize="@dimen/text_size_max"
                 android:textColor="@color/white"/>
 
         <Button
@@ -39,6 +40,7 @@
                 android:padding="@dimen/basic"
                 android:layout_margin="@dimen/basic"
                 android:text="@string/borrow_title"
+                android:textSize="@dimen/text_size_max"
                 android:textColor="@color/white"/>
 
         <Button

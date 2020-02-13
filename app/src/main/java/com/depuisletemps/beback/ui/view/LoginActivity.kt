@@ -39,13 +39,6 @@ class LoginActivity : BaseActivity() {
         if (isCurrentUserLogged()) startLoanActivity()
     }
 
-    /**
-     * This method starts the Loan activity
-     */
-    fun startLoanActivity() {
-        val intent = Intent(this, LoanActivity::class.java)
-        startActivity(intent)
-    }
 
     /**
      * This method creates the Sign-In intent to trigger the sign-in procedure
