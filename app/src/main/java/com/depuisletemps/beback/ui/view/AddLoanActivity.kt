@@ -13,8 +13,16 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
+import com.depuisletemps.beback.api.LoanHelper
+import com.depuisletemps.beback.api.UserHelper
+import com.depuisletemps.beback.model.Loan
+import com.depuisletemps.beback.model.User
 import com.depuisletemps.beback.ui.customview.CategoryAdapter
+import com.depuisletemps.beback.utils.Utils
+import com.google.android.gms.tasks.Task
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.DocumentReference
 import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.toolbar.*
 import java.util.*
@@ -32,13 +40,12 @@ class AddLoanActivity: BaseActivity() {
 
         mBtnSubmit.setOnClickListener(View.OnClickListener {
             if (isFormValid())
-                createLoan()
+                createFirestoreLoan()
             else {
                 Toast.makeText(applicationContext, R.string.invalid_form, Toast.LENGTH_LONG)
                     .show()
             }
         })
-
     }
 
     /**
@@ -111,7 +118,9 @@ class AddLoanActivity: BaseActivity() {
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            loan_return_date.text = getString(R.string.return_date, dayOfMonth, monthOfYear, year)
+            loan_return_date.text = getString(R.string.return_date, dayOfMonth, monthOfYear+1, year)
+            val primaryLightColor = ContextCompat.getColor(this, R.color.primaryLightColor)
+            loan_return_date.setBackgroundColor(primaryLightColor)
             mBtnCancelDate.visibility = View.VISIBLE
         }, year, month, day)
         dpd.datePicker.minDate = System.currentTimeMillis()
@@ -123,6 +132,8 @@ class AddLoanActivity: BaseActivity() {
      */
     fun cancelDate(view: View) {
         loan_return_date.text = getString(R.string.return_date_hint)
+        val primaryColor = ContextCompat.getColor(this, R.color.primaryColor)
+        loan_return_date.setBackgroundColor(primaryColor)
         mBtnCancelDate.visibility = View.GONE
     }
 
@@ -147,7 +158,6 @@ class AddLoanActivity: BaseActivity() {
      * Make the float button enabled
      */
     fun enableFloatButton() {
-//        mBtnSubmit.setBackgroundTintList(getResources().getColorStateList(R.color.red, null))
         setButtonTint(mBtnSubmit, ColorStateList.valueOf(ContextCompat.getColor(this,R.color.secondaryColor)) )
     }
 
@@ -155,15 +165,36 @@ class AddLoanActivity: BaseActivity() {
      * Make the float button disabled
      */
     fun disableFloatButton() {
-//        mBtnSubmit.backgroundTintList = ColorStateList.valueOf(ResourcesCompat.getColor(resources, R.color.light_grey, theme))
         setButtonTint(mBtnSubmit, ColorStateList.valueOf(ContextCompat.getColor(this,R.color.light_grey)) )
     }
 
     /**
-     * This method creates the loan
-     */
-    fun createLoan() {
+    * This method create a user entry in the Firebase database "employees" collection, only if needed (thanks to merge option)
+    */
+    private fun createFirestoreLoan(){
+        val user: FirebaseUser? = getCurrentUser()
 
+        val requestor_id:String = user?.uid ?: ""
+        val recipient_id:String = loan_recipient.text.toString()
+
+        val product:String = loan_product.text.toString()
+        val categories: Array<String> =
+            this.resources.getStringArray(R.array.product_category)
+
+        val product_category:String = categories[spinner_loan_categories.selectedItemPosition]
+        val creation_date = Utils.getTodayDate()
+        val due_date = loan_return_date.text.toString()
+        val returned_date = ""
+
+        addLoanInFirestore(requestor_id, recipient_id, mType, product, product_category, creation_date, due_date, returned_date)
+        startLoanActivity()
+    }
+
+    /**
+     * This method adds the user in Firestore
+     */
+    fun addLoanInFirestore(requestor_id:String, recipient_id:String, mType:String, product:String, product_category:String, creation_date:String, due_date:String, returned_date:String): Task<DocumentReference> {
+        return LoanHelper.createLoan(requestor_id, recipient_id, mType, product, product_category, creation_date, due_date, returned_date)
     }
 
     fun setButtonTint(button: FloatingActionButton, tint: ColorStateList) {

@@ -39,4 +39,12 @@ open class BaseActivity: AppCompatActivity() {
             ).show()
         }
     }
+
+    /**
+     * This method starts the Loan activity
+     */
+    protected fun startLoanActivity() {
+        val intent = Intent(this, LoanActivity::class.java)
+        startActivity(intent)
+    }
 }

@@ -5,13 +5,19 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.LinearLayout
 import com.depuisletemps.beback.R
+import com.depuisletemps.beback.api.UserHelper
+import com.depuisletemps.beback.model.User
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.AuthUI.IdpConfig
 import com.firebase.ui.auth.AuthUI.IdpConfig.*
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
+import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
@@ -38,7 +44,6 @@ class LoginActivity : BaseActivity() {
     fun checkLoginAndDisplayAppropriateScreen() {
         if (isCurrentUserLogged()) startLoanActivity()
     }
-
 
     /**
      * This method creates the Sign-In intent to trigger the sign-in procedure
@@ -72,7 +77,7 @@ class LoginActivity : BaseActivity() {
             val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
-                createUserInFirestore()
+                createFirestoreUser()
                 startLoanActivity()
             } else {
                 if (response == null) {
@@ -101,7 +106,7 @@ class LoginActivity : BaseActivity() {
      /**
      * This method create a user entry in the Firebase database "employees" collection, only if needed (thanks to merge option)
      */
-    private fun createUserInFirestore(){
+    private fun createFirestoreUser(){
         val user: FirebaseUser? = getCurrentUser()
 
         val id:String = user?.uid ?: ""
@@ -111,16 +116,15 @@ class LoginActivity : BaseActivity() {
         val firstname:String = displayName.split(" ")[0]
         val lastname:String = displayName.split(" ")[1]
 
-        var docData: HashMap<String, Any> = HashMap<String, Any>()
-        docData.put("id", id)
-        docData.put("mail", mail)
-        docData.put("pic", pic)
-        docData.put("firstname", firstname)
-        docData.put("lastname", lastname)
-        docData.put("pseudo", "")
-
-        mDb.collection("users").document(id).set(docData, SetOptions.merge())
+         addUserInFirestore(id, mail, firstname, lastname, "", pic)
      }
+
+    /**
+     * This method adds the user in Firestore
+     */
+    fun addUserInFirestore(id: String, mail:String, firstname: String, lastname:String, pseudo:String, pic:String): Task<Void> {
+        return UserHelper.createUser(id, mail, firstname, lastname, pseudo, pic)
+    }
 
     companion object {
         private const val RC_SIGN_IN = 123

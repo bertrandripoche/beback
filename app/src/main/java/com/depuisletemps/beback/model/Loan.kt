@@ -2,8 +2,7 @@ package com.depuisletemps.beback.model
 
 import java.util.*
 
-class Loan (
-    val id:String,
+data class Loan (
     var requestor_id:String,
     var recipient_id:String,
     var type:String,

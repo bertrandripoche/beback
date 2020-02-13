@@ -1,6 +1,9 @@
 package com.depuisletemps.beback.utils
 
 import com.depuisletemps.beback.R
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 class Utils {
 
@@ -16,5 +19,17 @@ class Utils {
         val index:Int = categories.indexOf(category)
         println("Index :"+index)
         return icons[index]
+    }
+
+    companion object {
+        private val RIGHT_DATE_FORMAT: DateFormat =
+            SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
+
+        fun getTodayDate(): String {
+            val thisDay = Calendar.getInstance()
+            val today = thisDay.timeInMillis
+
+            return RIGHT_DATE_FORMAT.format(today)
+        }
     }
 }
