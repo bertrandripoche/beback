@@ -39,7 +39,6 @@
             android:textSize="@dimen/text_size"
             android:textStyle="italic"
             android:paddingEnd="@dimen/basic"
-            android:text="Emprunté à"
             android:textColor="@color/red"
             app:layout_constraintRight_toLeftOf="@+id/item_recipient"
             app:layout_constraintTop_toBottomOf="@id/item_product"
@@ -67,18 +66,17 @@
                 android:layout_margin="@dimen/middle"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/item_product"
-                app:layout_constraintRight_toLeftOf="@id/item_return_date"/>
+                app:layout_constraintRight_toLeftOf="@id/item_due_date"/>
 
 
 
     <TextView
-            android:id="@+id/item_return_date"
+            android:id="@+id/item_due_date"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:gravity="center_vertical"
             android:layout_marginBottom="@dimen/basic"
             android:textSize="@dimen/text_size"
-            android:text="Retour\n26/03/20"
             android:textStyle="bold"
             android:layout_marginEnd="@dimen/default_margin"
             android:textColor="@color/red"

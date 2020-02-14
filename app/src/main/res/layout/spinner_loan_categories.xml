@@ -17,6 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:padding="@dimen/extra"
+            android:textSize="@dimen/text_size_max"
             app:layout_constraintLeft_toRightOf="@+id/image_category"
             app:layout_constraintTop_toTopOf="@+id/image_category"
             app:layout_constraintBottom_toBottomOf="@+id/image_category"

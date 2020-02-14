@@ -1,7 +1,5 @@
 package com.depuisletemps.beback.model
 
-import java.util.*
-
 data class Loan (
     var requestor_id:String,
     var recipient_id:String,
@@ -11,4 +9,6 @@ data class Loan (
     var creation_date : String,
     var due_date:String?,
     var returned_date:String?
-)
+){
+    constructor(): this("","", "", "", "", "", " ", "")
+}

@@ -26,7 +26,6 @@ class LoanActivity: BaseActivity() {
     lateinit var mProfileButton: MenuItem
     lateinit var mLoansRef: CollectionReference
     private var mAdapter: LoanAdapter? = null
-    private var mLoanList: List<Loan>? = null
     var mUser: FirebaseUser? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -98,12 +97,12 @@ class LoanActivity: BaseActivity() {
         val query = mLoansRef.whereEqualTo("requestor_id", requesterId)
 
         val options = FirestoreRecyclerOptions.Builder<Loan>().setQuery(query, Loan::class.java).build()
-        mAdapter = LoanAdapter(options)
+        mAdapter = LoanAdapter(options, this)
 
         if (activity_loan_recycler_view != null) {
             activity_loan_recycler_view.setHasFixedSize(true)
-            activity_loan_recycler_view.setLayoutManager(LinearLayoutManager(applicationContext))
-            activity_loan_recycler_view.setAdapter(mAdapter)
+            activity_loan_recycler_view.layoutManager = LinearLayoutManager(applicationContext)
+            activity_loan_recycler_view.adapter = mAdapter
         }
     }
 
@@ -144,4 +143,21 @@ class LoanActivity: BaseActivity() {
         intent.putExtra("type", type)
         startActivity(intent)
     }
+
+    /**
+     * This method indicates when the adapter needs to start listening
+     */
+    override fun onStart() {
+        super.onStart()
+        mAdapter!!.startListening()
+    }
+
+    /**
+     * This method indicates when the adapter needs to stop listening
+     */
+    override fun onStop() {
+        super.onStop()
+        mAdapter!!.stopListening()
+    }
+
 }
