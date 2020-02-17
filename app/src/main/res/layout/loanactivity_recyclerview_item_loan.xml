@@ -18,69 +18,77 @@
 
     <TextView
             android:id="@+id/item_product"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:gravity="center_vertical"
-            android:textSize="@dimen/title_size_small"
+            android:textSize="@dimen/text_size_max"
             android:paddingEnd="@dimen/middle"
-            android:textStyle="bold"
             android:textAlignment="center"
             android:text="Corde à sauter"
             android:textColor="@color/black"
             android:paddingStart="@dimen/middle"
-            app:layout_constraintBottom_toTopOf="@+id/item_to_from"
+            app:layout_constraintLeft_toRightOf="@+id/item_product_category"
+            app:layout_constraintRight_toLeftOf="@+id/guideline_vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
-    <TextView
-            android:id="@+id/item_to_from"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:textSize="@dimen/text_size"
-            android:textStyle="italic"
-            android:paddingEnd="@dimen/basic"
-            android:textColor="@color/red"
-            app:layout_constraintRight_toLeftOf="@+id/item_recipient"
-            app:layout_constraintTop_toBottomOf="@id/item_product"
-            app:layout_constraintBottom_toBottomOf="parent"/>
-
-        <TextView
-                android:id="@+id/item_recipient"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:textSize="@dimen/text_size"
-                android:textStyle="italic"
-                android:text="Jean-Pierre"
-                android:textColor="@color/red"
-                app:layout_constraintRight_toLeftOf="@+id/item_loan_type"
-                app:layout_constraintTop_toBottomOf="@id/item_product"
-                app:layout_constraintBottom_toBottomOf="parent"/>
-
-        <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/item_loan_type"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/ic_borrowing"
-                android:layout_margin="@dimen/middle"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/item_product"
-                app:layout_constraintRight_toLeftOf="@id/item_due_date"/>
-
-
+    <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/item_due_date_pic"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:scaleType="centerCrop"
+            android:visibility="gone"
+            android:src="@drawable/ic_due_date"
+            app:layout_constraintLeft_toRightOf="@+id/guideline_vertical"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/item_loan_type"
+            />
 
     <TextView
             android:id="@+id/item_due_date"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
+            android:layout_height="0dp"
+            android:gravity="center_vertical|start"
             android:layout_marginBottom="@dimen/basic"
             android:textSize="@dimen/text_size"
             android:textStyle="bold"
             android:layout_marginEnd="@dimen/default_margin"
-            android:textColor="@color/red"
-            app:layout_constraintRight_toRightOf="parent"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/item_loan_type"
+            app:layout_constraintLeft_toRightOf="@+id/item_due_date_pic"
             />
+
+    <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/item_loan_type"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_borrowing"
+            app:layout_constraintLeft_toRightOf="@+id/guideline_vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/item_due_date_pic"
+            />
+
+    <TextView
+            android:id="@+id/item_recipient"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/text_size"
+            android:paddingEnd="@dimen/basic"
+            android:text="Tesfdsfsdft"
+            android:gravity="center_vertical"
+            android:textStyle="italic"
+            android:textColor="@color/red"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/item_due_date_pic"
+            app:layout_constraintLeft_toRightOf="@+id/item_loan_type"/>
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_vertical"
+            android:layout_width="1dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.7"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

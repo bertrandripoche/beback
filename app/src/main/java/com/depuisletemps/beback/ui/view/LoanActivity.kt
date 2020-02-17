@@ -99,9 +99,11 @@ class LoanActivity: BaseActivity() {
         val options = FirestoreRecyclerOptions.Builder<Loan>().setQuery(query, Loan::class.java).build()
         mAdapter = LoanAdapter(options, this)
 
+        val orientation = resources.getInteger(R.integer.gallery_orientation)
+
         if (activity_loan_recycler_view != null) {
             activity_loan_recycler_view.setHasFixedSize(true)
-            activity_loan_recycler_view.layoutManager = LinearLayoutManager(applicationContext)
+            activity_loan_recycler_view.layoutManager = LinearLayoutManager(applicationContext, orientation, false)
             activity_loan_recycler_view.adapter = mAdapter
         }
     }
@@ -121,6 +123,13 @@ class LoanActivity: BaseActivity() {
         val alertDialog = alertDialogBuilder.create()
         alertDialog.show()
 
+        activateButtonListeners(dialogView, alertDialog)
+    }
+
+    /**
+     * Alert dialog buttons management
+     */
+    fun activateButtonListeners(dialogView: View, alertDialog: AlertDialog) {
         val btn_loaner = dialogView.findViewById<Button>(R.id.btn_loaner)
         btn_loaner.setOnClickListener{
             startAddLoanActivity("lend")
@@ -128,6 +137,10 @@ class LoanActivity: BaseActivity() {
         val btn_borrower= dialogView.findViewById<Button>(R.id.btn_borrower)
         btn_borrower.setOnClickListener{
             startAddLoanActivity("borrow")
+        }
+        val btn_delivery= dialogView.findViewById<Button>(R.id.btn_delivery)
+        btn_delivery.setOnClickListener{
+            startAddLoanActivity("delivery")
         }
         val btn_cancel = dialogView.findViewById<Button>(R.id.btn_cancel)
         btn_cancel.setOnClickListener {

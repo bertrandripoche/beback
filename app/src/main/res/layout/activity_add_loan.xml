@@ -110,7 +110,7 @@
             />
 
     <TextView
-            android:id="@+id/loan_return_date_title"
+            android:id="@+id/loan_due_date_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="@dimen/extra"
@@ -121,18 +121,18 @@
             android:gravity="center_vertical"
             android:text="@string/when"
             app:layout_constraintTop_toBottomOf="@+id/spinner_loan_categories"
-            app:layout_constraintBottom_toBottomOf="@id/loan_return_date"
+            app:layout_constraintBottom_toBottomOf="@id/loan_due_date"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="@+id/guideline_vertical_left"
             />
 
     <TextView
-            android:id="@+id/loan_return_date"
+            android:id="@+id/loan_due_date"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:padding="@dimen/extra"
             android:layout_margin="@dimen/basic"
-            android:hint="@string/return_date_hint"
+            android:hint="@string/due_date_hint"
             android:background="@color/primaryColor"
             android:textSize="@dimen/text_size_max"
             android:textAlignment="center"
@@ -152,9 +152,9 @@
             android:src="@drawable/ic_cancel"
             android:visibility="gone"
             android:contentDescription="@string/cancel"
-            app:layout_constraintTop_toTopOf="@+id/loan_return_date"
-            app:layout_constraintBottom_toBottomOf="@+id/loan_return_date"
-            app:layout_constraintLeft_toRightOf="@+id/loan_return_date"
+            app:layout_constraintTop_toTopOf="@+id/loan_due_date"
+            app:layout_constraintBottom_toBottomOf="@+id/loan_due_date"
+            app:layout_constraintLeft_toRightOf="@+id/loan_due_date"
             app:layout_constraintRight_toLeftOf="@id/mBtnPick"/>
 
     <Button
@@ -166,8 +166,8 @@
             android:layout_marginEnd="@dimen/basic"
             android:text="@string/pick"
             android:onClick="clickDataPicker"
-            app:layout_constraintTop_toTopOf="@+id/loan_return_date"
-            app:layout_constraintBottom_toBottomOf="@+id/loan_return_date"
+            app:layout_constraintTop_toTopOf="@+id/loan_due_date"
+            app:layout_constraintBottom_toBottomOf="@+id/loan_due_date"
             app:layout_constraintLeft_toRightOf="@+id/mBtnCancelDate"
             app:layout_constraintRight_toRightOf="parent"/>
 
@@ -184,7 +184,7 @@
             android:padding="@dimen/middle"
             android:drawablePadding="@dimen/middle"
             android:drawableStart="@drawable/ic_warning_pink"
-            app:layout_constraintTop_toBottomOf="@id/loan_return_date"
+            app:layout_constraintTop_toBottomOf="@id/loan_due_date"
             app:layout_constraintLeft_toLeftOf="parent"/>
 
 

@@ -22,7 +22,7 @@
     <string name="loan_choice">Loan choice</string>
     <string name="i_lend">I lend…</string>
     <string name="i_borrow">I borrow…</string>
-    <string name="lend_title">Generous donator</string>
+    <string name="lend_title">Generous loaner</string>
     <string name="borrow_title">Humble borrower</string>
     <string name="cancel">Forget it</string>
     <string name="product_hint">… you know, this thing…</string>
@@ -32,13 +32,16 @@
     <string name="what">WHAT *</string>
     <string name="type">TYPE</string>
     <string name="when">WHEN</string>
-    <string name="return_date_hint">Return date \&#x27A1;</string>
-    <string name="return_date">%1$d / %2$d / %3$d </string>
+    <string name="due_date_hint">Due date \&#x27A1;</string>
+    <string name="due_date">%1$d / %2$d / %3$d </string>
     <string name="pick">PICK</string>
     <string name="mandatory_information">* = required, wouldn\'t make sense\nwithout it, isn\'t it ?</string>
     <string name="invalid_form">Damned it !\nI forgot the required fields !</string>
     <string name="lent_to">Lent to</string>
     <string name="borrowed_from">Borrowed from</string>
+    <string name="delivery_title">Quietly waiting for delivery</string>
+    <string name="i_wait">Waiting for...</string>
+    <string name="transported_by">Transported by</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">
@@ -46,8 +49,12 @@
         <item>Appliance</item>
         <item>Books</item>
         <item>Clothes</item>
+        <item>Delivery</item>
+        <item>Electronic</item>
         <item>Games</item>
+        <item>Instruments</item>
         <item>Money</item>
+        <item>Music</item>
         <item>Sport</item>
         <item>Tools</item>
         <item>Utensil</item>
@@ -58,8 +65,12 @@
         <item>@drawable/ic_appliance</item>
         <item>@drawable/ic_books</item>
         <item>@drawable/ic_clothes</item>
+        <item>@drawable/ic_delivery</item>
+        <item>@drawable/ic_electronic</item>
         <item>@drawable/ic_games</item>
+        <item>@drawable/ic_music_instrument</item>
         <item>@drawable/ic_money</item>
+        <item>@drawable/ic_music</item>
         <item>@drawable/ic_sport</item>
         <item>@drawable/ic_tools</item>
         <item>@drawable/ic_kitchen</item>

@@ -44,6 +44,18 @@
                 android:textColor="@color/white"/>
 
         <Button
+                android:id="@+id/btn_delivery"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/round_secondary_color_button"
+                android:drawableStart="@drawable/ic_delivery_black"
+                android:padding="@dimen/basic"
+                android:layout_margin="@dimen/basic"
+                android:text="@string/delivery_title"
+                android:textSize="@dimen/text_size_max"
+                android:textColor="@color/white"/>
+
+        <Button
                 android:id="@+id/btn_cancel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

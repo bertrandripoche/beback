@@ -17,11 +17,13 @@ class LoanViewHolder(view: View): RecyclerView.ViewHolder(view) {
     val product = view.item_product
     val recipient = view.item_recipient
     val loanType = view.item_loan_type
-    val toFrom = view.item_to_from
     val dueDate = view.item_due_date
+    val dueDatePic = view.item_due_date_pic
     val utils:Utils = Utils()
 
     fun updateWithLoan(loan: Loan, position: Int, context:Context) {
+        val red = ContextCompat.getColor(context, R.color.red)
+        val green = ContextCompat.getColor(context, R.color.green)
         val primaryLightColor = ContextCompat.getColor(context, R.color.primaryLightColor)
         val primaryColor = ContextCompat.getColor(context, R.color.primaryColor)
         if (position % 2 == 0) item?.setBackgroundColor(primaryLightColor)
@@ -32,13 +34,23 @@ class LoanViewHolder(view: View): RecyclerView.ViewHolder(view) {
         recipient.text = loan.recipient_id
         if (loan.type == "lend") {
             loanType.setImageResource(R.drawable.ic_loan)
-            toFrom.setText(R.string.lent_to)
-
-        } else {
+            recipient.setTextColor(green)
+        } else if (loan.type == "borrow") {
             loanType.setImageResource(R.drawable.ic_borrowing)
-            toFrom.setText(R.string.borrowed_from)
+            recipient.setTextColor(red)
+        }  else {
+            loanType.setImageResource(R.drawable.ic_delivery_black)
+            recipient.setTextColor(red)
         }
         dueDate.text = loan.due_date.toString()
+        if (!dueDate.text.equals("")) {
+            dueDatePic.visibility = View.VISIBLE
+            dueDate.visibility = View.VISIBLE
+        }
+        else {
+            dueDatePic.visibility = View.GONE
+            dueDate.visibility = View.GONE
+        }
     }
 }
 

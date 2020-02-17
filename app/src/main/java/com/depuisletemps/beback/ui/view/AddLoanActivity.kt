@@ -53,8 +53,10 @@ class AddLoanActivity: BaseActivity() {
      */
     private fun configureScreenFromType() {
         mType = getLoanType()
+        val primaryColor = ContextCompat.getColor(this, R.color.primaryColor)
         val greenColor = ContextCompat.getColor(this, R.color.green)
         val redColor = ContextCompat.getColor(this, R.color.red)
+        val yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
         if (mType.equals("lend")) {
             loan_type.setBackgroundColor(greenColor)
             loan_recipient_title.text = getString(R.string.whom)
@@ -63,6 +65,13 @@ class AddLoanActivity: BaseActivity() {
             loan_type.setBackgroundColor(redColor)
             loan_recipient_title.text = getString(R.string.who)
             loan_type.text = getString(R.string.i_borrow)
+        } else if (mType.equals("delivery")) {
+            loan_type.setBackgroundColor(yellowColor)
+            loan_recipient_title.text = getString(R.string.who)
+            loan_type.text = getString(R.string.i_wait)
+            spinner_loan_categories.setBackgroundColor(primaryColor)
+            spinner_loan_categories.setSelection(4)
+            spinner_loan_categories.isEnabled = false
         }
         disableFloatButton()
     }
@@ -118,9 +127,9 @@ class AddLoanActivity: BaseActivity() {
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            loan_return_date.text = getString(R.string.return_date, dayOfMonth, monthOfYear+1, year)
+            loan_due_date.text = getString(R.string.due_date, dayOfMonth, monthOfYear+1, year)
             val primaryLightColor = ContextCompat.getColor(this, R.color.primaryLightColor)
-            loan_return_date.setBackgroundColor(primaryLightColor)
+            loan_due_date.setBackgroundColor(primaryLightColor)
             mBtnCancelDate.visibility = View.VISIBLE
         }, year, month, day)
         dpd.datePicker.minDate = System.currentTimeMillis()
@@ -128,12 +137,12 @@ class AddLoanActivity: BaseActivity() {
     }
 
     /**
-     * This method empties the return date field
+     * This method empties the due date field
      */
     fun cancelDate(view: View) {
-        loan_return_date.text = getString(R.string.return_date_hint)
+        loan_due_date.text = ""
         val primaryColor = ContextCompat.getColor(this, R.color.primaryColor)
-        loan_return_date.setBackgroundColor(primaryColor)
+        loan_due_date.setBackgroundColor(primaryColor)
         mBtnCancelDate.visibility = View.GONE
     }
 
@@ -183,7 +192,7 @@ class AddLoanActivity: BaseActivity() {
 
         val product_category:String = categories[spinner_loan_categories.selectedItemPosition]
         val creation_date = Utils.getTodayDate()
-        val due_date = loan_return_date.text.toString()
+        val due_date = loan_due_date.text.toString()
         val returned_date = ""
 
         addLoanInFirestore(requestor_id, recipient_id, mType, product, product_category, creation_date, due_date, returned_date)

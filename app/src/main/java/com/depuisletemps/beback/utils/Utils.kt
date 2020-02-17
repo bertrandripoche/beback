@@ -13,8 +13,8 @@ class Utils {
      * @return the resource id Int which matches the categories
      */
     fun getIconFromCategory(category: String): Int {
-        val categories = arrayOf<String>("Miscellaneous","Appliance","Books","Clothes","Games","Money","Sport","Tools","Utensil")
-        val icons = arrayOf<Int>(R.drawable.ic_miscellaneous,R.drawable.ic_appliance,R.drawable.ic_books,R.drawable.ic_clothes,R.drawable.ic_games,R.drawable.ic_money,R.drawable.ic_sport,R.drawable.ic_tools,R.drawable.ic_kitchen)
+        val categories = arrayOf<String>("Miscellaneous","Appliance","Books","Clothes","Delivery","Electronic","Instrument","Games","Money","Music","Sport","Tools","Utensil")
+        val icons = arrayOf<Int>(R.drawable.ic_miscellaneous,R.drawable.ic_appliance,R.drawable.ic_books,R.drawable.ic_clothes,R.drawable.ic_delivery,R.drawable.ic_electronic,R.drawable.ic_music_instrument,R.drawable.ic_games,R.drawable.ic_money,R.drawable.ic_music,R.drawable.ic_sport,R.drawable.ic_tools,R.drawable.ic_kitchen)
 
         val index:Int = categories.indexOf(category)
         return icons[index]
