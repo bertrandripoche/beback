@@ -1,9 +1,14 @@
 package com.depuisletemps.beback.utils
 
 import com.depuisletemps.beback.R
+import org.joda.time.Days
+import org.joda.time.LocalDate
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.format.DateTimeFormatter
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 class Utils {
 
@@ -13,22 +18,25 @@ class Utils {
      * @return the resource id Int which matches the categories
      */
     fun getIconFromCategory(category: String): Int {
-        val categories = arrayOf<String>("Miscellaneous","Appliance","Books","Clothes","Delivery","Electronic","Instrument","Games","Money","Music","Sport","Tools","Utensil")
-        val icons = arrayOf<Int>(R.drawable.ic_miscellaneous,R.drawable.ic_appliance,R.drawable.ic_books,R.drawable.ic_clothes,R.drawable.ic_delivery,R.drawable.ic_electronic,R.drawable.ic_music_instrument,R.drawable.ic_games,R.drawable.ic_money,R.drawable.ic_music,R.drawable.ic_sport,R.drawable.ic_tools,R.drawable.ic_kitchen)
+        val categories = arrayOf("Miscellaneous","Appliance","Books","Clothes","Electronic","Instrument","Games","Money","Music","Sport","Tools","Kitchen")
+        val icons = arrayOf(R.drawable.ic_miscellaneous,R.drawable.ic_appliance,R.drawable.ic_books,R.drawable.ic_clothes,R.drawable.ic_electronic,R.drawable.ic_music_instrument,R.drawable.ic_games,R.drawable.ic_money,R.drawable.ic_music,R.drawable.ic_sport,R.drawable.ic_tools,R.drawable.ic_kitchen)
 
         val index:Int = categories.indexOf(category)
         return icons[index]
     }
 
     companion object {
-        private val RIGHT_DATE_FORMAT: DateFormat =
-            SimpleDateFormat("dd/MM/yyyy", Locale.FRANCE)
-
         fun getTodayDate(): String {
-            val thisDay = Calendar.getInstance()
-            val today = thisDay.timeInMillis
+            return LocalDate.now().toString()
+        }
 
-            return RIGHT_DATE_FORMAT.format(today)
+        fun getDifferenceDays(today: LocalDate, dueDate: LocalDate): Int {
+            return Days.daysBetween(today,dueDate).days
+        }
+
+        fun getLocalDateFromString(date: String): LocalDate {
+            val formatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+            return LocalDate.parse(date, formatter)
         }
     }
 }

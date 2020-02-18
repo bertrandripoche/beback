@@ -10,13 +10,9 @@ import android.view.View
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.api.LoanHelper
-import com.depuisletemps.beback.api.UserHelper
-import com.depuisletemps.beback.model.Loan
-import com.depuisletemps.beback.model.User
 import com.depuisletemps.beback.ui.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.Utils
 import com.google.android.gms.tasks.Task
@@ -25,10 +21,14 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
 import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.toolbar.*
+import org.joda.time.LocalDate
+import java.text.DecimalFormat
 import java.util.*
+
 
 class AddLoanActivity: BaseActivity() {
     lateinit var mType:String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_loan)
@@ -53,7 +53,6 @@ class AddLoanActivity: BaseActivity() {
      */
     private fun configureScreenFromType() {
         mType = getLoanType()
-        val primaryColor = ContextCompat.getColor(this, R.color.primaryColor)
         val greenColor = ContextCompat.getColor(this, R.color.green)
         val redColor = ContextCompat.getColor(this, R.color.red)
         val yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
@@ -69,11 +68,20 @@ class AddLoanActivity: BaseActivity() {
             loan_type.setBackgroundColor(yellowColor)
             loan_recipient_title.text = getString(R.string.who)
             loan_type.text = getString(R.string.i_wait)
-            spinner_loan_categories.setBackgroundColor(primaryColor)
-            spinner_loan_categories.setSelection(4)
-            spinner_loan_categories.isEnabled = false
+            loan_recipient.hint = getString(R.string.delivery_hint)
         }
         disableFloatButton()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (loan_due_date.text != "") outState?.putString("dueDateSet", loan_due_date.text.toString())
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+        if (savedInstanceState != null)
+            if (savedInstanceState.getString("dueDateSet") != "")  setPickDate(savedInstanceState.getString("dueDateSet"))
     }
 
     /**
@@ -93,6 +101,9 @@ class AddLoanActivity: BaseActivity() {
         Objects.requireNonNull(ab)!!.setDisplayHomeAsUpEnabled(true)
     }
 
+    /**
+     * This method configuree the spinner
+     */
     private fun configureSpinner() {
         val categories: Array<String> =
             this.resources.getStringArray(R.array.product_category)
@@ -105,7 +116,7 @@ class AddLoanActivity: BaseActivity() {
     }
 
     /**
-     * Method to describe the actions to do on text writing
+     * Method to describe the actions to complete on text writing
      */
     val textWatcher: TextWatcher = object : TextWatcher {
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
@@ -121,19 +132,29 @@ class AddLoanActivity: BaseActivity() {
      * This method displays the DatePicker
      */
     fun clickDataPicker(view: View) {
-        val c = Calendar.getInstance()
-        val year = c.get(Calendar.YEAR)
-        val month = c.get(Calendar.MONTH)
-        val day = c.get(Calendar.DAY_OF_MONTH)
+        val df = DecimalFormat("00")
+        val today = LocalDate.now()
+        val year:Int = today.year
+        val month:Int = today.monthOfYear
+        val day = today.dayOfMonth
 
         val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            loan_due_date.text = getString(R.string.due_date, dayOfMonth, monthOfYear+1, year)
-            val primaryLightColor = ContextCompat.getColor(this, R.color.primaryLightColor)
-            loan_due_date.setBackgroundColor(primaryLightColor)
-            mBtnCancelDate.visibility = View.VISIBLE
+            setPickDate(getString(R.string.due_date, df.format(dayOfMonth), df.format(monthOfYear), year))
         }, year, month, day)
         dpd.datePicker.minDate = System.currentTimeMillis()
         dpd.show()
+    }
+
+    /**
+     * This method set the date picked in the accurate field
+     */
+    fun setPickDate(date: String?) {
+        if (date != null) {
+            loan_due_date.text = date
+            val primaryLightColor = ContextCompat.getColor(this, R.color.primaryLightColor)
+            loan_due_date.setBackgroundColor(primaryLightColor)
+            mBtnCancelDate.visibility = View.VISIBLE
+        }
     }
 
     /**

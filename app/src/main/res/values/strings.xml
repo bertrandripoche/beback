@@ -33,7 +33,7 @@
     <string name="type">TYPE</string>
     <string name="when">WHEN</string>
     <string name="due_date_hint">Due date \&#x27A1;</string>
-    <string name="due_date">%1$d / %2$d / %3$d </string>
+    <string name="due_date">%1$s/%2$s/%3$d </string>
     <string name="pick">PICK</string>
     <string name="mandatory_information">* = required, wouldn\'t make sense\nwithout it, isn\'t it ?</string>
     <string name="invalid_form">Damned it !\nI forgot the required fields !</string>
@@ -42,6 +42,7 @@
     <string name="delivery_title">Quietly waiting for delivery</string>
     <string name="i_wait">Waiting for...</string>
     <string name="transported_by">Transported by</string>
+    <string name="delivery_hint">... you know, this company...</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">
@@ -49,7 +50,6 @@
         <item>Appliance</item>
         <item>Books</item>
         <item>Clothes</item>
-        <item>Delivery</item>
         <item>Electronic</item>
         <item>Games</item>
         <item>Instruments</item>
@@ -57,7 +57,7 @@
         <item>Music</item>
         <item>Sport</item>
         <item>Tools</item>
-        <item>Utensil</item>
+        <item>Kitchen</item>
     </string-array>
 
     <array name="product_category_icon">
@@ -65,7 +65,6 @@
         <item>@drawable/ic_appliance</item>
         <item>@drawable/ic_books</item>
         <item>@drawable/ic_clothes</item>
-        <item>@drawable/ic_delivery</item>
         <item>@drawable/ic_electronic</item>
         <item>@drawable/ic_games</item>
         <item>@drawable/ic_music_instrument</item>

@@ -8,8 +8,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.utils.Utils
+import com.depuisletemps.beback.utils.Utils.Companion.getDifferenceDays
+import com.depuisletemps.beback.utils.Utils.Companion.getLocalDateFromString
+import com.depuisletemps.beback.utils.Utils.Companion.getTodayDate
 import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.*
+import org.joda.time.LocalDate
 
 class LoanViewHolder(view: View): RecyclerView.ViewHolder(view) {
     val item = view.item_loan_recycler_layout
@@ -22,10 +26,12 @@ class LoanViewHolder(view: View): RecyclerView.ViewHolder(view) {
     val utils:Utils = Utils()
 
     fun updateWithLoan(loan: Loan, position: Int, context:Context) {
+        val black = ContextCompat.getColor(context, R.color.black)
         val red = ContextCompat.getColor(context, R.color.red)
         val green = ContextCompat.getColor(context, R.color.green)
         val primaryLightColor = ContextCompat.getColor(context, R.color.primaryLightColor)
         val primaryColor = ContextCompat.getColor(context, R.color.primaryColor)
+        val secondaryDarkColor = ContextCompat.getColor(context, R.color.secondaryDarkColor)
         if (position % 2 == 0) item?.setBackgroundColor(primaryLightColor)
         else item?.setBackgroundColor(primaryColor)
 
@@ -39,8 +45,8 @@ class LoanViewHolder(view: View): RecyclerView.ViewHolder(view) {
             loanType.setImageResource(R.drawable.ic_borrowing)
             recipient.setTextColor(red)
         }  else {
-            loanType.setImageResource(R.drawable.ic_delivery_black)
-            recipient.setTextColor(red)
+            loanType.setImageResource(R.drawable.ic_delivery_yellow)
+            recipient.setTextColor(secondaryDarkColor)
         }
         dueDate.text = loan.due_date.toString()
         if (!dueDate.text.equals("")) {
@@ -51,6 +57,22 @@ class LoanViewHolder(view: View): RecyclerView.ViewHolder(view) {
             dueDatePic.visibility = View.GONE
             dueDate.visibility = View.GONE
         }
+
+        if (dueDate.text != "") {
+            val dueDateLocalDate = getLocalDateFromString(dueDate.text.toString())
+            val todayLocalDate = LocalDate.now()
+            val daysDiff: Int = getDifferenceDays(todayLocalDate, dueDateLocalDate)
+
+            println("DueDate : "+dueDate.text.toString()+ " - Diff : "+daysDiff)
+
+            if (daysDiff < 0) {
+                dueDate.setTextColor(black)
+                dueDatePic.setImageResource(R.drawable.ic_coffin)
+            } else if (daysDiff < 7) dueDate.setTextColor(red)
+            else if (daysDiff < 14) dueDate.setTextColor(secondaryDarkColor)
+            else dueDate.setTextColor(green)
+        }
     }
+
 }
 

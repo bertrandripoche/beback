@@ -2,6 +2,7 @@ package com.depuisletemps.beback.ui.view
 
 import android.content.Intent
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -27,6 +28,7 @@ class LoanActivity: BaseActivity() {
     lateinit var mLoansRef: CollectionReference
     private var mAdapter: LoanAdapter? = null
     var mUser: FirebaseUser? = null
+    var mIsLoanAlertDialogDisplayed:Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +47,17 @@ class LoanActivity: BaseActivity() {
      * This method overrides the onBackPressed method to change the behavior of the Back button
      */
     override fun onBackPressed() {
+    }
 
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (mIsLoanAlertDialogDisplayed) outState?.putBoolean("loanAlertDialogDisplayed", true)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+        if (savedInstanceState != null)
+            if (savedInstanceState.getBoolean("loanAlertDialogDisplayed"))  createLoanAlertDialog()
     }
 
     /**
@@ -124,6 +136,7 @@ class LoanActivity: BaseActivity() {
         alertDialog.show()
 
         activateButtonListeners(dialogView, alertDialog)
+        mIsLoanAlertDialogDisplayed = true
     }
 
     /**
@@ -145,6 +158,7 @@ class LoanActivity: BaseActivity() {
         val btn_cancel = dialogView.findViewById<Button>(R.id.btn_cancel)
         btn_cancel.setOnClickListener {
             alertDialog.cancel()
+            mIsLoanAlertDialogDisplayed = false
         }
     }
 
