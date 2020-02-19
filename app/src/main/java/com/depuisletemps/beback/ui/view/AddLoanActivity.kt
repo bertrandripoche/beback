@@ -148,7 +148,7 @@ class AddLoanActivity: BaseActivity() {
     /**
      * This method set the date picked in the accurate field
      */
-    fun setPickDate(date: String?) {
+    private fun setPickDate(date: String?) {
         if (date != null) {
             loan_due_date.text = date
             val primaryLightColor = ContextCompat.getColor(this, R.color.primaryLightColor)
@@ -194,12 +194,12 @@ class AddLoanActivity: BaseActivity() {
     /**
      * Make the float button disabled
      */
-    fun disableFloatButton() {
+    private fun disableFloatButton() {
         setButtonTint(mBtnSubmit, ColorStateList.valueOf(ContextCompat.getColor(this,R.color.light_grey)) )
     }
 
     /**
-    * This method create a user entry in the Firebase database "employees" collection, only if needed (thanks to merge option)
+    * This method create a user entry in the Firebase database "loan" collection
     */
     private fun createFirestoreLoan(){
         val user: FirebaseUser? = getCurrentUser()

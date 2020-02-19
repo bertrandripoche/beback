@@ -2,7 +2,6 @@ package com.depuisletemps.beback.ui.view
 
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -11,14 +10,18 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.ui.recyclerview.LoanAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
+import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.activity_loan.*
+
 
 class LoanActivity: BaseActivity() {
 
@@ -106,7 +109,7 @@ class LoanActivity: BaseActivity() {
         val requesterId: String = mUser?.uid ?: ""
 
         mLoansRef = mDb.collection("loans")
-        val query = mLoansRef.whereEqualTo("requestor_id", requesterId)
+        val query = mLoansRef.whereEqualTo("requestor_id", requesterId).orderBy("due_date", Query.Direction.DESCENDING)
 
         val options = FirestoreRecyclerOptions.Builder<Loan>().setQuery(query, Loan::class.java).build()
         mAdapter = LoanAdapter(options, this)
@@ -186,5 +189,6 @@ class LoanActivity: BaseActivity() {
         super.onStop()
         mAdapter!!.stopListening()
     }
+
 
 }

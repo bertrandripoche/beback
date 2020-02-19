@@ -1,14 +1,11 @@
 package com.depuisletemps.beback.utils
 
 import com.depuisletemps.beback.R
+import com.google.firebase.Timestamp
 import org.joda.time.Days
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import org.joda.time.format.DateTimeFormatter
-import java.text.DateFormat
-import java.text.SimpleDateFormat
-import java.util.*
-
 
 class Utils {
 
@@ -35,8 +32,15 @@ class Utils {
         }
 
         fun getLocalDateFromString(date: String): LocalDate {
-            val formatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy");
+            val formatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy")
             return LocalDate.parse(date, formatter)
+        }
+
+        fun getTimeStampFromString(date: String): Timestamp {
+            val formatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy")
+            val localDate: LocalDate = LocalDate.parse(date, formatter)
+            val dateFromLocalDate = java.sql.Date.valueOf(localDate.toString())
+            return Timestamp(dateFromLocalDate)
         }
     }
 }
