@@ -1,14 +1,16 @@
 package com.depuisletemps.beback.model
 
+import com.google.firebase.Timestamp
+
 data class Loan (
     var requestor_id:String,
     var recipient_id:String,
     var type:String,
     var product:String,
     var product_category:String,
-    var creation_date : String,
-    var due_date:String?,
-    var returned_date:String?
+    var creation_date : Timestamp?,
+    var due_date:Timestamp?,
+    var returned_date:Timestamp?
 ){
-    constructor(): this("","", "", "", "", "", " ", "")
+    constructor(): this("","", "", "", "", null, null, null)
 }

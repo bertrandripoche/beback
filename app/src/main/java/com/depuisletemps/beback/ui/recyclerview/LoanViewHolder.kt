@@ -10,8 +10,7 @@ import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.Companion.getDifferenceDays
 import com.depuisletemps.beback.utils.Utils.Companion.getLocalDateFromString
-import com.depuisletemps.beback.utils.Utils.Companion.getTodayDate
-import kotlinx.android.synthetic.main.activity_add_loan.*
+import com.depuisletemps.beback.utils.Utils.Companion.getStringFromDate
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.*
 import org.joda.time.LocalDate
 
@@ -25,6 +24,9 @@ class LoanViewHolder(view: View): RecyclerView.ViewHolder(view) {
     val dueDatePic = view.item_due_date_pic
     val utils:Utils = Utils()
 
+    /**
+     * This method populates the date into the recyclerView ViewHolder
+     */
     fun updateWithLoan(loan: Loan, position: Int, context:Context) {
         val black = ContextCompat.getColor(context, R.color.black)
         val red = ContextCompat.getColor(context, R.color.red)
@@ -48,8 +50,11 @@ class LoanViewHolder(view: View): RecyclerView.ViewHolder(view) {
             loanType.setImageResource(R.drawable.ic_delivery_yellow)
             recipient.setTextColor(secondaryDarkColor)
         }
-        dueDate.text = loan.due_date.toString()
-        if (!dueDate.text.equals("")) {
+        if (loan.due_date != null) {
+            val due_date_Date = loan.due_date?.toDate()
+            dueDate.text = getStringFromDate(due_date_Date)
+        }
+        if (!dueDate.text.equals("01/01/3000")) {
             dueDatePic.visibility = View.VISIBLE
             dueDate.visibility = View.VISIBLE
         }

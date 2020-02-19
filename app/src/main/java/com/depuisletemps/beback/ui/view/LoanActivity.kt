@@ -10,9 +10,7 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.ui.recyclerview.LoanAdapter
@@ -109,7 +107,7 @@ class LoanActivity: BaseActivity() {
         val requesterId: String = mUser?.uid ?: ""
 
         mLoansRef = mDb.collection("loans")
-        val query = mLoansRef.whereEqualTo("requestor_id", requesterId).orderBy("due_date", Query.Direction.DESCENDING)
+        val query = mLoansRef.whereEqualTo("requestor_id", requesterId).orderBy("due_date", Query.Direction.ASCENDING)
 
         val options = FirestoreRecyclerOptions.Builder<Loan>().setQuery(query, Loan::class.java).build()
         mAdapter = LoanAdapter(options, this)
