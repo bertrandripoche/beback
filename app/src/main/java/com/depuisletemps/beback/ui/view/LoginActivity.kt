@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.widget.LinearLayout
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.api.UserHelper
-import com.depuisletemps.beback.model.User
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.AuthUI.IdpConfig
 import com.firebase.ui.auth.AuthUI.IdpConfig.*
@@ -15,10 +14,6 @@ import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
 
@@ -77,7 +72,7 @@ class LoginActivity : BaseActivity() {
             val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
-                createFirestoreUser()
+                checkAndCreateFirestoreUser()
                 startLoanActivity()
             } else {
                 if (response == null) {
@@ -104,9 +99,9 @@ class LoginActivity : BaseActivity() {
     }
 
      /**
-     * This method create a user entry in the Firebase database "employees" collection, only if needed (thanks to merge option)
+     * This method create a user entry in the Firebase database "employees" collection, only if needed
      */
-    private fun createFirestoreUser(){
+    private fun checkAndCreateFirestoreUser(){
         val user: FirebaseUser? = getCurrentUser()
 
         val id:String = user?.uid ?: ""

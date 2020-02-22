@@ -5,6 +5,7 @@ import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 
 class UserHelper {
     companion object {
@@ -25,11 +26,11 @@ class UserHelper {
             pic: String?
         ): Task<Void> {
             val userToCreate = User(id, mail, firstname, lastname, pseudo, pic)
-            return getUsersCollection().document(id).set(userToCreate)
+            return getUsersCollection().document(id).set(userToCreate, SetOptions.merge())
         }
 
         // GET
-        fun getUser(id: String): Task<DocumentSnapshot> {
+        fun getUserFromId(id: String): Task<DocumentSnapshot> {
             return getUsersCollection().document(id).get()
         }
 

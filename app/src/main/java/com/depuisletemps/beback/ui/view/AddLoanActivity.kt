@@ -15,8 +15,10 @@ import com.depuisletemps.beback.R
 import com.depuisletemps.beback.api.LoanHelper
 import com.depuisletemps.beback.ui.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.Utils
+import com.depuisletemps.beback.utils.Utils.Companion.getTimeStampFromString
 import com.google.android.gms.tasks.Task
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
 import kotlinx.android.synthetic.main.activity_add_loan.*
@@ -135,11 +137,11 @@ class AddLoanActivity: BaseActivity() {
         val df = DecimalFormat("00")
         val today = LocalDate.now()
         val year:Int = today.year
-        val month:Int = today.monthOfYear
+        val month:Int = today.monthOfYear-1
         val day = today.dayOfMonth
 
         val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            setPickDate(getString(R.string.due_date, df.format(dayOfMonth), df.format(monthOfYear), year))
+            setPickDate(getString(R.string.due_date, df.format(dayOfMonth), df.format(monthOfYear+1), year))
         }, year, month, day)
         dpd.datePicker.minDate = System.currentTimeMillis()
         dpd.show()
@@ -199,7 +201,7 @@ class AddLoanActivity: BaseActivity() {
     }
 
     /**
-    * This method create a user entry in the Firebase database "loan" collection
+    * This method create a loan entry in the Firebase database "loan" collection
     */
     private fun createFirestoreLoan(){
         val user: FirebaseUser? = getCurrentUser()
@@ -212,18 +214,19 @@ class AddLoanActivity: BaseActivity() {
             this.resources.getStringArray(R.array.product_category)
 
         val product_category:String = categories[spinner_loan_categories.selectedItemPosition]
-        val creation_date = Utils.getTodayDate()
-        val due_date = loan_due_date.text.toString()
-        val returned_date = ""
+        val creation_date = Timestamp.now()
+        var due_date = loan_due_date.text.toString()
+        if (due_date == "") due_date = "01/01/3000"
+        val returned_date = null
 
-        addLoanInFirestore(requestor_id, recipient_id, mType, product, product_category, creation_date, due_date, returned_date)
+        addLoanInFirestore(requestor_id, recipient_id, mType, product, product_category, creation_date, getTimeStampFromString(due_date), returned_date)
         startLoanActivity()
     }
 
     /**
-     * This method adds the user in Firestore
+     * This method adds the loan in Firestore
      */
-    fun addLoanInFirestore(requestor_id:String, recipient_id:String, mType:String, product:String, product_category:String, creation_date:String, due_date:String, returned_date:String): Task<DocumentReference> {
+    fun addLoanInFirestore(requestor_id:String, recipient_id:String, mType:String, product:String, product_category:String, creation_date:Timestamp, due_date:Timestamp?, returned_date:Timestamp?): Task<DocumentReference> {
         return LoanHelper.createLoan(requestor_id, recipient_id, mType, product, product_category, creation_date, due_date, returned_date)
     }
 

@@ -2,6 +2,7 @@ package com.depuisletemps.beback.api
 
 import com.depuisletemps.beback.model.Loan
 import com.google.android.gms.tasks.Task
+import com.google.firebase.Timestamp
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
@@ -24,9 +25,9 @@ class LoanHelper {
             type: String,
             product: String,
             product_category: String,
-            creation_date: String,
-            due_date: String,
-            returned_date: String
+            creation_date: Timestamp,
+            due_date: Timestamp?,
+            returned_date: Timestamp?
         ): Task<DocumentReference> {
             val loanToCreate = Loan(requestor_id, recipient_id, type, product, product_category, creation_date, due_date, returned_date)
             return getLoansCollection().add(loanToCreate)
@@ -54,7 +55,7 @@ class LoanHelper {
             return getLoansCollection().document(id).update("product_category", product_category)
         }
 
-        fun updateDueDate(id: String, due_date: Date): Task<Void> {
+        fun updateDueDate(id: String, due_date: Timestamp): Task<Void> {
             return getLoansCollection().document(id).update("due_date", due_date)
         }
 
