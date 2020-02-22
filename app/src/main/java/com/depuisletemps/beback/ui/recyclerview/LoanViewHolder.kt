@@ -1,8 +1,8 @@
 package com.depuisletemps.beback.ui.recyclerview
 
 import android.content.Context
-import android.graphics.Color
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
@@ -10,20 +10,32 @@ import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.Companion.getDifferenceDays
 import com.depuisletemps.beback.utils.Utils.Companion.getLocalDateFromString
-import com.depuisletemps.beback.utils.Utils.Companion.getTodayDate
-import kotlinx.android.synthetic.main.activity_add_loan.*
-import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.*
 import org.joda.time.LocalDate
+import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_due_date
+import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_due_date_pic
+import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_loan_type
+import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_product
+import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_product_category
+import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_recipient
+import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan_swipelayout.view.*
 
-class LoanViewHolder(view: View): RecyclerView.ViewHolder(view) {
-    val item = view.item_loan_recycler_layout
-    val category = view.item_product_category
-    val product = view.item_product
-    val recipient = view.item_recipient
-    val loanType = view.item_loan_type
-    val dueDate = view.item_due_date
-    val dueDatePic = view.item_due_date_pic
+
+class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview), View.OnClickListener {
+    val item = itemview.content
+    val category = itemview.item_product_category
+    val product = itemview.item_product
+    val recipient = itemview.item_recipient
+    val loanType = itemview.item_loan_type
+    val dueDate = itemview.item_due_date
+    val dueDatePic = itemview.item_due_date_pic
     val utils:Utils = Utils()
+    var delete = itemview.item_menu_delete
+    var edit = itemview.item_menu_edit
+    var archive = itemview.item_menu_archive
+
+    override fun onClick(v: View?) { // Clicked on item
+        println("Click sur item")
+    }
 
     fun updateWithLoan(loan: Loan, position: Int, context:Context) {
         val black = ContextCompat.getColor(context, R.color.black)
@@ -73,6 +85,5 @@ class LoanViewHolder(view: View): RecyclerView.ViewHolder(view) {
             else dueDate.setTextColor(green)
         }
     }
-
 }
 
