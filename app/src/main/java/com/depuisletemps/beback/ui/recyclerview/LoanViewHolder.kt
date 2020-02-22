@@ -2,6 +2,7 @@ package com.depuisletemps.beback.ui.recyclerview
 
 import android.content.Context
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
@@ -10,7 +11,6 @@ import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.Companion.getDifferenceDays
 import com.depuisletemps.beback.utils.Utils.Companion.getLocalDateFromString
 import com.depuisletemps.beback.utils.Utils.Companion.getStringFromDate
-import org.joda.time.LocalDate
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_due_date
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_due_date_pic
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_loan_type
@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.i
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_product_category
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_recipient
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan_swipelayout.view.*
+import org.joda.time.LocalDate
 
 
 class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview), View.OnClickListener {
@@ -60,7 +61,7 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview), View.On
             loanType.setImageResource(R.drawable.ic_borrowing)
             recipient.setTextColor(red)
         }  else {
-            loanType.setImageResource(R.drawable.ic_delivery_yellow)
+            loanType.setImageResource(R.drawable.ic_delivery)
             recipient.setTextColor(secondaryDarkColor)
         }
         if (loan.due_date != null) {

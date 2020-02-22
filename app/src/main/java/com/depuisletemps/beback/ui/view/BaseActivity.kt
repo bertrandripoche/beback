@@ -12,7 +12,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 open class BaseActivity: AppCompatActivity() {
     private val TAG = "BaseActivity"
-    protected val mDb: FirebaseFirestore = FirebaseFirestore.getInstance()
+    val mDb: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     /**
      * This method returns the current logged user
@@ -45,6 +45,14 @@ open class BaseActivity: AppCompatActivity() {
      */
     protected fun startLoanActivity() {
         val intent = Intent(this, LoanActivity::class.java)
+        startActivity(intent)
+    }
+
+    /**
+     * This method starts the Loan activity
+     */
+    protected fun startLoanPagerActivity() {
+        val intent = Intent(this, LoanPagerActivity::class.java)
         startActivity(intent)
     }
 }

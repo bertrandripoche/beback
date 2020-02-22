@@ -30,6 +30,13 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.depuisletemps.beback.ui.view.LoanActivity" />
         </activity>
+        <activity
+                android:name="com.depuisletemps.beback.ui.view.LoanPagerActivity"
+                android:parentActivityName="com.depuisletemps.beback.ui.view.LoginActivity" >
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.depuisletemps.beback.ui.view.LoginActivity" />
+        </activity>
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>

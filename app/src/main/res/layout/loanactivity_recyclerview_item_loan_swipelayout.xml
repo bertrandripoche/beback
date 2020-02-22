@@ -11,9 +11,9 @@
             android:id="@+id/es"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:contentView="@+id/content"
-            app:leftMenuView="@+id/left"
-            app:rightMenuView="@+id/right">
+            app:leftMenuView="@id/left"
+            app:rightMenuView="@id/right"
+            app:contentView="@id/content">
 
         <LinearLayout
                 android:id="@+id/left"

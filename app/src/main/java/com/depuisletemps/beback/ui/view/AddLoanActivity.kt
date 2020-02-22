@@ -220,7 +220,7 @@ class AddLoanActivity: BaseActivity() {
         val returned_date = null
 
         addLoanInFirestore(requestor_id, recipient_id, mType, product, product_category, creation_date, getTimeStampFromString(due_date), returned_date)
-        startLoanActivity()
+        startLoanPagerActivity()
     }
 
     /**

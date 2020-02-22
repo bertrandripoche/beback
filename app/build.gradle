@@ -55,4 +55,13 @@ dependencies {
     implementation 'com.google.android.material:material:1.1.0'
     implementation 'com.facebook.android:facebook-android-sdk:[5,6)'
 
+    // SWIPELAYOUT
+    implementation 'com.github.anzaizai:EasySwipeMenuLayout:1.1.4'
+
+    // TABLAYOUT
+    implementation "com.google.android.material:material:1.1.0"
+
+    // VIEWPAGER
+    implementation 'androidx.viewpager2:viewpager2:1.0.0'
+
 }

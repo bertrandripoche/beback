@@ -7,12 +7,15 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loan
+import com.depuisletemps.beback.ui.recyclerview.ItemClickSupport
 import com.depuisletemps.beback.ui.recyclerview.LoanAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseUser
@@ -37,6 +40,7 @@ class LoanActivity: BaseActivity() {
 
         configureToolbar()
         configureRecyclerView()
+        configureOnClickRecyclerView()
 
         mBtnAdd.setOnClickListener(View.OnClickListener {
             createLoanAlertDialog()
@@ -114,11 +118,28 @@ class LoanActivity: BaseActivity() {
 
         val orientation = resources.getInteger(R.integer.gallery_orientation)
 
-        if (activity_loan_recycler_view != null) {
+        if (this.activity_loan_recycler_view != null) {
             activity_loan_recycler_view.setHasFixedSize(true)
             activity_loan_recycler_view.layoutManager = LinearLayoutManager(applicationContext, orientation, false)
             activity_loan_recycler_view.adapter = mAdapter
         }
+    }
+
+    fun configureOnClickRecyclerView() {
+        ItemClickSupport.addTo(activity_loan_recycler_view, R.layout.loanactivity_recyclerview_item_loan_swipelayout)
+            .setOnItemClickListener(object : ItemClickSupport.OnItemClickListener {
+                override fun onItemClicked(
+                    recyclerView: RecyclerView?,
+                    position: Int,
+                    v: View
+                ) {
+                    Toast.makeText(
+                        v.context,
+                        "Oh le joli test",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            })
     }
 
     /**
