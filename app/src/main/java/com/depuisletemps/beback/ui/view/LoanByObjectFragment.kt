@@ -68,18 +68,8 @@ class LoanByObjectFragment: Fragment() {
                 .whereEqualTo("returned_date", null).orderBy("due_date", Query.Direction.ASCENDING)
         } else {
             query = mLoansRef.whereEqualTo("requestor_id", requesterId)
-                .whereLessThan("returned_date", getTimeStampFromString("01/01/1970")!! ).orderBy("returned_date", Query.Direction.ASCENDING)
+                .whereGreaterThan("returned_date", getTimeStampFromString("01/01/1970")!! ).orderBy("returned_date", Query.Direction.ASCENDING)
         }
-
-query.get()
-.addOnSuccessListener { documents ->
-    for (document in documents) {
-        Log.d(TAG, "${document.id} => ${document.data}")
-    }
-}
-.addOnFailureListener { exception ->
-    Log.w(TAG, "Error getting documents: ", exception)
-}
 
         val options = FirestoreRecyclerOptions.Builder<Loan>().setQuery(query, Loan::class.java).build()
         mAdapter = LoanAdapter(options, ctx, mMode)

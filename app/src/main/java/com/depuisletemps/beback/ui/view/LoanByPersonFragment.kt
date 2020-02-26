@@ -94,7 +94,7 @@ class LoanByPersonFragment: Fragment() {
                 ) {
                     Toast.makeText(
                         v.context,
-                        "Oh le joli test",
+                        "Oh le joli test $position",
                         Toast.LENGTH_LONG
                     ).show()
                 }

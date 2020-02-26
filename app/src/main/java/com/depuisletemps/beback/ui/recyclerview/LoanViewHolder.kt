@@ -67,30 +67,34 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
             loanType.setImageResource(R.drawable.ic_delivery)
             recipient.setTextColor(secondaryDarkColor)
         }
-        if (loan.due_date != null) {
-            val due_date_Date = loan.due_date?.toDate()
-            dueDate.text = getStringFromDate(due_date_Date)
-        }
-        if (!dueDate.text.equals("01/01/3000")) {
-            dueDatePic.visibility = View.VISIBLE
-            dueDate.visibility = View.VISIBLE
-        }
-        else {
-            dueDatePic.visibility = View.GONE
-            dueDate.visibility = View.GONE
-        }
+        if (mode == "Standard") {
+            if (loan.due_date != null) {
+                val due_date_Date = loan.due_date?.toDate()
+                dueDate.text = getStringFromDate(due_date_Date)
+            }
+            if (!dueDate.text.equals("01/01/3000")) {
+                dueDatePic.visibility = View.VISIBLE
+                dueDate.visibility = View.VISIBLE
+            } else {
+                dueDatePic.visibility = View.GONE
+                dueDate.visibility = View.GONE
+            }
 
-        if (dueDate.text != "") {
-            val dueDateLocalDate = getLocalDateFromString(dueDate.text.toString())
-            val todayLocalDate = LocalDate.now()
-            val daysDiff: Int = getDifferenceDays(todayLocalDate, dueDateLocalDate)
+            if (dueDate.text != "") {
+                val dueDateLocalDate = getLocalDateFromString(dueDate.text.toString())
+                val todayLocalDate = LocalDate.now()
+                val daysDiff: Int = getDifferenceDays(todayLocalDate, dueDateLocalDate)
 
-            if (daysDiff < 0) {
-                dueDate.setTextColor(black)
-                dueDatePic.setImageResource(R.drawable.ic_coffin)
-            } else if (daysDiff < 7) dueDate.setTextColor(red)
-            else if (daysDiff < 14) dueDate.setTextColor(secondaryDarkColor)
-            else dueDate.setTextColor(green)
+                if (daysDiff < 0) {
+                    dueDate.setTextColor(black)
+                    dueDatePic.setImageResource(R.drawable.ic_coffin)
+                } else if (daysDiff < 7) dueDate.setTextColor(red)
+                else if (daysDiff < 14) dueDate.setTextColor(secondaryDarkColor)
+                else dueDate.setTextColor(green)
+            }
+        } else {
+            dueDatePic.setImageResource(R.drawable.ic_checked)
+            if (loan.returned_date != null) dueDate.text = getStringFromDate(loan.returned_date?.toDate())
         }
     }
 }
