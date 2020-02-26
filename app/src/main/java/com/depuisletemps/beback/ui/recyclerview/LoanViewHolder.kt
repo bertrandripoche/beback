@@ -2,7 +2,6 @@ package com.depuisletemps.beback.ui.recyclerview
 
 import android.content.Context
 import android.view.View
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
@@ -21,7 +20,7 @@ import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan_swipel
 import org.joda.time.LocalDate
 
 
-class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview), View.OnClickListener {
+class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
     val item = itemview.content
     val category = itemview.item_product_category
     val product = itemview.item_product
@@ -34,22 +33,26 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview), View.On
     var edit = itemview.item_menu_edit
     var archive = itemview.item_menu_archive
 
-    override fun onClick(v: View?) { // Clicked on item
-        println("Click sur item")
-    }
-
     /**
      * This method populates the date into the recyclerView ViewHolder
      */
-    fun updateWithLoan(loan: Loan, position: Int, context:Context) {
+    fun updateWithLoan(loan: Loan, position: Int, context:Context, mode:String) {
         val black = ContextCompat.getColor(context, R.color.black)
         val red = ContextCompat.getColor(context, R.color.red)
         val green = ContextCompat.getColor(context, R.color.green)
         val primaryLightColor = ContextCompat.getColor(context, R.color.primaryLightColor)
         val primaryColor = ContextCompat.getColor(context, R.color.primaryColor)
+        val ligthGrey =  ContextCompat.getColor(context, R.color.light_grey)
+        val darkGrey =  ContextCompat.getColor(context, R.color.grey)
         val secondaryDarkColor = ContextCompat.getColor(context, R.color.secondaryDarkColor)
-        if (position % 2 == 0) item?.setBackgroundColor(primaryLightColor)
-        else item?.setBackgroundColor(primaryColor)
+
+        if (mode == context.getString(R.string.standard)) {
+            if (position % 2 == 0) item?.setBackgroundColor(primaryLightColor)
+            else item?.setBackgroundColor(primaryColor)
+        } else {
+            if (position % 2 == 0) item?.setBackgroundColor(ligthGrey)
+            else item?.setBackgroundColor(darkGrey)
+        }
 
         category.setImageResource(utils.getIconFromCategory(loan.product_category))
         product.text = loan.product
@@ -81,8 +84,6 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview), View.On
             val dueDateLocalDate = getLocalDateFromString(dueDate.text.toString())
             val todayLocalDate = LocalDate.now()
             val daysDiff: Int = getDifferenceDays(todayLocalDate, dueDateLocalDate)
-
-            println("DueDate : "+dueDate.text.toString()+ " - Diff : "+daysDiff)
 
             if (daysDiff < 0) {
                 dueDate.setTextColor(black)

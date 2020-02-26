@@ -9,14 +9,14 @@ import com.depuisletemps.beback.model.Loan
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 
-class LoanAdapter(options: FirestoreRecyclerOptions<Loan>, private val context: Context): FirestoreRecyclerAdapter<Loan,LoanViewHolder>(options) {
+class LoanAdapter(options: FirestoreRecyclerOptions<Loan>, private val context: Context, val mode: String): FirestoreRecyclerAdapter<Loan,LoanViewHolder>(options) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LoanViewHolder {
         return LoanViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.loanactivity_recyclerview_item_loan_swipelayout, parent, false))
     }
 
     override fun onBindViewHolder(holder: LoanViewHolder, position: Int, loan: Loan) {
-        holder.updateWithLoan(loan, position, context)
+        holder.updateWithLoan(loan, position, context, mode)
     }
 
 }

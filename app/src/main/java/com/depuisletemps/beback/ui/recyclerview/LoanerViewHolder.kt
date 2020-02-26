@@ -11,11 +11,13 @@ import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan_swipel
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loaner.view.*
 
 class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
-    val item = itemview.content
+    val item = itemview
     val name: TextView = itemview.item_loaner_name
     val borrowing_number: TextView = itemview.item_borrowing_number
     val lending_number: TextView = itemview.item_lending_number
-
+    val ended_borrowing_number: TextView = itemview.item_ended_borrowing_number
+    val ended_lending_number: TextView = itemview.item_ended_lending_number
+    val delivery: TextView = itemview.item_delivery_number
     /**
      * This method populates the date into the recyclerView ViewHolder
      */
@@ -26,7 +28,11 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         else item?.setBackgroundColor(primaryColor)
 
         name.text = loaner.name
-        borrowing_number.text = loaner.borrowing.toString()
-        lending_number.text = loaner.lending.toString()
+
+        if (loaner.borrowing != null) borrowing_number.text = loaner.borrowing.toString() else borrowing_number.text = "0"
+        if (loaner.lending != null) lending_number.text = loaner.lending.toString() else lending_number.text = "0"
+        if (loaner.ended_borrowing != null) ended_borrowing_number.text = loaner.ended_borrowing.toString() else ended_borrowing_number.text = "0"
+        if (loaner.ended_lending != null) ended_lending_number.text = loaner.ended_lending.toString() else ended_lending_number.text = "0"
+        if (loaner.delivery != null) delivery.text = loaner.delivery.toString() else delivery.text = "0"
     }
 }

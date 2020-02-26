@@ -43,6 +43,8 @@
     <string name="i_wait">Waiting for...</string>
     <string name="transported_by">Transported by</string>
     <string name="delivery_hint">... you know, this company...</string>
+    <string name="standard">Standard</string>
+    <string name="mode">Mode</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">

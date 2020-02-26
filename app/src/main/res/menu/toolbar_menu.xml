@@ -9,6 +9,13 @@
             android:title="@string/archive">
     </item>
     <item
+            android:id="@+id/menu_pending"
+            android:icon="@drawable/ic_pending"
+            android:visible="false"
+            app:showAsAction="always"
+            android:title="@string/archive">
+    </item>
+    <item
             android:id="@+id/menu_profile"
             android:icon="@drawable/ic_profile_yellow"
             app:showAsAction="always"

@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.widget.Spinner
 import android.widget.Toast
@@ -13,14 +14,18 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.api.LoanHelper
+import com.depuisletemps.beback.api.LoanerHelper
+import com.depuisletemps.beback.model.Loan
+import com.depuisletemps.beback.model.Loaner
 import com.depuisletemps.beback.ui.customview.CategoryAdapter
-import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.Companion.getTimeStampFromString
 import com.google.android.gms.tasks.Task
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.joda.time.LocalDate
@@ -29,6 +34,7 @@ import java.util.*
 
 
 class AddLoanActivity: BaseActivity() {
+    private val TAG = "AddLoanActivity"
     lateinit var mType:String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,7 +83,7 @@ class AddLoanActivity: BaseActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (loan_due_date.text != "") outState?.putString("dueDateSet", loan_due_date.text.toString())
+        if (loan_due_date.text != "") outState.putString("dueDateSet", loan_due_date.text.toString())
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
@@ -91,7 +97,7 @@ class AddLoanActivity: BaseActivity() {
      */
     private fun getLoanType(): String {
         val i = intent
-        return i.extras.getString("type") ?: ""
+        return i.extras?.getString("type") ?: ""
     }
 
     /**
@@ -181,8 +187,6 @@ class AddLoanActivity: BaseActivity() {
      * Method to configure the textWatchers on the fields which requires it
      */
     fun isFormValid(): Boolean {
-        println("Loan product : " + loan_product.text.toString())
-        println("Loan recipient : "+ loan_recipient.text.toString())
         return !loan_product.text.toString().equals("") &&  !loan_recipient.text.toString().equals("")
     }
 
@@ -206,28 +210,63 @@ class AddLoanActivity: BaseActivity() {
     private fun createFirestoreLoan(){
         val user: FirebaseUser? = getCurrentUser()
 
-        val requestor_id:String = user?.uid ?: ""
-        val recipient_id:String = loan_recipient.text.toString()
+        val requestorId:String = user?.uid ?: ""
+        val recipientId:String = loan_recipient.text.toString()
 
         val product:String = loan_product.text.toString()
         val categories: Array<String> =
             this.resources.getStringArray(R.array.product_category)
 
-        val product_category:String = categories[spinner_loan_categories.selectedItemPosition]
-        val creation_date = Timestamp.now()
-        var due_date = loan_due_date.text.toString()
-        if (due_date == "") due_date = "01/01/3000"
-        val returned_date = null
+        val productCategory:String = categories[spinner_loan_categories.selectedItemPosition]
+        val creationDate = Timestamp.now()
+        var dueDate = loan_due_date.text.toString()
+        if (dueDate == "") dueDate = "01/01/3000"
+        val returnedDate = null
 
-        addLoanInFirestore(requestor_id, recipient_id, mType, product, product_category, creation_date, getTimeStampFromString(due_date), returned_date)
-        startLoanPagerActivity()
+        val loan = Loan(requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), returnedDate)
+        val loaner = Loaner(recipientId, null, null, null, null, null)
+//        addLoanInFirestore(requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), returnedDate)
+//        addLoanerInFirestore(requestorId, recipientId, mType)
+//        startLoanPagerActivity(getString(R.string.standard))
+
+        val loanRef = mDb.collection("loans").document()
+        val loanerRef = mDb.collection("users").document(requestorId).collection("loaners").document(recipientId)
+        val data = hashMapOf("name" to recipientId)
+
+        mDb.runBatch { batch ->
+            batch.set(loanRef,loan)
+            batch.set(loanerRef,data, SetOptions.merge())
+            when (mType) {
+                "lend" -> batch.update(loanerRef, "lending", FieldValue.increment(1))
+                "borrow" -> batch.update(loanerRef, "borrowing", FieldValue.increment(1))
+                "delivery" -> batch.update(loanerRef, "delivery", FieldValue.increment(1))
+            }
+        }.addOnCompleteListener {
+            Toast.makeText(this, "Saved in Firestore", Toast.LENGTH_SHORT).show()
+            startLoanPagerActivity(getString(R.string.standard))
+        }.addOnFailureListener { e ->
+            Log.w(TAG, "Transaction failure.", e)
+        }
+
     }
 
     /**
      * This method adds the loan in Firestore
      */
-    fun addLoanInFirestore(requestor_id:String, recipient_id:String, mType:String, product:String, product_category:String, creation_date:Timestamp, due_date:Timestamp?, returned_date:Timestamp?): Task<DocumentReference> {
-        return LoanHelper.createLoan(requestor_id, recipient_id, mType, product, product_category, creation_date, due_date, returned_date)
+    fun addLoanInFirestore(requestorId:String, recipientId:String, mType:String, product:String, productCategory:String, creationDate:Timestamp, dueDate:Timestamp?, returnedDate:Timestamp?): Task<DocumentReference> {
+        return LoanHelper.createLoan(requestorId, recipientId, mType, product, productCategory, creationDate, dueDate, returnedDate)
+    }
+
+    /**
+     * This method adds the loaner in Firestore
+     */
+    fun addLoanerInFirestore(requestorId:String, recipientId: String, type: String): Task<Void> {
+        return when (type) {
+            "lend" -> LoanerHelper.createLoaner(1, 0, 0, 0, 0, requestorId, recipientId)
+            "borrow" -> LoanerHelper.createLoaner(0, 1, 0, 0, 0, requestorId, recipientId)
+            "delivery" -> LoanerHelper.createLoaner(0, 0, 0, 0, 1, requestorId, recipientId)
+            else -> LoanerHelper.createLoaner(0, 0, 0, 0, 0, requestorId, recipientId)
+        }
     }
 
     fun setButtonTint(button: FloatingActionButton, tint: ColorStateList) {

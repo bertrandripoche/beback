@@ -12,16 +12,42 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:gravity="center_vertical"
-            android:textSize="@dimen/title_size_small"
+            android:textSize="@dimen/title_size"
             android:paddingEnd="@dimen/middle"
             android:textStyle="bold"
             android:textColor="@color/black"
             android:paddingStart="@dimen/middle"
-            android:text="FJKSD"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/guideline_vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/item_delivery_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerCrop"
+            android:visibility="visible"
+            android:src="@drawable/ic_delivery"
+            app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_left"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/item_lending_icon"
+            />
+
+    <TextView
+            android:id="@+id/item_delivery_number"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/text_size_max"
+            android:textStyle="bold"
+            android:textColor="@color/green"
+            android:layout_marginEnd="@dimen/default_margin"
+            android:visibility="visible"
+            app:layout_constraintTop_toTopOf="@id/item_delivery_icon"
+            app:layout_constraintBottom_toBottomOf="@id/item_delivery_icon"
+            app:layout_constraintLeft_toRightOf="@+id/item_delivery_icon"
+            />
 
     <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_lending_icon"
@@ -32,7 +58,7 @@
             android:src="@drawable/ic_loan"
             app:layout_constraintLeft_toRightOf="@+id/guideline_vertical"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/item_lending_icon"
+            app:layout_constraintBottom_toTopOf="@id/item_ended_lending_icon"
             />
 
     <TextView
@@ -40,11 +66,10 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:gravity="center_vertical"
-            android:textSize="@dimen/title_size"
+            android:textSize="@dimen/text_size_max"
             android:textStyle="bold"
             android:textColor="@color/green"
             android:layout_marginEnd="@dimen/default_margin"
-            android:text="0"
             android:visibility="visible"
             app:layout_constraintTop_toTopOf="@id/item_lending_icon"
             app:layout_constraintBottom_toBottomOf="@id/item_lending_icon"
@@ -52,35 +77,103 @@
             />
 
     <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/item_ended_lending_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerCrop"
+            android:visibility="visible"
+            android:src="@drawable/ic_loan_black"
+            app:layout_constraintLeft_toRightOf="@+id/guideline_vertical"
+            app:layout_constraintTop_toBottomOf="@+id/item_lending_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+    <TextView
+            android:id="@+id/item_ended_lending_number"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/text_size_max"
+            android:textStyle="bold"
+            android:textColor="@color/green"
+            android:layout_marginEnd="@dimen/default_margin"
+            android:visibility="visible"
+            app:layout_constraintTop_toTopOf="@id/item_lending_icon"
+            app:layout_constraintBottom_toBottomOf="@id/item_lending_icon"
+            app:layout_constraintLeft_toRightOf="@+id/item_lending_icon"
+            />
+
+
+    <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/item_borrowing_icon"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_borrowing"
-            app:layout_constraintLeft_toRightOf="@+id/guideline_vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/item_lending_icon"
+            app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_right"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/item_lending_icon"
             />
 
     <TextView
             android:id="@+id/item_borrowing_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/title_size"
+            android:textSize="@dimen/text_size_max"
             android:paddingEnd="@dimen/basic"
             android:gravity="center_vertical"
-            android:text="2"
             android:textStyle="bold"
             android:textColor="@color/red"
             app:layout_constraintBottom_toBottomOf="@+id/item_borrowing_icon"
             app:layout_constraintTop_toTopOf="@+id/item_borrowing_icon"
             app:layout_constraintLeft_toRightOf="@+id/item_borrowing_icon"/>
 
+    <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/item_ended_borrowing_icon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerCrop"
+            android:visibility="visible"
+            android:src="@drawable/ic_borrowing_black"
+            app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_right"
+            app:layout_constraintTop_toBottomOf="@id/item_borrowing_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+
+    <TextView
+            android:id="@+id/item_ended_borrowing_number"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/text_size_max"
+            android:textStyle="bold"
+            android:textColor="@color/green"
+            android:layout_marginEnd="@dimen/default_margin"
+            android:visibility="visible"
+            app:layout_constraintTop_toTopOf="@id/item_lending_icon"
+            app:layout_constraintBottom_toBottomOf="@id/item_lending_icon"
+            app:layout_constraintLeft_toRightOf="@+id/item_lending_icon"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_vertical_left"
+            android:layout_width="1dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.55"/>
+
     <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_vertical"
             android:layout_width="1dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintGuide_percent="0.65"/>
+            app:layout_constraintGuide_percent="0.7"/>
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_vertical_right"
+            android:layout_width="1dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.85"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

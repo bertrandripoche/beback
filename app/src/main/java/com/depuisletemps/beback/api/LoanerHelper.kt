@@ -5,12 +5,9 @@ import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.Loaner
 import com.google.android.gms.tasks.Task
 import com.google.firebase.Timestamp
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.*
 
-class RecipientHelper {
+class LoanerHelper {
     companion object {
         private val COLLECTION_NAME: String = "users"
         private val SUBCOLLECTION_NAME: String = "loaners"
@@ -23,13 +20,16 @@ class RecipientHelper {
 
         // CREATE
         fun createLoaner(
-            name: String,
             lending: Int,
             borrowing: Int,
-            userId: String
-        ): Task<DocumentReference> {
-            val loanerToCreate = Loaner(name, lending, borrowing)
-            return getLoanersCollection(userId).add(loanerToCreate)
+            ended_lending: Int,
+            ended_borrowing: Int,
+            delivery: Int,
+            requestorId: String,
+            recipientId: String
+        ): Task<Void> {
+            val loanerToCreate = Loaner(recipientId, lending, borrowing, ended_lending, ended_borrowing, delivery)
+            return getLoanersCollection(requestorId).document(recipientId).set(loanerToCreate, SetOptions.merge())
         }
 
         // GET

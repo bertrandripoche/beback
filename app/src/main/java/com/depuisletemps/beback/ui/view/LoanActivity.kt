@@ -114,7 +114,7 @@ class LoanActivity: BaseActivity() {
         val query = mLoansRef.whereEqualTo("requestor_id", requesterId).orderBy("due_date", Query.Direction.ASCENDING)
 
         val options = FirestoreRecyclerOptions.Builder<Loan>().setQuery(query, Loan::class.java).build()
-        mAdapter = LoanAdapter(options, this)
+        mAdapter = LoanAdapter(options, this, getString(R.string.standard))
 
         val orientation = resources.getInteger(R.integer.gallery_orientation)
 

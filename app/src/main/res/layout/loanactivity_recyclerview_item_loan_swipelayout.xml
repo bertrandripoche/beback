@@ -134,8 +134,8 @@
                     android:id="@+id/item_menu_archive"
                     android:layout_width="80dp"
                     android:layout_height="match_parent"
-                    android:background="@color/secondaryLightColor"
-                    android:src="@drawable/ic_item_archive"
+                    android:background="@color/dark_green"
+                    android:src="@drawable/ic_archive_color"
                     android:clickable="true"
                     android:padding="10dp"/>
 

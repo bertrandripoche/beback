@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.depuisletemps.beback.R
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -51,8 +52,9 @@ open class BaseActivity: AppCompatActivity() {
     /**
      * This method starts the Loan activity
      */
-    protected fun startLoanPagerActivity() {
+    protected fun startLoanPagerActivity(mode: String) {
         val intent = Intent(this, LoanPagerActivity::class.java)
+        intent.putExtra(getString(R.string.mode), mode)
         startActivity(intent)
     }
 }

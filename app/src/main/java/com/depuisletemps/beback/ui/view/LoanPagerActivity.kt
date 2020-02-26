@@ -10,17 +10,22 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.ui.customview.ViewPagerAdapter
+import kotlinx.android.synthetic.main.activity_loan.*
 import kotlinx.android.synthetic.main.activity_loan_pager.*
+import kotlinx.android.synthetic.main.activity_loan_pager.mBtnAdd
 
 
 class LoanPagerActivity: BaseActivity() {
 
     lateinit var mToolbar: Toolbar
     lateinit var mArchiveButton: MenuItem
+    lateinit var mPendingButton: MenuItem
     lateinit var mProfileButton: MenuItem
     var mIsLoanAlertDialogDisplayed:Boolean = false
+    var mMode: String = "standard"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,10 +33,21 @@ class LoanPagerActivity: BaseActivity() {
 
         configureToolbar()
         configurePager()
+        mMode = getLoanMode()
 
         mBtnAdd.setOnClickListener(View.OnClickListener {
             createLoanAlertDialog()
         })
+    }
+
+    /**
+     * This method returns the mode from the bundle
+     * @return the placeId or null
+     */
+    private fun getLoanMode(): String {
+        val extras: Bundle? = this.intent.extras
+        if (extras?.getString(getString(R.string.mode)) != null) return extras.getString(getString(R.string.mode))
+        return getString(R.string.standard)
     }
 
     /**
@@ -88,7 +104,18 @@ class LoanPagerActivity: BaseActivity() {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.toolbar_menu, menu)
         mArchiveButton = menu.getItem(0)
-        mProfileButton = menu.getItem(1)
+        mPendingButton = menu.getItem(1)
+
+        if (mMode == getString(R.string.standard)) {
+            mPendingButton.setVisible(false)
+            mArchiveButton.setVisible(true)
+        }
+        if (mMode == getString(R.string.archive)) {
+            mPendingButton.setVisible(true)
+            mArchiveButton.setVisible(false)
+        }
+
+        mProfileButton = menu.getItem(2)
         return super.onCreateOptionsMenu(menu)
     }
 
@@ -97,7 +124,11 @@ class LoanPagerActivity: BaseActivity() {
      */
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menu_archive -> {
-            Toast.makeText(this,"Archive action", Toast.LENGTH_LONG).show()
+            startLoanPagerActivity(getString(R.string.archive))
+            true
+        }
+        R.id.menu_pending-> {
+            startLoanPagerActivity(getString(R.string.standard))
             true
         }
         R.id.menu_profile ->{

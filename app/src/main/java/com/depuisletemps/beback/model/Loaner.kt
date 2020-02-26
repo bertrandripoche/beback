@@ -1,5 +1,5 @@
 package com.depuisletemps.beback.model
 
-data class Loaner(var name: String, var lending: Int = 0, var borrowing: Int = 0){
-    constructor(): this("",0,0)
+data class Loaner(var name: String, var lending: Int?, var borrowing: Int?, var ended_lending: Int?, var ended_borrowing: Int?, var delivery: Int?){
+    constructor() : this("",null,null,null,null,null)
 }

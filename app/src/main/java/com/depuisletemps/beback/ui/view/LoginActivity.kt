@@ -37,7 +37,7 @@ class LoginActivity : BaseActivity() {
      * This method check if someone is already logged (and in such case, start the loan activity)
      */
     fun checkLoginAndDisplayAppropriateScreen() {
-        if (isCurrentUserLogged()) startLoanPagerActivity()
+        if (isCurrentUserLogged()) startLoanPagerActivity(getString(R.string.standard))
     }
 
     /**

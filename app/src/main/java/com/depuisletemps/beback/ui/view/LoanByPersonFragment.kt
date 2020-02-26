@@ -85,7 +85,7 @@ class LoanByPersonFragment: Fragment() {
     }
 
     fun configureOnClickRecyclerView() {
-        ItemClickSupport.addTo(fragment_loan_by_person_recycler_view, R.layout.fragment_loan_by_person)
+        ItemClickSupport.addTo(fragment_loan_by_person_recycler_view, R.layout.loanactivity_recyclerview_item_loaner)
             .setOnItemClickListener(object : ItemClickSupport.OnItemClickListener {
                 override fun onItemClicked(
                     recyclerView: RecyclerView?,

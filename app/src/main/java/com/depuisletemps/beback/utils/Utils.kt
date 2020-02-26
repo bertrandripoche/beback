@@ -51,10 +51,10 @@ class Utils {
         }
 
         fun getTimeStampFromString(date: String): Timestamp? {
+            val formatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy")
+            val localDate: LocalDate = LocalDate.parse(date, formatter)
+            val dateFromLocalDate = java.sql.Date.valueOf(localDate.toString())
             if (date != null) {
-                val formatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy")
-                val localDate: LocalDate = LocalDate.parse(date, formatter)
-                val dateFromLocalDate = java.sql.Date.valueOf(localDate.toString())
                 return Timestamp(dateFromLocalDate)
             } else return null
         }
