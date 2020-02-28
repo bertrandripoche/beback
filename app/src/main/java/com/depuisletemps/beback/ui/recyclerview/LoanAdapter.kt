@@ -12,7 +12,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions
 class LoanAdapter(options: FirestoreRecyclerOptions<Loan>, private val context: Context, val mode: String): FirestoreRecyclerAdapter<Loan,LoanViewHolder>(options) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LoanViewHolder {
-        return LoanViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.loanactivity_recyclerview_item_loan_swipelayout, parent, false))
+        return LoanViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.loanactivity_recyclerview_item_loan, parent, false))
     }
 
     override fun onBindViewHolder(holder: LoanViewHolder, position: Int, loan: Loan) {

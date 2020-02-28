@@ -45,6 +45,9 @@
     <string name="delivery_hint">... you know, this company...</string>
     <string name="standard">Standard</string>
     <string name="mode">Mode</string>
+    <string name="delete">Delete</string>
+    <string name="returned">Returned !</string>
+    <string name="undo">Undo</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">

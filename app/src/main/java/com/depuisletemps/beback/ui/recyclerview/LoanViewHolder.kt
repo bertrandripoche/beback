@@ -21,7 +21,7 @@ import org.joda.time.LocalDate
 
 
 class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
-    val item = itemview.content
+    val item = itemview
     val category = itemview.item_product_category
     val product = itemview.item_product
     val recipient = itemview.item_recipient
@@ -96,6 +96,8 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
             dueDatePic.setImageResource(R.drawable.ic_checked)
             if (loan.returned_date != null) dueDate.text = getStringFromDate(loan.returned_date?.toDate())
         }
+
+        item.setTag(loan.id)
     }
 }
 

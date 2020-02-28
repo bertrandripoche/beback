@@ -16,7 +16,6 @@ import com.depuisletemps.beback.R
 import com.depuisletemps.beback.api.LoanHelper
 import com.depuisletemps.beback.api.LoanerHelper
 import com.depuisletemps.beback.model.Loan
-import com.depuisletemps.beback.model.Loaner
 import com.depuisletemps.beback.ui.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.Utils.Companion.getTimeStampFromString
 import com.google.android.gms.tasks.Task
@@ -223,19 +222,19 @@ class AddLoanActivity: BaseActivity() {
         if (dueDate == "") dueDate = "01/01/3000"
         val returnedDate = null
 
-        val loan = Loan(requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), returnedDate)
-        val loaner = Loaner(recipientId, null, null, null, null, null)
+
 //        addLoanInFirestore(requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), returnedDate)
 //        addLoanerInFirestore(requestorId, recipientId, mType)
 //        startLoanPagerActivity(getString(R.string.standard))
 
         val loanRef = mDb.collection("loans").document()
         val loanerRef = mDb.collection("users").document(requestorId).collection("loaners").document(recipientId)
-        val data = hashMapOf("name" to recipientId)
+        val loanerData = hashMapOf("name" to recipientId)
+        val loan = Loan(loanRef.id, requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), returnedDate)
 
         mDb.runBatch { batch ->
             batch.set(loanRef,loan)
-            batch.set(loanerRef,data, SetOptions.merge())
+            batch.set(loanerRef,loanerData, SetOptions.merge())
             when (mType) {
                 "lend" -> batch.update(loanerRef, "lending", FieldValue.increment(1))
                 "borrow" -> batch.update(loanerRef, "borrowing", FieldValue.increment(1))
@@ -253,8 +252,8 @@ class AddLoanActivity: BaseActivity() {
     /**
      * This method adds the loan in Firestore
      */
-    fun addLoanInFirestore(requestorId:String, recipientId:String, mType:String, product:String, productCategory:String, creationDate:Timestamp, dueDate:Timestamp?, returnedDate:Timestamp?): Task<DocumentReference> {
-        return LoanHelper.createLoan(requestorId, recipientId, mType, product, productCategory, creationDate, dueDate, returnedDate)
+    fun addLoanInFirestore(id: String, requestorId:String, recipientId:String, mType:String, product:String, productCategory:String, creationDate:Timestamp, dueDate:Timestamp?, returnedDate:Timestamp?): Task<DocumentReference> {
+        return LoanHelper.createLoan(id, requestorId, recipientId, mType, product, productCategory, creationDate, dueDate, returnedDate)
     }
 
     /**
