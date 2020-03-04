@@ -73,10 +73,7 @@ class LoanByObjectFragment: Fragment() {
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val position = viewHolder.adapterPosition
-                    val item = viewHolder.itemView
                     val loan: Loan = mAdapter.getItem(position)
-
-//                  val affectedLoan = Loan(item.id, item.id )
 
                     when (direction) {
                         // Right : Delete
@@ -85,7 +82,7 @@ class LoanByObjectFragment: Fragment() {
                         // Left : Archive
                         ItemTouchHelper.LEFT -> archiveTheLoan(viewHolder.itemView.tag.toString(), loan)
 
-                        else -> println("HUMMM")
+                        else -> return
                     }
                 }
 
@@ -93,6 +90,12 @@ class LoanByObjectFragment: Fragment() {
                  * this method manages the layout below the item (for swipe effect)
                  */
                 override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean ) {
+                    val position = viewHolder.adapterPosition
+                    val loan: Loan = mAdapter.getItem(position)
+                    lateinit var return_message: String
+                    if (loan.type.equals(LoanType.DELIVERY.type)) return_message = getString(R.string.received)
+                    else return_message = getString(R.string.returned)
+
                     RecyclerViewSwipeDecorator.Builder(
                         c,
                         recyclerView,
@@ -109,7 +112,7 @@ class LoanByObjectFragment: Fragment() {
                                 R.color.dark_green
                             )
                         )
-                        .addSwipeLeftLabel(getString(R.string.returned))
+                        .addSwipeLeftLabel(return_message)
                         .setSwipeLeftLabelTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
                         .setSwipeLeftLabelColor(ContextCompat.getColor(context!!, R.color.white))
                         .addSwipeRightActionIcon(R.drawable.ic_delete)
@@ -147,7 +150,8 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, loan.type, FieldValue.increment(-1))
             batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(+1))
         }.addOnCompleteListener {
-            Toast.makeText(context, loan.product+" returned\nyeaahhh !", Toast.LENGTH_SHORT).show()
+            if (loan.type.equals(LoanType.DELIVERY.type)) Toast.makeText(context, getString(R.string.received_message, loan.product), Toast.LENGTH_SHORT).show()
+            else Toast.makeText(context, getString(R.string.archived_message, loan.product), Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e ->
             Log.w(TAG, "Transaction failure.", e)
         }
@@ -169,7 +173,8 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, loan.type, FieldValue.increment(+1))
             batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(-1))
         }.addOnCompleteListener {
-            Toast.makeText(context, "My bad !\n"+loan.product+" not returned !", Toast.LENGTH_SHORT).show()
+            if (loan.type.equals(LoanType.DELIVERY.type)) Toast.makeText(context, getString(R.string.not_received_message, loan.product), Toast.LENGTH_SHORT).show()
+            else Toast.makeText(context, getString(R.string.unarchived_message, loan.product), Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e ->
             Log.w(TAG, "Transaction failure.", e)
         }
@@ -184,7 +189,7 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, loan.type, FieldValue.increment(-1))
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
         }.addOnCompleteListener {
-            Toast.makeText(context, "Done\nForget about"+loan.product+" !", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,  getString(R.string.deleted_message, loan.product), Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e ->
             Log.w(TAG, "Transaction failure.", e)
         }
@@ -207,7 +212,7 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, loan.type, FieldValue.increment(+1))
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
         }.addOnCompleteListener {
-            Toast.makeText(context, "Ooops, my mistake !\n"+loan.product+" rescued !", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context,  getString(R.string.undeleted_message, loan.product), Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e ->
             Log.w(TAG, "Transaction failure.", e)
         }

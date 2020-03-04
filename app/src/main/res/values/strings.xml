@@ -40,14 +40,21 @@
     <string name="lent_to">Lent to</string>
     <string name="borrowed_from">Borrowed from</string>
     <string name="delivery_title">Quietly waiting for delivery</string>
-    <string name="i_wait">Waiting for...</string>
+    <string name="i_wait">Waiting for…</string>
     <string name="transported_by">Transported by</string>
-    <string name="delivery_hint">... you know, this company...</string>
+    <string name="delivery_hint">… you know, this company…</string>
     <string name="standard">Standard</string>
     <string name="mode">Mode</string>
     <string name="delete">Delete</string>
     <string name="returned">Returned !</string>
     <string name="undo">Undo</string>
+    <string name="deleted_message">%1$s ?\nForget about it !</string>
+    <string name="undeleted_message">Ooops, my mistake !\n%1$s rescued !</string>
+    <string name="archived_message">%1$s returned yeaahhh !</string>
+    <string name="unarchived_message">My bad !\n%1$s not returned !</string>
+    <string name="received_message">%1$s received yeaahhh !</string>
+    <string name="not_received_message">My bad !\n%1$s not received !</string>
+    <string name="received">Received !</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">

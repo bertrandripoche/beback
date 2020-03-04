@@ -55,10 +55,10 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         category.setImageResource(utils.getIconFromCategory(loan.product_category))
         product.text = loan.product
         recipient.text = loan.recipient_id
-        if (loan.type.equals(LoanType.LENDING)) {
+        if (loan.type.equals(LoanType.LENDING.type)) {
             loanType.setImageResource(R.drawable.ic_loan)
             recipient.setTextColor(green)
-        } else if (loan.type.equals(LoanType.BORROWING)) {
+        } else if (loan.type.equals(LoanType.BORROWING.type)) {
             loanType.setImageResource(R.drawable.ic_borrowing)
             recipient.setTextColor(red)
         }  else {
