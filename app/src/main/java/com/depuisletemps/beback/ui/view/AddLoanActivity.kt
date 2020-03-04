@@ -16,6 +16,8 @@ import com.depuisletemps.beback.R
 import com.depuisletemps.beback.api.LoanHelper
 import com.depuisletemps.beback.api.LoanerHelper
 import com.depuisletemps.beback.model.Loan
+import com.depuisletemps.beback.model.LoanStatus
+import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.Utils.Companion.getTimeStampFromString
 import com.google.android.gms.tasks.Task
@@ -63,19 +65,25 @@ class AddLoanActivity: BaseActivity() {
         val greenColor = ContextCompat.getColor(this, R.color.green)
         val redColor = ContextCompat.getColor(this, R.color.red)
         val yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
-        if (mType.equals("lend")) {
+        if (mType.equals(LoanType.LENDING.type)) {
             loan_type.setBackgroundColor(greenColor)
+            loan_type_pic.setBackgroundColor(greenColor)
             loan_recipient_title.text = getString(R.string.whom)
             loan_type.text = getString(R.string.i_lend)
-        } else if (mType.equals("borrow")) {
+            loan_type_pic.setImageResource(R.drawable.ic_loan_black)
+        } else if (mType.equals(LoanType.BORROWING.type)) {
             loan_type.setBackgroundColor(redColor)
+            loan_type_pic.setBackgroundColor(redColor)
             loan_recipient_title.text = getString(R.string.who)
             loan_type.text = getString(R.string.i_borrow)
-        } else if (mType.equals("delivery")) {
+            loan_type_pic.setImageResource(R.drawable.ic_borrowing_black)
+        } else if (mType.equals(LoanType.DELIVERY.type)) {
             loan_type.setBackgroundColor(yellowColor)
+            loan_type_pic.setBackgroundColor(yellowColor)
             loan_recipient_title.text = getString(R.string.who)
             loan_type.text = getString(R.string.i_wait)
             loan_recipient.hint = getString(R.string.delivery_hint)
+            loan_type_pic.setImageResource(R.drawable.ic_delivery_black)
         }
         disableFloatButton()
     }
@@ -222,11 +230,6 @@ class AddLoanActivity: BaseActivity() {
         if (dueDate == "") dueDate = "01/01/3000"
         val returnedDate = null
 
-
-//        addLoanInFirestore(requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), returnedDate)
-//        addLoanerInFirestore(requestorId, recipientId, mType)
-//        startLoanPagerActivity(getString(R.string.standard))
-
         val loanRef = mDb.collection("loans").document()
         val loanerRef = mDb.collection("users").document(requestorId).collection("loaners").document(recipientId)
         val loanerData = hashMapOf("name" to recipientId)
@@ -235,11 +238,8 @@ class AddLoanActivity: BaseActivity() {
         mDb.runBatch { batch ->
             batch.set(loanRef,loan)
             batch.set(loanerRef,loanerData, SetOptions.merge())
-            when (mType) {
-                "lend" -> batch.update(loanerRef, "lending", FieldValue.increment(1))
-                "borrow" -> batch.update(loanerRef, "borrowing", FieldValue.increment(1))
-                "delivery" -> batch.update(loanerRef, "delivery", FieldValue.increment(1))
-            }
+            batch.update(loanerRef, loan.type, FieldValue.increment(+1))
+            batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
         }.addOnCompleteListener {
             Toast.makeText(this, "Saved in Firestore", Toast.LENGTH_SHORT).show()
             startLoanPagerActivity(getString(R.string.standard))
@@ -247,25 +247,6 @@ class AddLoanActivity: BaseActivity() {
             Log.w(TAG, "Transaction failure.", e)
         }
 
-    }
-
-    /**
-     * This method adds the loan in Firestore
-     */
-    fun addLoanInFirestore(id: String, requestorId:String, recipientId:String, mType:String, product:String, productCategory:String, creationDate:Timestamp, dueDate:Timestamp?, returnedDate:Timestamp?): Task<DocumentReference> {
-        return LoanHelper.createLoan(id, requestorId, recipientId, mType, product, productCategory, creationDate, dueDate, returnedDate)
-    }
-
-    /**
-     * This method adds the loaner in Firestore
-     */
-    fun addLoanerInFirestore(requestorId:String, recipientId: String, type: String): Task<Void> {
-        return when (type) {
-            "lend" -> LoanerHelper.createLoaner(1, 0, 0, 0, 0, requestorId, recipientId)
-            "borrow" -> LoanerHelper.createLoaner(0, 1, 0, 0, 0, requestorId, recipientId)
-            "delivery" -> LoanerHelper.createLoaner(0, 0, 0, 0, 1, requestorId, recipientId)
-            else -> LoanerHelper.createLoaner(0, 0, 0, 0, 0, requestorId, recipientId)
-        }
     }
 
     fun setButtonTint(button: FloatingActionButton, tint: ColorStateList) {

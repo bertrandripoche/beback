@@ -167,11 +167,11 @@ class LoanPagerActivity: BaseActivity() {
     fun activateButtonListeners(dialogView: View, alertDialog: AlertDialog) {
         val btn_loaner = dialogView.findViewById<Button>(R.id.btn_loaner)
         btn_loaner.setOnClickListener{
-            startAddLoanActivity("lend")
+            startAddLoanActivity("lending")
         }
         val btn_borrower= dialogView.findViewById<Button>(R.id.btn_borrower)
         btn_borrower.setOnClickListener{
-            startAddLoanActivity("borrow")
+            startAddLoanActivity("borrowing")
         }
         val btn_delivery= dialogView.findViewById<Button>(R.id.btn_delivery)
         btn_delivery.setOnClickListener{

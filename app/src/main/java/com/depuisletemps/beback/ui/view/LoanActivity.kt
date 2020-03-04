@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loan
+import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.recyclerview.ItemClickSupport
 import com.depuisletemps.beback.ui.recyclerview.LoanAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
@@ -167,15 +168,15 @@ class LoanActivity: BaseActivity() {
     fun activateButtonListeners(dialogView: View, alertDialog: AlertDialog) {
         val btn_loaner = dialogView.findViewById<Button>(R.id.btn_loaner)
         btn_loaner.setOnClickListener{
-            startAddLoanActivity("lend")
+            startAddLoanActivity(LoanType.LENDING.type)
         }
         val btn_borrower= dialogView.findViewById<Button>(R.id.btn_borrower)
         btn_borrower.setOnClickListener{
-            startAddLoanActivity("borrow")
+            startAddLoanActivity(LoanType.BORROWING.type)
         }
         val btn_delivery= dialogView.findViewById<Button>(R.id.btn_delivery)
         btn_delivery.setOnClickListener{
-            startAddLoanActivity("delivery")
+            startAddLoanActivity(LoanType.DELIVERY.type)
         }
         val btn_cancel = dialogView.findViewById<Button>(R.id.btn_cancel)
         btn_cancel.setOnClickListener {

@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loan
+import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.Companion.getDifferenceDays
 import com.depuisletemps.beback.utils.Utils.Companion.getLocalDateFromString
@@ -29,9 +30,6 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
     val dueDate = itemview.item_due_date
     val dueDatePic = itemview.item_due_date_pic
     val utils:Utils = Utils()
-    var delete = itemview.item_menu_delete
-    var edit = itemview.item_menu_edit
-    var archive = itemview.item_menu_archive
 
     /**
      * This method populates the date into the recyclerView ViewHolder
@@ -57,10 +55,10 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         category.setImageResource(utils.getIconFromCategory(loan.product_category))
         product.text = loan.product
         recipient.text = loan.recipient_id
-        if (loan.type == "lend") {
+        if (loan.type.equals(LoanType.LENDING)) {
             loanType.setImageResource(R.drawable.ic_loan)
             recipient.setTextColor(green)
-        } else if (loan.type == "borrow") {
+        } else if (loan.type.equals(LoanType.BORROWING)) {
             loanType.setImageResource(R.drawable.ic_borrowing)
             recipient.setTextColor(red)
         }  else {

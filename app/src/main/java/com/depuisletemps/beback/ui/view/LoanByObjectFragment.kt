@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loan
+import com.depuisletemps.beback.model.LoanStatus
+import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.recyclerview.ItemClickSupport
 import com.depuisletemps.beback.ui.recyclerview.LoanAdapter
 import com.depuisletemps.beback.utils.Utils.Companion.getTimeStampFromString
@@ -24,6 +26,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import com.google.firebase.Timestamp
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
+import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.fragment_loan_by_object.*
 
 
@@ -31,7 +34,7 @@ class LoanByObjectFragment: Fragment() {
 
     private val TAG = "LoanByObjectFragment"
     lateinit var mLoansRef: CollectionReference
-    private var mAdapter: LoanAdapter? = null
+    lateinit private var mAdapter: LoanAdapter
     var mUser: FirebaseUser? = null
     lateinit var mDb: FirebaseFirestore
     lateinit var mMode: String
@@ -55,107 +58,144 @@ class LoanByObjectFragment: Fragment() {
         configureOnClickRecyclerView()
         setBackgroundForRecyclerView()
 
-        val simpleCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
+        if (mMode == "Standard") {
 
-                override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, viewHolder1: RecyclerView.ViewHolder): Boolean {
+            val simpleCallback = object :
+                ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
+
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    viewHolder1: RecyclerView.ViewHolder
+                ): Boolean {
                     return false
                 }
 
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val position = viewHolder.adapterPosition
                     val item = viewHolder.itemView
-//                    val affectedLoan = Loan(item.id, item.id )
+                    val loan: Loan = mAdapter.getItem(position)
+
+//                  val affectedLoan = Loan(item.id, item.id )
 
                     when (direction) {
-                        // Right Delete
-                        ItemTouchHelper.RIGHT -> deleteTheLoan(viewHolder.itemView.tag.toString())
+                        // Right : Delete
+                        ItemTouchHelper.RIGHT -> deleteTheLoan(viewHolder.itemView.tag.toString(), loan)
 
-                        // Left Archive
-                        ItemTouchHelper.LEFT -> updateTheLoan(viewHolder.itemView.tag.toString())
-
+                        // Left : Archive
+                        ItemTouchHelper.LEFT -> archiveTheLoan(viewHolder.itemView.tag.toString(), loan)
 
                         else -> println("HUMMM")
                     }
-
-//                    fragment_loan_by_object_recycler_view.adapter!!.notifyItemRemoved(position)
                 }
 
-            /**
-             * this method manages the layout
-             */
-            override fun onChildDraw(c: Canvas, recyclerView: RecyclerView,viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean) {
-                    RecyclerViewSwipeDecorator.Builder(c,recyclerView,viewHolder,dX,dY,actionState,isCurrentlyActive)
+                /**
+                 * this method manages the layout below the item (for swipe effect)
+                 */
+                override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean ) {
+                    RecyclerViewSwipeDecorator.Builder(
+                        c,
+                        recyclerView,
+                        viewHolder,
+                        dX,
+                        dY,
+                        actionState,
+                        isCurrentlyActive
+                    )
                         .addSwipeLeftActionIcon(R.drawable.ic_archive_color)
-                        .addSwipeLeftBackgroundColor(ContextCompat.getColor(context!!,R.color.dark_green))
+                        .addSwipeLeftBackgroundColor(
+                            ContextCompat.getColor(
+                                context!!,
+                                R.color.dark_green
+                            )
+                        )
                         .addSwipeLeftLabel(getString(R.string.returned))
                         .setSwipeLeftLabelTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
-                        .setSwipeLeftLabelColor(ContextCompat.getColor(context!!,R.color.white))
+                        .setSwipeLeftLabelColor(ContextCompat.getColor(context!!, R.color.white))
                         .addSwipeRightActionIcon(R.drawable.ic_delete)
-                        .addSwipeRightBackgroundColor(ContextCompat.getColor(context!!,R.color.red))
+                        .addSwipeRightBackgroundColor(
+                            ContextCompat.getColor(
+                                context!!,
+                                R.color.red
+                            )
+                        )
                         .addSwipeRightLabel(getString(R.string.delete))
                         .setSwipeRightLabelTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
-                        .setSwipeRightLabelColor(ContextCompat.getColor(context!!,R.color.white))
+                        .setSwipeRightLabelColor(ContextCompat.getColor(context!!, R.color.white))
                         .create()
                         .decorate()
                     super.onChildDraw(c, recyclerView!!, viewHolder!!, dX, dY, actionState, isCurrentlyActive)
                 }
-        }
+            }
 
-        val itemTouchHelper = ItemTouchHelper(simpleCallback)
-        itemTouchHelper.attachToRecyclerView(fragment_loan_by_object_recycler_view)
+            val itemTouchHelper = ItemTouchHelper(simpleCallback)
+            itemTouchHelper.attachToRecyclerView(fragment_loan_by_object_recycler_view)
+        }
 
     }
 
-    private fun updateTheLoan(tag: String) {
+    private fun archiveTheLoan(tag: String, loan: Loan) {
         val loanRef = mDb.collection("loans").document(tag)
+        val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
+
         val returnedDate: Timestamp = Timestamp.now()
 
         mDb.runBatch { batch ->
             batch.update(loanRef, "returned_date", returnedDate)
-
+            batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
+            batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(+1))
+            batch.update(loanerRef, loan.type, FieldValue.increment(-1))
+            batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(+1))
         }.addOnCompleteListener {
-            Toast.makeText(context, "Deleted in Firestore", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, loan.product+" returned\nyeaahhh !", Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e ->
             Log.w(TAG, "Transaction failure.", e)
         }
 
-        Snackbar.make(fragment_loan_by_object_layout, tag,Snackbar.LENGTH_LONG)
+        Snackbar.make(fragment_loan_by_object_layout, loan.product,Snackbar.LENGTH_LONG)
             .setAction(getString(R.string.undo), View.OnClickListener{
-                removeTheReturnedDate(tag)
+                unarchiveTheLoan(tag, loan)
             }).show()
     }
 
-
-    private fun deleteTheLoan(tag: String) {
+    private fun unarchiveTheLoan(tag: String, loan: Loan) {
         val loanRef = mDb.collection("loans").document(tag)
-
-        mDb.runBatch { batch ->
-            batch.delete(loanRef)
-        }.addOnCompleteListener {
-            Toast.makeText(context, "Deleted in Firestore", Toast.LENGTH_SHORT).show()
-        }.addOnFailureListener { e ->
-            Log.w(TAG, "Transaction failure.", e)
-        }
-
-        Snackbar.make(fragment_loan_by_object_layout, tag,Snackbar.LENGTH_LONG)
-            .setAction(getString(R.string.undo), View.OnClickListener{
-                removeTheReturnedDate(tag)
-            }).show()
-    }
-
-    private fun removeTheReturnedDate(tag: String) {
-        val loanRef = mDb.collection("loans").document(tag)
+        val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
 
         mDb.runBatch { batch ->
             batch.update(loanRef, "returned_date", null)
+            batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
+            batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(-1))
+            batch.update(loanerRef, loan.type, FieldValue.increment(+1))
+            batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(-1))
         }.addOnCompleteListener {
-            Toast.makeText(context, "Modification cancelled\n in Firestore", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "My bad !\n"+loan.product+" not returned !", Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e ->
             Log.w(TAG, "Transaction failure.", e)
         }
     }
 
-    private fun recreateTheLoan(tag:String, loan: Loan) {
+    private fun deleteTheLoan(tag: String, loan: Loan) {
+        val loanRef = mDb.collection("loans").document(tag)
+        val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
+
+        mDb.runBatch { batch ->
+            batch.delete(loanRef)
+            batch.update(loanerRef, loan.type, FieldValue.increment(-1))
+            batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
+        }.addOnCompleteListener {
+            Toast.makeText(context, "Done\nForget about"+loan.product+" !", Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener { e ->
+            Log.w(TAG, "Transaction failure.", e)
+        }
+
+        Snackbar.make(fragment_loan_by_object_layout, loan.product,Snackbar.LENGTH_LONG)
+            .setAction(getString(R.string.undo), View.OnClickListener{
+                undeleteTheLoan(tag, loan)
+            }).show()
+    }
+
+    private fun undeleteTheLoan(tag:String, loan: Loan) {
         val loanRef = mDb.collection("loans").document()
         val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
         val loanerData = hashMapOf("name" to loan.recipient_id)
@@ -164,13 +204,10 @@ class LoanByObjectFragment: Fragment() {
         mDb.runBatch { batch ->
             batch.set(loanRef,loan)
             batch.set(loanerRef,loanerData, SetOptions.merge())
-            when (loan.type) {
-                "lend" -> batch.update(loanerRef, "lending", FieldValue.increment(1))
-                "borrow" -> batch.update(loanerRef, "borrowing", FieldValue.increment(1))
-                "delivery" -> batch.update(loanerRef, "delivery", FieldValue.increment(1))
-            }
+            batch.update(loanerRef, loan.type, FieldValue.increment(+1))
+            batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
         }.addOnCompleteListener {
-            Toast.makeText(context, "Saved in Firestore", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Ooops, my mistake !\n"+loan.product+" rescued !", Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e ->
             Log.w(TAG, "Transaction failure.", e)
         }
@@ -232,6 +269,17 @@ class LoanByObjectFragment: Fragment() {
                     ).show()
                 }
             })
+    }
+
+    /**
+     * This method send the opposite field, eg : Borrowing -> Ended_borrowing
+     */
+    fun reverseTypeField(type: String): String {
+        when (type) {
+            LoanType.LENDING.type -> return LoanType.ENDED_LENDING.type
+            LoanType.BORROWING.type -> return LoanType.ENDED_BORROWING.type
+            else -> return LoanType.ENDED_DELIVERY.type
+        }
     }
 
     /**
