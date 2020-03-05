@@ -25,13 +25,15 @@
     <string name="lend_title">Generous loaner</string>
     <string name="borrow_title">Humble borrower</string>
     <string name="cancel">Forget it</string>
-    <string name="product_hint">… you know, this thing…</string>
-    <string name="recipient_hint">… you know, this mate…</string>
+    <string name="product_hint">…you know, this thing…</string>
+    <string name="recipient_hint">…you know, this mate…</string>
+    <string name="delivery_hint">…you know, this company…</string>
     <string name="who">WHO *</string>
     <string name="whom">WHOM *</string>
     <string name="what">WHAT *</string>
     <string name="type">TYPE</string>
     <string name="when">WHEN</string>
+    <string name="due">DUE</string>
     <string name="due_date_hint">Due date \&#x27A1;</string>
     <string name="due_date">%1$s/%2$s/%3$d </string>
     <string name="pick">PICK</string>
@@ -42,7 +44,6 @@
     <string name="delivery_title">Quietly waiting for delivery</string>
     <string name="i_wait">Waiting for…</string>
     <string name="transported_by">Transported by</string>
-    <string name="delivery_hint">… you know, this company…</string>
     <string name="standard">Standard</string>
     <string name="mode">Mode</string>
     <string name="delete">Delete</string>
@@ -55,6 +56,10 @@
     <string name="received_message">%1$s received yeaahhh !</string>
     <string name="not_received_message">My bad !\n%1$s not received !</string>
     <string name="received">Received !</string>
+    <string name="loanId">loanId</string>
+    <string name="on">On</string>
+    <string name="i_borrowed">I borrowed</string>
+    <string name="i_lended">I lent</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">
@@ -63,8 +68,8 @@
         <item>Books</item>
         <item>Clothes</item>
         <item>Electronic</item>
-        <item>Games</item>
         <item>Instruments</item>
+        <item>Games</item>
         <item>Money</item>
         <item>Music</item>
         <item>Sport</item>
@@ -78,8 +83,8 @@
         <item>@drawable/ic_books</item>
         <item>@drawable/ic_clothes</item>
         <item>@drawable/ic_electronic</item>
-        <item>@drawable/ic_games</item>
         <item>@drawable/ic_music_instrument</item>
+        <item>@drawable/ic_games</item>
         <item>@drawable/ic_money</item>
         <item>@drawable/ic_music</item>
         <item>@drawable/ic_sport</item>

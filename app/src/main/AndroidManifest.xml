@@ -16,26 +16,26 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name="com.depuisletemps.beback.ui.view.LoanActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-        <activity
-                android:name="com.depuisletemps.beback.ui.view.AddLoanActivity"
-                android:parentActivityName="com.depuisletemps.beback.ui.view.LoanActivity">
-            <meta-data
-                    android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.depuisletemps.beback.ui.view.LoanActivity" />
-        </activity>
         <activity
                 android:name="com.depuisletemps.beback.ui.view.LoanPagerActivity"
                 android:parentActivityName="com.depuisletemps.beback.ui.view.LoginActivity" >
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.depuisletemps.beback.ui.view.LoginActivity" />
+        </activity>
+        <activity
+                android:name="com.depuisletemps.beback.ui.view.AddLoanActivity"
+                android:parentActivityName="com.depuisletemps.beback.ui.view.LoanPagerActivity">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.depuisletemps.beback.ui.view.LoanPagerActivity" />
+        </activity>
+        <activity
+                android:name="com.depuisletemps.beback.ui.view.LoanDetailActivity"
+                android:parentActivityName="com.depuisletemps.beback.ui.view.LoanPagerActivity">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.depuisletemps.beback.ui.view.LoanPagerActivity" />
         </activity>
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>

@@ -19,6 +19,18 @@ class Utils {
      * @param category provides a category to the method
      * @return the resource id Int which matches the categories
      */
+    fun getIndexFromCategory(category: String): Int {
+        val categories = arrayOf("Miscellaneous","Appliance","Books","Clothes","Electronic","Instruments","Games","Money","Music","Sport","Tools","Kitchen")
+        val icons = arrayOf(R.drawable.ic_miscellaneous, R.drawable.ic_appliance,R.drawable.ic_books,R.drawable.ic_clothes,R.drawable.ic_electronic,R.drawable.ic_music_instrument,R.drawable.ic_games,R.drawable.ic_money,R.drawable.ic_music,R.drawable.ic_sport,R.drawable.ic_tools,R.drawable.ic_kitchen)
+
+        return categories.indexOf(category)
+    }
+
+    /**
+     * Method which allows to get the category icon Int from the saved spinner position whatever the language
+     * @param category provides a category to the method
+     * @return the resource id Int which matches the categories
+     */
     fun getIconFromCategory(category: String): Int {
         val categories = arrayOf("Miscellaneous","Appliance","Books","Clothes","Electronic","Instruments","Games","Money","Music","Sport","Tools","Kitchen")
         val icons = arrayOf(R.drawable.ic_miscellaneous, R.drawable.ic_appliance,R.drawable.ic_books,R.drawable.ic_clothes,R.drawable.ic_electronic,R.drawable.ic_music_instrument,R.drawable.ic_games,R.drawable.ic_money,R.drawable.ic_music,R.drawable.ic_sport,R.drawable.ic_tools,R.drawable.ic_kitchen)

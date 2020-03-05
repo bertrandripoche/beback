@@ -1,5 +1,6 @@
 package com.depuisletemps.beback.ui.view
 
+import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
 import android.util.Log
@@ -28,6 +29,7 @@ import com.google.firebase.Timestamp
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.fragment_loan_by_object.*
+import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.*
 
 
 class LoanByObjectFragment: Fragment() {
@@ -71,6 +73,9 @@ class LoanByObjectFragment: Fragment() {
                     return false
                 }
 
+                /**
+                 * this method manages the swipes on items
+                 */
                 override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
                     val position = viewHolder.adapterPosition
                     val loan: Loan = mAdapter.getItem(position)
@@ -91,10 +96,13 @@ class LoanByObjectFragment: Fragment() {
                  */
                 override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean ) {
                     val position = viewHolder.adapterPosition
-                    val loan: Loan = mAdapter.getItem(position)
-                    lateinit var return_message: String
-                    if (loan.type.equals(LoanType.DELIVERY.type)) return_message = getString(R.string.received)
-                    else return_message = getString(R.string.returned)
+                    var returnMessage: String = ""
+                    if (position >= 0) {
+                        val loan: Loan = mAdapter.getItem(position)
+                        if (loan.type.equals(LoanType.DELIVERY.type)) returnMessage =
+                            getString(R.string.received)
+                        else returnMessage = getString(R.string.returned)
+                    }
 
                     RecyclerViewSwipeDecorator.Builder(
                         c,
@@ -112,7 +120,7 @@ class LoanByObjectFragment: Fragment() {
                                 R.color.dark_green
                             )
                         )
-                        .addSwipeLeftLabel(return_message)
+                        .addSwipeLeftLabel(returnMessage)
                         .setSwipeLeftLabelTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
                         .setSwipeLeftLabelColor(ContextCompat.getColor(context!!, R.color.white))
                         .addSwipeRightActionIcon(R.drawable.ic_delete)
@@ -137,6 +145,11 @@ class LoanByObjectFragment: Fragment() {
 
     }
 
+    /**
+     * This method archives the selected item
+     * @param tag is a String representing the id of the loan
+     * @param loan is a Loan representing the loan object
+     */
     private fun archiveTheLoan(tag: String, loan: Loan) {
         val loanRef = mDb.collection("loans").document(tag)
         val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
@@ -162,6 +175,11 @@ class LoanByObjectFragment: Fragment() {
             }).show()
     }
 
+    /**
+     * This method unarchives the selected item
+     * @param tag is a String representing the id of the loan
+     * @param loan is a Loan representing the loan object
+     */
     private fun unarchiveTheLoan(tag: String, loan: Loan) {
         val loanRef = mDb.collection("loans").document(tag)
         val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
@@ -180,6 +198,11 @@ class LoanByObjectFragment: Fragment() {
         }
     }
 
+    /**
+     * This method deletes the selected item
+     * @param tag is a String representing the id of the loan
+     * @param loan is a Loan representing the loan object
+     */
     private fun deleteTheLoan(tag: String, loan: Loan) {
         val loanRef = mDb.collection("loans").document(tag)
         val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
@@ -200,6 +223,11 @@ class LoanByObjectFragment: Fragment() {
             }).show()
     }
 
+    /**
+     * This method undeletes the previously detetedItem
+     * @param tag is a String representing the id of the loan
+     * @param loan is a Loan representing the loan object
+     */
     private fun undeleteTheLoan(tag:String, loan: Loan) {
         val loanRef = mDb.collection("loans").document()
         val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
@@ -251,6 +279,9 @@ class LoanByObjectFragment: Fragment() {
 
     }
 
+    /**
+     * This method sets the color of the background of the recyclerView items
+     */
     private fun setBackgroundForRecyclerView() {
         if (mMode == getString(R.string.standard)) {
             fragment_loan_by_object_recycler_view.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryColor))
@@ -259,6 +290,9 @@ class LoanByObjectFragment: Fragment() {
         }
     }
 
+    /**
+     * This method manages the click on an item from the recyclerView
+     */
     fun configureOnClickRecyclerView() {
         ItemClickSupport.addTo(fragment_loan_by_object_recycler_view, R.layout.loanactivity_recyclerview_item_loan)
             .setOnItemClickListener(object : ItemClickSupport.OnItemClickListener {
@@ -267,17 +301,15 @@ class LoanByObjectFragment: Fragment() {
                     position: Int,
                     v: View
                 ) {
-                    Toast.makeText(
-                        v.context,
-                        "Oh le joli test",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    startLoanDetailActivity(v.tag.toString())
                 }
             })
     }
 
     /**
      * This method send the opposite field, eg : Borrowing -> Ended_borrowing
+     * @param type is the type of loan of the Loan object
+     * @return a String which is the "opposite" status of the loan type
      */
     fun reverseTypeField(type: String): String {
         when (type) {
@@ -301,5 +333,14 @@ class LoanByObjectFragment: Fragment() {
     override fun onStop() {
         super.onStop()
         mAdapter!!.stopListening()
+    }
+
+    /**
+     * This method starts the Loan activity
+     */
+    fun startLoanDetailActivity(tag: String) {
+        val intent = Intent(context, LoanDetailActivity::class.java)
+        intent.putExtra("loanId", tag)
+        startActivity(intent)
     }
 }
