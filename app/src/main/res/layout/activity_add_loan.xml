@@ -145,6 +145,7 @@
             android:layout_margin="@dimen/basic"
             android:hint="@string/due_date_hint"
             android:background="@color/primaryColor"
+            android:textColor="@color/black"
             android:textSize="@dimen/text_size_max"
             android:textAlignment="center"
             app:layout_constraintTop_toBottomOf="@+id/spinner_loan_categories"

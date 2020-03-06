@@ -60,6 +60,15 @@
     <string name="on">On</string>
     <string name="i_borrowed">I borrowed</string>
     <string name="i_lended">I lent</string>
+    <string name="since">Since</string>
+    <string name="back">Back</string>
+    <string name="angry">Damned it \nLate again !</string>
+    <string name="fine">It could have been\nworse, dude !</string>
+    <string name="happy">Went like a charm !</string>
+    <string name="whom_no_star">Whom</string>
+    <string name="who_no_star">Who</string>
+    <string name="what_no_star">What</string>
+    <string name="invalid_edit_form">Hummm well…\nNothing changed</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">

@@ -5,9 +5,11 @@ import android.graphics.Canvas
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -28,6 +30,7 @@ import com.google.firebase.firestore.*
 import com.google.firebase.Timestamp
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.android.synthetic.main.activity_add_loan.*
+import kotlinx.android.synthetic.main.custom_toast.*
 import kotlinx.android.synthetic.main.fragment_loan_by_object.*
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.*
 
@@ -163,8 +166,10 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, loan.type, FieldValue.increment(-1))
             batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(+1))
         }.addOnCompleteListener {
-            if (loan.type.equals(LoanType.DELIVERY.type)) Toast.makeText(context, getString(R.string.received_message, loan.product), Toast.LENGTH_SHORT).show()
-            else Toast.makeText(context, getString(R.string.archived_message, loan.product), Toast.LENGTH_SHORT).show()
+            if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1)
+            // Toast.makeText(context, getString(R.string.received_message, loan.product), Toast.LENGTH_SHORT).show()
+            else displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1)
+            //Toast.makeText(context, getString(R.string.archived_message, loan.product), Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e ->
             Log.w(TAG, "Transaction failure.", e)
         }
@@ -191,8 +196,10 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, loan.type, FieldValue.increment(+1))
             batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(-1))
         }.addOnCompleteListener {
-            if (loan.type.equals(LoanType.DELIVERY.type)) Toast.makeText(context, getString(R.string.not_received_message, loan.product), Toast.LENGTH_SHORT).show()
-            else Toast.makeText(context, getString(R.string.unarchived_message, loan.product), Toast.LENGTH_SHORT).show()
+            if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2)
+            //Toast.makeText(context, getString(R.string.not_received_message, loan.product), Toast.LENGTH_SHORT).show()
+            else displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2)
+            //Toast.makeText(context, getString(R.string.unarchived_message, loan.product), Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e ->
             Log.w(TAG, "Transaction failure.", e)
         }
@@ -212,7 +219,8 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, loan.type, FieldValue.increment(-1))
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
         }.addOnCompleteListener {
-            Toast.makeText(context,  getString(R.string.deleted_message, loan.product), Toast.LENGTH_SHORT).show()
+            displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_3)
+//            Toast.makeText(context,  getString(R.string.deleted_message, loan.product), Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e ->
             Log.w(TAG, "Transaction failure.", e)
         }
@@ -240,7 +248,8 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, loan.type, FieldValue.increment(+1))
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
         }.addOnCompleteListener {
-            Toast.makeText(context,  getString(R.string.undeleted_message, loan.product), Toast.LENGTH_SHORT).show()
+            displayCustomToast(getString(R.string.undeleted_message, loan.product), R.drawable.bubble_4)
+            //Toast.makeText(context,  getString(R.string.undeleted_message, loan.product), Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e ->
             Log.w(TAG, "Transaction failure.", e)
         }
@@ -333,6 +342,24 @@ class LoanByObjectFragment: Fragment() {
     override fun onStop() {
         super.onStop()
         mAdapter!!.stopListening()
+    }
+
+    /**
+     * This method
+     */
+    fun displayCustomToast(message: String, bubble: Int) {
+        val inflater = layoutInflater
+        //val container: ViewGroup = custom_toast_container
+        val layout: View = inflater.inflate(R.layout.custom_toast, custom_toast_container)
+        val text: TextView = layout.findViewById(R.id.text)
+        text.background = ContextCompat.getDrawable(context!!, bubble)
+        text.text = message
+        with (Toast(context)) {
+            setGravity(Gravity.CENTER_VERTICAL, 0, 0)
+            duration = Toast.LENGTH_LONG
+            view = layout
+            show()
+        }
     }
 
     /**

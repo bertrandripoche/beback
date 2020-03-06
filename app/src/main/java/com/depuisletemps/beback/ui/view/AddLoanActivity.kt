@@ -126,7 +126,7 @@ class AddLoanActivity: BaseActivity() {
 
         val spinner = findViewById<View>(R.id.spinner_loan_categories) as Spinner
 
-        val categoryAdapter = CategoryAdapter(applicationContext, categories_icons, categories)
+        val categoryAdapter = CategoryAdapter(applicationContext, categories_icons, categories, "")
         spinner.adapter = categoryAdapter
     }
 

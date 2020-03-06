@@ -6,25 +6,19 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
+import android.widget.AdapterView
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loan
-import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.Companion.getStringFromDate
-import com.depuisletemps.beback.utils.Utils.Companion.getTimeStampFromString
 import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_add_loan.loan_due_date
 import kotlinx.android.synthetic.main.activity_add_loan.loan_product
 import kotlinx.android.synthetic.main.activity_add_loan.loan_recipient
@@ -60,9 +54,9 @@ class LoanDetailActivity: BaseActivity() {
 
         mBtnEdit.setOnClickListener(View.OnClickListener {
             if (isFormValid())
-                createFirestoreLoan()
+                editFirestoreLoan()
             else {
-                Toast.makeText(applicationContext, R.string.invalid_form, Toast.LENGTH_LONG)
+                Toast.makeText(applicationContext, R.string.invalid_edit_form, Toast.LENGTH_LONG)
                     .show()
             }
         })
@@ -72,38 +66,98 @@ class LoanDetailActivity: BaseActivity() {
      * This method sets the background color depending on the type of loan we do (lending, borrowing)
      */
     private fun configureScreen(loan: Loan?) {
+        val greenColor = ContextCompat.getColor(this, R.color.green)
+        val redColor = ContextCompat.getColor(this, R.color.red)
+        val yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
+        val blueColor = ContextCompat.getColor(this, R.color.primaryColor)
+        val blackColor = ContextCompat.getColor(this, R.color.black)
+        val orangeColor = ContextCompat.getColor(this, R.color.secondaryDarkColor)
+        val greyColor = ContextCompat.getColor(this, R.color.dark_grey)
+
         if (loan != null) {
-            val greenColor = ContextCompat.getColor(this, R.color.green)
-            val redColor = ContextCompat.getColor(this, R.color.red)
-            val yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
             if (loan.type.equals(LoanType.LENDING.type)) {
                 loan_type.setBackgroundColor(greenColor)
                 loan_type_pic.setBackgroundColor(greenColor)
-                loan_recipient_title.text = getString(R.string.whom)
+                loan_recipient_title.text = getString(R.string.whom_no_star)
                 loan_type.text = getString(R.string.i_lended)
                 loan_type_pic.setImageResource(R.drawable.ic_loan_black)
             } else if (loan.type.equals(LoanType.BORROWING.type)) {
                 loan_type.setBackgroundColor(redColor)
                 loan_type_pic.setBackgroundColor(redColor)
-                loan_recipient_title.text = getString(R.string.who)
+                loan_recipient_title.text = getString(R.string.who_no_star)
                 loan_type.text = getString(R.string.i_borrowed)
                 loan_type_pic.setImageResource(R.drawable.ic_borrowing_black)
             } else if (loan.type.equals(LoanType.DELIVERY.type)) {
                 loan_type.setBackgroundColor(yellowColor)
                 loan_type_pic.setBackgroundColor(yellowColor)
-                loan_recipient_title.text = getString(R.string.who)
+                loan_recipient_title.text = getString(R.string.who_no_star)
                 loan_type.text = getString(R.string.i_wait)
                 loan_recipient.hint = getString(R.string.delivery_hint)
+                loan_creation_date_title.text = getString(R.string.since)
                 loan_type_pic.setImageResource(R.drawable.ic_delivery_black)
             }
 
-            if (getStringFromDate(loan.due_date?.toDate()) != "01/01/3000") setPickDate(getStringFromDate(loan.due_date?.toDate()))
-            loan_creation_date.setText(getStringFromDate(loan.creation_date?.toDate()))
-            loan_product.setText(loan.product)
-            loan_recipient.setText(loan.recipient_id)
-            println(utils.getIndexFromCategory(loan.product_category))
+            if (loan.returned_date != null) {
+                loan_product.keyListener = null
+                loan_product.setBackgroundColor(blueColor)
+                loan_recipient.keyListener = null
+                loan_recipient.setBackgroundColor(blueColor)
+                spinner_loan_categories.setBackgroundColor(blueColor)
+                spinner_loan_categories.isEnabled = false
+                mBtnPick.visibility = View.GONE
+                loan_returned_date_title.visibility = View.VISIBLE
+                loan_returned_date.visibility = View.VISIBLE
+                loan_returned_date.text = getStringFromDate(loan.returned_date?.toDate())
+                loan_product.setText(loan.product)
+                loan_recipient.setText(loan.recipient_id)
+
+                if (getStringFromDate(loan.due_date?.toDate()) == "01/01/3000") {
+                    loan_due_date_title.visibility = View.GONE
+                    loan_due_date.visibility = View.GONE
+                } else {
+                    loan_due_date.setBackgroundColor(blueColor)
+                    loan_due_date.setTextColor(blackColor)
+                    loan_due_date.text = getStringFromDate(loan.due_date?.toDate())
+                    mBtnCancelDate.visibility = View.GONE
+                }
+
+                if (loan_due_date.text != "") {
+                    feedback.visibility = View.VISIBLE
+                    val dueDateLocalDate = Utils.getLocalDateFromString(loan_due_date.text.toString())
+                    val returnedLocalDate = Utils.getLocalDateFromString(loan_returned_date.text.toString())
+                    val daysDiff: Int = Utils.getDifferenceDays(returnedLocalDate, dueDateLocalDate)
+
+                    if (daysDiff < -7) {
+                        loan_returned_date.setTextColor(redColor)
+                        feedback.setTextColor(redColor)
+                        feedback.setBackgroundResource(R.drawable.bubble_4)
+                        feedback.setText(R.string.angry)
+                    }
+                    else if (daysDiff < 0) {
+                        loan_returned_date.setTextColor(orangeColor)
+                        feedback.setTextColor(orangeColor)
+                        feedback.setBackgroundResource(R.drawable.bubble_2)
+                        feedback.setText(R.string.fine)
+                    }
+                    else {
+                        loan_returned_date.setTextColor(greenColor)
+                        feedback.setTextColor(greenColor)
+                        feedback.setBackgroundResource(R.drawable.bubble_1)
+                        feedback.setText(R.string.happy)
+                    }
+                }
+
+            } else {
+                if (getStringFromDate(loan.due_date?.toDate()) != "01/01/3000") setPickDate(getStringFromDate(loan.due_date?.toDate()))
+                loan_product.hint = loan.product
+                loan_recipient.hint = loan.recipient_id
+                loan_due_date.setTextColor(greyColor)
+            }
+
             spinner_loan_categories.setSelection(utils.getIndexFromCategory(loan.product_category))
+            loan_creation_date.setText(getStringFromDate(loan.creation_date?.toDate()))
         }
+
         disableFloatButton()
     }
 
@@ -115,7 +169,7 @@ class LoanDetailActivity: BaseActivity() {
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
         if (savedInstanceState != null)
-            if (savedInstanceState.getString("dueDateSet") != "")  setPickDate(savedInstanceState.getString("dueDateSet"))
+            if (savedInstanceState.getString("dueDateSet") != "") setPickDate(savedInstanceState.getString("dueDateSet"))
     }
 
     /**
@@ -152,12 +206,20 @@ class LoanDetailActivity: BaseActivity() {
     private fun configureSpinner() {
         val categories: Array<String> =
             this.resources.getStringArray(R.array.product_category)
-        val categories_icons = resources.obtainTypedArray(R.array.product_category_icon)
+        val categoriesIcons = resources.obtainTypedArray(R.array.product_category_icon)
 
         val spinner = findViewById<View>(R.id.spinner_loan_categories) as Spinner
 
-        val categoryAdapter = CategoryAdapter(applicationContext, categories_icons, categories)
+        val categoryAdapter = CategoryAdapter(applicationContext, categoriesIcons, categories, "small")
         spinner.adapter = categoryAdapter
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                setEditBtnState()
+            }
+        }
     }
 
     /**
@@ -169,8 +231,28 @@ class LoanDetailActivity: BaseActivity() {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
         override fun afterTextChanged(s: Editable) { // Enable-disable Floating Action Button
-            if (isFormValid()) enableFloatButton() else disableFloatButton()
+            setEditBtnState()
         }
+    }
+
+    /**
+     * This method
+     */
+    fun setEditBtnState() {
+        if (isFormValid()) enableFloatButton() else disableFloatButton()
+    }
+
+    /**
+     * Method to configure the textWatchers on the fields which requires it
+     */
+    fun isFormValid(): Boolean {
+        val categories: Array<String> =
+            this.resources.getStringArray(R.array.product_category)
+
+        return !loan_product.text.toString().equals("")
+                || !loan_recipient.text.toString().equals("")
+                || !loan_due_date.text.toString().equals(mDue)
+                || categories[spinner_loan_categories.selectedItemPosition] != mProductCategory
     }
 
     /**
@@ -185,6 +267,7 @@ class LoanDetailActivity: BaseActivity() {
 
         val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
             setPickDate(getString(R.string.due_date, df.format(dayOfMonth), df.format(monthOfYear+1), year))
+            setEditBtnState()
         }, year, month, day)
         dpd.datePicker.minDate = System.currentTimeMillis()
         dpd.show()
@@ -210,6 +293,7 @@ class LoanDetailActivity: BaseActivity() {
         val primaryColor = ContextCompat.getColor(this, R.color.primaryColor)
         loan_due_date.setBackgroundColor(primaryColor)
         mBtnCancelDate.visibility = View.GONE
+        setEditBtnState()
     }
 
     /**
@@ -218,15 +302,6 @@ class LoanDetailActivity: BaseActivity() {
      fun configureTextWatchers() {
         loan_product.addTextChangedListener(textWatcher)
         loan_recipient.addTextChangedListener(textWatcher)
-    }
-
-    /**
-     * Method to configure the textWatchers on the fields which requires it
-     */
-    fun isFormValid(): Boolean {
-        // TODO checker que ce qu'on a entré est différeent d'avant et si oui, mè
-        return !loan_product.text.toString().equals("") &&  !loan_recipient.text.toString().equals("")
-                && ((loan_product.text.toString() != mWhat) || (loan_product.text.toString() != mWho))
     }
 
     /**
@@ -246,7 +321,7 @@ class LoanDetailActivity: BaseActivity() {
     /**
     * This method create a loan entry in the Firebase database "loan" collection
     */
-    private fun createFirestoreLoan(){
+    private fun editFirestoreLoan(){
     //TODO
     }
 

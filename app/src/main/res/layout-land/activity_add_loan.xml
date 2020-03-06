@@ -146,6 +146,7 @@
             android:padding="@dimen/extra"
             android:layout_margin="@dimen/basic"
             android:hint="@string/due_date_hint"
+            android:textColor="@color/black"
             android:background="@color/primaryColor"
             android:textSize="@dimen/text_size_max"
             android:textAlignment="center"
