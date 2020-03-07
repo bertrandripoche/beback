@@ -345,18 +345,17 @@ class LoanByObjectFragment: Fragment() {
     }
 
     /**
-     * This method
+     * This method displays a message in a nice way
      */
     fun displayCustomToast(message: String, bubble: Int) {
         val inflater = layoutInflater
-        //val container: ViewGroup = custom_toast_container
         val layout: View = inflater.inflate(R.layout.custom_toast, custom_toast_container)
         val text: TextView = layout.findViewById(R.id.text)
         text.background = ContextCompat.getDrawable(context!!, bubble)
         text.text = message
         with (Toast(context)) {
             setGravity(Gravity.CENTER_VERTICAL, 0, 0)
-            duration = Toast.LENGTH_LONG
+            duration = Toast.LENGTH_SHORT
             view = layout
             show()
         }

@@ -9,6 +9,8 @@
     <color name="primaryTextColor">#000000</color>
     <color name="secondaryTextColor">#000000</color>
 
+    <color name="black">#000000</color>
+    <color name="black_transparent">#BB000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="white_transparent">#00FFFFFF</color>
     <color name="blue">#84b1d4</color>
@@ -23,7 +25,6 @@
     <color name="red">#DF2F2E</color>
     <color name="light_pink">#FC99AF</color>
     <color name="pink">#C20044</color>
-    <color name="black">#000000</color>
 
     <color name="mail">#78A15F</color>
     <color name="facebook">#4A68B0</color>

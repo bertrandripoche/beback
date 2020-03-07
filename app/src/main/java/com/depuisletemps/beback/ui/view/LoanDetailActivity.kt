@@ -6,19 +6,28 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.widget.AdapterView
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loan
+import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.Companion.getStringFromDate
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.android.material.snackbar.BaseTransientBottomBar
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_add_loan.loan_due_date
 import kotlinx.android.synthetic.main.activity_add_loan.loan_product
 import kotlinx.android.synthetic.main.activity_add_loan.loan_recipient
@@ -28,6 +37,8 @@ import kotlinx.android.synthetic.main.activity_add_loan.loan_type_pic
 import kotlinx.android.synthetic.main.activity_add_loan.mBtnCancelDate
 import kotlinx.android.synthetic.main.activity_add_loan.spinner_loan_categories
 import kotlinx.android.synthetic.main.activity_loan_detail.*
+import kotlinx.android.synthetic.main.custom_toast.*
+import kotlinx.android.synthetic.main.fragment_loan_by_object.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.joda.time.LocalDate
 import java.text.DecimalFormat
@@ -59,6 +70,14 @@ class LoanDetailActivity: BaseActivity() {
                 Toast.makeText(applicationContext, R.string.invalid_edit_form, Toast.LENGTH_LONG)
                     .show()
             }
+        })
+
+        mBtnDelete.setOnClickListener(View.OnClickListener {
+            deleteTheLoan(mLoan!!)
+        })
+
+        mBtnUnarchive.setOnClickListener(View.OnClickListener {
+            unarchiveTheLoan(mLoan!!)
         })
     }
 
@@ -98,6 +117,8 @@ class LoanDetailActivity: BaseActivity() {
             }
 
             if (loan.returned_date != null) {
+                mBtnDelete.visibility = View.VISIBLE
+                mBtnUnarchive.visibility = View.VISIBLE
                 loan_product.keyListener = null
                 loan_product.setBackgroundColor(blueColor)
                 loan_recipient.keyListener = null
@@ -148,6 +169,7 @@ class LoanDetailActivity: BaseActivity() {
                 }
 
             } else {
+                mBtnEdit.visibility = View.VISIBLE
                 if (getStringFromDate(loan.due_date?.toDate()) != "01/01/3000") setPickDate(getStringFromDate(loan.due_date?.toDate()))
                 loan_product.hint = loan.product
                 loan_recipient.hint = loan.recipient_id
@@ -236,7 +258,7 @@ class LoanDetailActivity: BaseActivity() {
     }
 
     /**
-     * This method
+     * This method enable/disable the edit button
      */
     fun setEditBtnState() {
         if (isFormValid()) enableFloatButton() else disableFloatButton()
@@ -322,7 +344,46 @@ class LoanDetailActivity: BaseActivity() {
     * This method create a loan entry in the Firebase database "loan" collection
     */
     private fun editFirestoreLoan(){
-    //TODO
+        val categories: Array<String> =
+            this.resources.getStringArray(R.array.product_category)
+        val loanRef = mDb.collection("loans").document(mLoan!!.id)
+        val loanerRef = mDb.collection("users").document(mLoan!!.requestor_id).collection("loaners").document(mLoan!!.recipient_id)
+
+        mDb.runBatch { batch ->
+            if (categories[spinner_loan_categories.selectedItemPosition] != mProductCategory) batch.update(loanRef, "product_category", categories[spinner_loan_categories.selectedItemPosition])
+            if (!loan_product.text.toString().equals("")) batch.update(loanRef, "product", loan_product.text.toString())
+            if (!loan_recipient.text.toString().equals("")) {
+                val loanerRefNew = mDb.collection("users").document(mLoan!!.requestor_id).collection("loaners").document(loan_recipient.text.toString())
+                val loanerData = hashMapOf("name" to loan_recipient.text.toString())
+
+                batch.update(loanRef, "recipient_id", loan_recipient.text.toString())
+                when (mLoan!!.type) {
+                    LoanType.LENDING.type -> batch.update(loanerRef, LoanType.LENDING.type, FieldValue.increment(-1))
+                    LoanType.BORROWING.type -> batch.update(loanerRef, LoanType.BORROWING.type, FieldValue.increment(-1))
+                    LoanType.DELIVERY.type -> batch.update(loanerRef, LoanType.DELIVERY.type, FieldValue.increment(-1))
+                }
+                batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
+
+                batch.set(loanerRefNew,loanerData, SetOptions.merge())
+                batch.update(loanerRefNew, LoanStatus.PENDING.type, FieldValue.increment(+1))
+                when (mLoan!!.type) {
+                    LoanType.LENDING.type -> batch.update(loanerRefNew, LoanType.LENDING.type, FieldValue.increment(+1))
+                    LoanType.BORROWING.type -> batch.update(loanerRefNew, LoanType.BORROWING.type, FieldValue.increment(+1))
+                    LoanType.DELIVERY.type -> batch.update(loanerRefNew, LoanType.DELIVERY.type, FieldValue.increment(+1))
+                }
+            }
+            if (loan_due_date.text.toString().equals("")) batch.update(loanRef,"due_date", Utils.getTimeStampFromString("01/01/3000"))
+            if (!loan_due_date.text.toString().equals("")) batch.update(loanRef, "due_date", Utils.getTimeStampFromString(loan_due_date.text.toString()))
+        }.addOnCompleteListener {
+            //Toast.makeText(this, "Saved in Firestore", Toast.LENGTH_SHORT).show()
+            displayCustomToast(
+                getString(R.string.saved),
+                R.drawable.bubble_3
+            )
+            startLoanPagerActivity(getString(R.string.standard))
+        }.addOnFailureListener { e ->
+            Log.w(TAG, "Transaction failure.", e)
+        }
     }
 
     fun setButtonTint(button: FloatingActionButton, tint: ColorStateList) {
@@ -332,4 +393,154 @@ class LoanDetailActivity: BaseActivity() {
             ViewCompat.setBackgroundTintList(button, tint)
         }
     }
+
+    private fun deleteTheLoan(loan: Loan) {
+        val loanRef = mDb.collection("loans").document(loan.id)
+        val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
+
+        mDb.runBatch { batch ->
+            batch.delete(loanRef)
+            batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(-1))
+            batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(-1))
+        }.addOnCompleteListener {
+            displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_3)
+//            Toast.makeText(context,  getString(R.string.deleted_message, loan.product), Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener { e ->
+            Log.w(TAG, "Transaction failure.", e)
+        }
+
+        Snackbar.make(activity_loan_detail, loan.product, Snackbar.LENGTH_LONG)
+            .setAction(getString(R.string.undo)) {
+                undeleteTheLoan(loan)
+            }.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                override fun onShown(transientBottomBar: Snackbar?) {
+                }
+
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                        startLoanPagerActivity(getString(R.string.archive))
+                    }
+                }
+            }).show()
+
+    }
+
+    /**
+     * This method undeletes the previously detetedItem
+     * @param loan is a Loan representing the loan object
+     */
+    private fun undeleteTheLoan(loan: Loan) {
+        val loanRef = mDb.collection("loans").document(loan.id)
+        val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners")
+            .document(loan.recipient_id)
+        val loanerData = hashMapOf("name" to loan.recipient_id)
+
+        mDb.runBatch { batch ->
+            batch.set(loanRef, loan)
+            batch.set(loanerRef, loanerData, SetOptions.merge())
+            batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(+1))
+            batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(+1))
+        }.addOnCompleteListener {
+            displayCustomToast(
+                getString(R.string.undeleted_message, loan.product),
+                R.drawable.bubble_4
+            )
+
+            //Toast.makeText(context,  getString(R.string.undeleted_message, loan.product), Toast.LENGTH_SHORT).show()
+        }.addOnFailureListener { e ->
+            Log.w(TAG, "Transaction failure.", e)
+        }
+    }
+
+    /**
+     * This method unarchives the selected item
+     * @param tag is a String representing the id of the loan
+     * @param loan is a Loan representing the loan object
+     */
+    private fun unarchiveTheLoan(loan: Loan) {
+        val loanRef = mDb.collection("loans").document(loan.id)
+        val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
+
+        mDb.runBatch { batch ->
+            batch.update(loanRef, "returned_date", null)
+            batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
+            batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(-1))
+            batch.update(loanerRef, loan.type, FieldValue.increment(+1))
+            batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(-1))
+        }.addOnCompleteListener {
+            if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2)
+            else displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2)
+        }.addOnFailureListener { e ->
+            Log.w(TAG, "Transaction failure.", e)
+        }
+
+        Snackbar.make(activity_loan_detail, loan.product, Snackbar.LENGTH_LONG)
+            .setAction(getString(R.string.undo)) {
+                rearchiveTheLoan(loan)
+            }.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                override fun onShown(transientBottomBar: Snackbar?) {
+                }
+
+                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                        startLoanPagerActivity(getString(R.string.standard))
+                    }
+                }
+            }).show()
+    }
+
+    /**
+     * This method archives the selected item
+     * @param loan is a Loan representing the loan object
+     */
+    private fun rearchiveTheLoan(loan: Loan) {
+        val loanRef = mDb.collection("loans").document(loan.id)
+        val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
+
+        val returnedDate: Timestamp = Timestamp.now()
+
+        mDb.runBatch { batch ->
+            batch.update(loanRef, "returned_date", returnedDate)
+            batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
+            batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(+1))
+            batch.update(loanerRef, loan.type, FieldValue.increment(-1))
+            batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(+1))
+        }.addOnCompleteListener {
+            if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1)
+            else displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1)
+        }.addOnFailureListener { e ->
+            Log.w(TAG, "Transaction failure.", e)
+        }
+    }
+
+    /**
+     * This method displays a message in a nice way
+     */
+    fun displayCustomToast(message: String, bubble: Int) {
+        val inflater = layoutInflater
+        val layout: View = inflater.inflate(R.layout.custom_toast, custom_toast_container)
+        val text: TextView = layout.findViewById(R.id.text)
+        text.background = ContextCompat.getDrawable(this, bubble)
+        text.text = message
+        with (Toast(this)) {
+            setGravity(Gravity.CENTER_VERTICAL, 0, 0)
+            duration = Toast.LENGTH_SHORT
+            view = layout
+            show()
+        }
+    }
+
+    /**
+     * This method send the opposite field, eg : Borrowing -> Ended_borrowing
+     * @param type is the type of loan of the Loan object
+     * @return a String which is the "opposite" status of the loan type
+     */
+    fun reverseTypeField(type: String): String {
+        when (type) {
+            LoanType.LENDING.type -> return LoanType.ENDED_LENDING.type
+            LoanType.BORROWING.type -> return LoanType.ENDED_BORROWING.type
+            else -> return LoanType.ENDED_DELIVERY.type
+        }
+    }
+
 }

@@ -69,6 +69,7 @@
     <string name="who_no_star">Who</string>
     <string name="what_no_star">What</string>
     <string name="invalid_edit_form">Hummm well…\nNothing changed</string>
+    <string name="saved">That\'s in the box, boss !</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">
