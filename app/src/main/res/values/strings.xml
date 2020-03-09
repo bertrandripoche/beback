@@ -70,6 +70,7 @@
     <string name="what_no_star">What</string>
     <string name="invalid_edit_form">Hummm well…\nNothing changed</string>
     <string name="saved">That\'s in the box, boss !</string>
+    <string name="category_icon">Category Icon</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">

@@ -2,6 +2,7 @@ package com.depuisletemps.beback.ui.view
 
 import android.app.DatePickerDialog
 import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -13,6 +14,7 @@ import android.widget.AdapterView
 import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
@@ -39,10 +41,12 @@ import kotlinx.android.synthetic.main.activity_add_loan.spinner_loan_categories
 import kotlinx.android.synthetic.main.activity_loan_detail.*
 import kotlinx.android.synthetic.main.custom_toast.*
 import kotlinx.android.synthetic.main.fragment_loan_by_object.*
+import kotlinx.android.synthetic.main.spinner_loan_categories.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.joda.time.LocalDate
 import java.text.DecimalFormat
 import java.util.*
+import kotlin.reflect.typeOf
 
 
 class LoanDetailActivity: BaseActivity() {
@@ -174,6 +178,7 @@ class LoanDetailActivity: BaseActivity() {
                 loan_product.hint = loan.product
                 loan_recipient.hint = loan.recipient_id
                 loan_due_date.setTextColor(greyColor)
+                loan_creation_date.setTextColor(greyColor)
             }
 
             spinner_loan_categories.setSelection(utils.getIndexFromCategory(loan.product_category))
@@ -226,8 +231,7 @@ class LoanDetailActivity: BaseActivity() {
      * This method configuree the spinner
      */
     private fun configureSpinner() {
-        val categories: Array<String> =
-            this.resources.getStringArray(R.array.product_category)
+        val categories: Array<String> = this.resources.getStringArray(R.array.product_category)
         val categoriesIcons = resources.obtainTypedArray(R.array.product_category_icon)
 
         val spinner = findViewById<View>(R.id.spinner_loan_categories) as Spinner
@@ -238,10 +242,17 @@ class LoanDetailActivity: BaseActivity() {
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 setEditBtnState()
+                if (mLoan!!.returned_date == null) {
+                    val text: TextView =
+                        (spinner.selectedView as ConstraintLayout).getViewById(R.id.text_category) as TextView
+                    if (position != categories.indexOf(mProductCategory)) text.setTextColor(Color.BLACK)
+                    else text.setTextColor(Color.GRAY)
+                }
             }
         }
+
     }
 
     /**
@@ -252,7 +263,8 @@ class LoanDetailActivity: BaseActivity() {
 
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-        override fun afterTextChanged(s: Editable) { // Enable-disable Floating Action Button
+        override fun afterTextChanged(s: Editable) {
+            // Enable-disable Floating Action Button
             setEditBtnState()
         }
     }
@@ -270,10 +282,16 @@ class LoanDetailActivity: BaseActivity() {
     fun isFormValid(): Boolean {
         val categories: Array<String> =
             this.resources.getStringArray(R.array.product_category)
+        val blackColor = ContextCompat.getColor(this, R.color.black)
+        val darkGreyColor = ContextCompat.getColor(this, R.color.dark_grey)
+
+        if (!loan_due_date.text.toString().equals(mDue)) loan_due_date.setTextColor(blackColor)
+        else loan_due_date.setTextColor(darkGreyColor)
 
         return !loan_product.text.toString().equals("")
                 || !loan_recipient.text.toString().equals("")
-                || !loan_due_date.text.toString().equals(mDue)
+                || (!loan_due_date.text.toString().equals(mDue) && !loan_due_date.text.toString().equals(""))
+                || (mDue != "01/01/3000" && loan_due_date.text.toString() == "")
                 || categories[spinner_loan_categories.selectedItemPosition] != mProductCategory
     }
 

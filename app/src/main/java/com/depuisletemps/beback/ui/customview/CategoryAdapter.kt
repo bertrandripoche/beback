@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
 
 class CategoryAdapter(var context: Context, var icons: TypedArray, var categories: Array<String>, val size:String) :  BaseAdapter() {
@@ -30,6 +31,7 @@ class CategoryAdapter(var context: Context, var icons: TypedArray, var categorie
     }
 
     override fun getView(i: Int, view: View?, viewGroup: ViewGroup): View {
+
         lateinit var view: View
         when (size) {
             "small" -> view = inflater.inflate(R.layout.spinner_loan_categories_small, null)
@@ -39,7 +41,6 @@ class CategoryAdapter(var context: Context, var icons: TypedArray, var categorie
         val names = view.findViewById<View>(R.id.text_category) as TextView?
         icon!!.setImageDrawable(icons.getDrawable(i))
         names!!.text = categories[i]
-        names!!.textSize =
         return view
     }
 

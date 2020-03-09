@@ -23,6 +23,7 @@
     <dimen name="basic">5dip</dimen>
     <dimen name="middle">10dip</dimen>
     <dimen name="extra">15dip</dimen>
+    <dimen name="mega">18dip</dimen>
 
     <integer name="gallery_orientation">1</integer>
 
