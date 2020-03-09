@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.LinearLayout
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.api.UserHelper
+import com.depuisletemps.beback.model.LoanType
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.AuthUI.IdpConfig
 import com.firebase.ui.auth.AuthUI.IdpConfig.*
@@ -73,7 +74,7 @@ class LoginActivity : BaseActivity() {
 
             if (resultCode == Activity.RESULT_OK) {
                 checkAndCreateFirestoreUser()
-                startLoanActivity()
+                startLoanPagerActivity(getString(R.string.standard))
             } else {
                 if (response == null) {
                     showSnackBar( login_activity_linear_layout, getString(R.string.error_authentication_canceled)

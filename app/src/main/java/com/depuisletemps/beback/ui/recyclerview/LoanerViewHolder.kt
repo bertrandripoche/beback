@@ -7,7 +7,6 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loaner
-import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan_swipelayout.view.*
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loaner.view.*
 
 class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
@@ -24,8 +23,8 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
     fun updateWithLoaner(loaner: Loaner, position: Int, context: Context) {
         val primaryLightColor = ContextCompat.getColor(context, R.color.primaryLightColor)
         val primaryColor = ContextCompat.getColor(context, R.color.primaryColor)
-        if (position % 2 == 0) item?.setBackgroundColor(primaryLightColor)
-        else item?.setBackgroundColor(primaryColor)
+        if (position % 2 == 0) item.setBackgroundColor(primaryLightColor)
+        else item.setBackgroundColor(primaryColor)
 
         name.text = loaner.name
 

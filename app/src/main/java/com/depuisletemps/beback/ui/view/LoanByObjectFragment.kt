@@ -138,7 +138,7 @@ class LoanByObjectFragment: Fragment() {
                         .setSwipeRightLabelColor(ContextCompat.getColor(context!!, R.color.white))
                         .create()
                         .decorate()
-                    super.onChildDraw(c, recyclerView!!, viewHolder!!, dX, dY, actionState, isCurrentlyActive)
+                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
                 }
             }
 
@@ -227,7 +227,7 @@ class LoanByObjectFragment: Fragment() {
 
         Snackbar.make(fragment_loan_by_object_layout, loan.product,Snackbar.LENGTH_LONG)
             .setAction(getString(R.string.undo), View.OnClickListener{
-                undeleteTheLoan(tag, loan)
+                undeleteTheLoan(loan)
             }).show()
     }
 
@@ -236,11 +236,11 @@ class LoanByObjectFragment: Fragment() {
      * @param tag is a String representing the id of the loan
      * @param loan is a Loan representing the loan object
      */
-    private fun undeleteTheLoan(tag:String, loan: Loan) {
+    private fun undeleteTheLoan(loan: Loan) {
         val loanRef = mDb.collection("loans").document()
         val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
         val loanerData = hashMapOf("name" to loan.recipient_id)
-        val loan = Loan(loanRef.id, loan.requestor_id, loan.recipient_id, loan.type, loan.product, loan.product_category, loan.creation_date, loan.due_date, loan.returned_date)
+        //val loan = Loan(loanRef.id, loan.requestor_id, loan.recipient_id, loan.type, loan.product, loan.product_category, loan.creation_date, loan.due_date, loan.returned_date)
 
         mDb.runBatch { batch ->
             batch.set(loanRef,loan)
@@ -333,7 +333,7 @@ class LoanByObjectFragment: Fragment() {
      */
     override fun onStart() {
         super.onStart()
-        mAdapter!!.startListening()
+        mAdapter.startListening()
     }
 
     /**
@@ -341,7 +341,7 @@ class LoanByObjectFragment: Fragment() {
      */
     override fun onStop() {
         super.onStop()
-        mAdapter!!.stopListening()
+        mAdapter.stopListening()
     }
 
     /**

@@ -2,6 +2,7 @@ package com.depuisletemps.beback.ui.view
 
 import android.app.DatePickerDialog
 import android.content.res.ColorStateList
+import android.content.res.TypedArray
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
@@ -51,21 +52,41 @@ import kotlin.reflect.typeOf
 
 class LoanDetailActivity: BaseActivity() {
     private val TAG = "LoanDetailActivity"
-    lateinit var mWhat:String
-    lateinit var mWho:String
-    lateinit var mProductCategory:String
-    lateinit var mDue:String
+    var mWhat:String = ""
+    var mWho:String = ""
+    var mProductCategory:String = ""
+    var mDue:String = ""
+    var mCurrentWhat:String = ""
+    var mCurrentWho:String = ""
+    var mCurrentProductCategory:String = ""
+    var mCurrentDue:String = ""
+    var mLoanId: String = ""
     var mLoan: Loan? = null
-    val utils: Utils = Utils()
+    val mUtils: Utils = Utils()
+    var mFirstTime: Boolean = true
+    lateinit var mCategories: Array<String>
+    lateinit var mCategoriesIcons: TypedArray
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loan_detail)
-        getLoan()
 
-        configureToolbar()
-        configureSpinner()
-        configureTextWatchers()
+        mCategories = this.resources.getStringArray(R.array.product_category)
+        mCategoriesIcons = this.resources.obtainTypedArray(R.array.product_category_icon)
+
+        if (savedInstanceState != null){
+            mFirstTime = false
+            if (savedInstanceState.getString("dueDateSet") != "01/01/3000")
+                setPickDate(savedInstanceState.getString("dueDateSet"))
+            if (savedInstanceState.getString("whatSaved") != null) mCurrentWhat = savedInstanceState.getString("whatSaved")!!
+            if (savedInstanceState.getString("whoSaved") != null) mCurrentWho = savedInstanceState.getString("whoSaved")!!
+            if (savedInstanceState.getString("productCategorySaved") != null) mCurrentProductCategory = savedInstanceState.getString("productCategorySaved")!!
+            if (savedInstanceState.getString("dueSaved") != null) mCurrentDue = savedInstanceState.getString("dueSaved")!!
+            if (savedInstanceState.getString("loanId") != null) mLoanId = savedInstanceState.getString("loanId")!!
+            setEditBtnState()
+        }
+
+        getLoan()
 
         mBtnEdit.setOnClickListener(View.OnClickListener {
             if (isFormValid())
@@ -83,6 +104,21 @@ class LoanDetailActivity: BaseActivity() {
         mBtnUnarchive.setOnClickListener(View.OnClickListener {
             unarchiveTheLoan(mLoan!!)
         })
+
+        configureToolbar()
+        configureSpinner()
+        configureTextWatchers()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (loan_due_date.text != "") outState.putString("dueDateSet", loan_due_date.text.toString())
+        else outState.putString("dueDateSet", "01/01/3000")
+        outState.putString("whatSaved", mWhat)
+        outState.putString("whoSaved", mWho)
+        outState.putString("productCategorySaved", mCategories[spinner_loan_categories.selectedItemPosition])
+        outState.putString("dueSaved", mDue)
+        outState.putString("loanId", mDue)
     }
 
     /**
@@ -140,7 +176,6 @@ class LoanDetailActivity: BaseActivity() {
                     loan_due_date_title.visibility = View.GONE
                     loan_due_date.visibility = View.GONE
                 } else {
-                    loan_due_date.setBackgroundColor(blueColor)
                     loan_due_date.setTextColor(blackColor)
                     loan_due_date.text = getStringFromDate(loan.due_date?.toDate())
                     mBtnCancelDate.visibility = View.GONE
@@ -170,33 +205,27 @@ class LoanDetailActivity: BaseActivity() {
                         feedback.setBackgroundResource(R.drawable.bubble_1)
                         feedback.setText(R.string.happy)
                     }
+                } else {
+                    feedback.setTextColor(greenColor)
+                    feedback.setBackgroundResource(R.drawable.bubble_1)
+                    feedback.setText(R.string.happy)
                 }
 
             } else {
                 mBtnEdit.visibility = View.VISIBLE
-                if (getStringFromDate(loan.due_date?.toDate()) != "01/01/3000") setPickDate(getStringFromDate(loan.due_date?.toDate()))
+                if (getStringFromDate(loan.due_date?.toDate()) != "01/01/3000" && mFirstTime) setPickDate(getStringFromDate(loan.due_date?.toDate()))
                 loan_product.hint = loan.product
                 loan_recipient.hint = loan.recipient_id
                 loan_due_date.setTextColor(greyColor)
                 loan_creation_date.setTextColor(greyColor)
             }
 
-            spinner_loan_categories.setSelection(utils.getIndexFromCategory(loan.product_category))
+            if (mFirstTime) spinner_loan_categories.setSelection(mUtils.getIndexFromCategory(loan.product_category))
+            else spinner_loan_categories.setSelection(mUtils.getIndexFromCategory(mCurrentProductCategory))
             loan_creation_date.setText(getStringFromDate(loan.creation_date?.toDate()))
         }
 
         disableFloatButton()
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        if (loan_due_date.text != "") outState.putString("dueDateSet", loan_due_date.text.toString())
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
-        if (savedInstanceState != null)
-            if (savedInstanceState.getString("dueDateSet") != "") setPickDate(savedInstanceState.getString("dueDateSet"))
     }
 
     /**
@@ -204,8 +233,8 @@ class LoanDetailActivity: BaseActivity() {
      */
     private fun getLoan() {
         val i = intent
-        val tag: String = i.extras?.getString("loanId") ?: ""
-        val docRef = mDb.collection("loans").document(tag)
+        mLoanId = i.extras?.getString("loanId") ?: ""
+        val docRef = mDb.collection("loans").document(mLoanId)
         docRef.get()
             .addOnSuccessListener { documentSnapshot ->
                 mLoan = documentSnapshot.toObject(Loan::class.java)
@@ -231,12 +260,9 @@ class LoanDetailActivity: BaseActivity() {
      * This method configuree the spinner
      */
     private fun configureSpinner() {
-        val categories: Array<String> = this.resources.getStringArray(R.array.product_category)
-        val categoriesIcons = resources.obtainTypedArray(R.array.product_category_icon)
-
         val spinner = findViewById<View>(R.id.spinner_loan_categories) as Spinner
 
-        val categoryAdapter = CategoryAdapter(applicationContext, categoriesIcons, categories, "small")
+        val categoryAdapter = CategoryAdapter(applicationContext, mCategoriesIcons, mCategories, "small")
         spinner.adapter = categoryAdapter
 
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
@@ -244,11 +270,16 @@ class LoanDetailActivity: BaseActivity() {
             }
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
                 setEditBtnState()
-                if (mLoan!!.returned_date == null) {
-                    val text: TextView =
-                        (spinner.selectedView as ConstraintLayout).getViewById(R.id.text_category) as TextView
-                    if (position != categories.indexOf(mProductCategory)) text.setTextColor(Color.BLACK)
-                    else text.setTextColor(Color.GRAY)
+                if (mLoan?.returned_date == null) {
+                    if (spinner.selectedView != null) {
+                        val darkGreyColor = ContextCompat.getColor(applicationContext, R.color.dark_grey)
+                        val text: TextView =
+                            (spinner.selectedView as ConstraintLayout).getViewById(R.id.text_category) as TextView
+                        if (position != mCategories.indexOf(mProductCategory)) text.setTextColor(
+                            Color.BLACK
+                        )
+                        else text.setTextColor(darkGreyColor)
+                    }
                 }
             }
         }
@@ -285,8 +316,10 @@ class LoanDetailActivity: BaseActivity() {
         val blackColor = ContextCompat.getColor(this, R.color.black)
         val darkGreyColor = ContextCompat.getColor(this, R.color.dark_grey)
 
-        if (!loan_due_date.text.toString().equals(mDue)) loan_due_date.setTextColor(blackColor)
-        else loan_due_date.setTextColor(darkGreyColor)
+        if (loan_returned_date == null) {
+            if (!loan_due_date.text.toString().equals(mDue) && mDue != null) loan_due_date.setTextColor(blackColor)
+            else loan_due_date.setTextColor(darkGreyColor)
+        }
 
         return !loan_product.text.toString().equals("")
                 || !loan_recipient.text.toString().equals("")
@@ -319,8 +352,7 @@ class LoanDetailActivity: BaseActivity() {
     private fun setPickDate(date: String?) {
         if (date != null) {
             loan_due_date.text = date
-            val primaryLightColor = ContextCompat.getColor(this, R.color.primaryLightColor)
-            loan_due_date.setBackgroundColor(primaryLightColor)
+            loan_due_date.setTextColor(Color.BLACK)
             mBtnCancelDate.visibility = View.VISIBLE
         }
     }

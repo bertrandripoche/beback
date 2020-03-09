@@ -44,14 +44,6 @@ open class BaseActivity: AppCompatActivity() {
     /**
      * This method starts the Loan activity
      */
-    protected fun startLoanActivity() {
-        val intent = Intent(this, LoanActivity::class.java)
-        startActivity(intent)
-    }
-
-    /**
-     * This method starts the Loan activity
-     */
     protected fun startLoanPagerActivity(mode: String) {
         val intent = Intent(this, LoanPagerActivity::class.java)
         intent.putExtra(getString(R.string.mode), mode)

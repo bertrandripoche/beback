@@ -17,7 +17,6 @@ import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.i
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_product
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_product_category
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_recipient
-import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan_swipelayout.view.*
 import org.joda.time.LocalDate
 
 
@@ -45,11 +44,11 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         val secondaryDarkColor = ContextCompat.getColor(context, R.color.secondaryDarkColor)
 
         if (mode == context.getString(R.string.standard)) {
-            if (position % 2 == 0) item?.setBackgroundColor(primaryLightColor)
-            else item?.setBackgroundColor(primaryColor)
+            if (position % 2 == 0) item.setBackgroundColor(primaryLightColor)
+            else item.setBackgroundColor(primaryColor)
         } else {
-            if (position % 2 == 0) item?.setBackgroundColor(ligthGrey)
-            else item?.setBackgroundColor(darkGrey)
+            if (position % 2 == 0) item.setBackgroundColor(ligthGrey)
+            else item.setBackgroundColor(darkGrey)
         }
 
         category.setImageResource(utils.getIconFromCategory(loan.product_category))

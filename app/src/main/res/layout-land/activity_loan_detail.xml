@@ -56,7 +56,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/loan_type"
                     app:layout_constraintBottom_toTopOf="@+id/loan_recipient"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="@+id/guideline_vertical_left"
+                    app:layout_constraintRight_toLeftOf="@+id/guideline_vertical_left"
                     />
 
             <EditText
@@ -71,7 +71,7 @@
                     android:textAlignment="center"
                     app:layout_constraintTop_toBottomOf="@+id/loan_type"
                     app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_left"
-                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/guideline_vertical_middle_here"
                     />
 
             <TextView
@@ -88,7 +88,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/loan_product"
                     app:layout_constraintBottom_toTopOf="@+id/spinner_loan_categories"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="@+id/guideline_vertical_left"
+                    app:layout_constraintRight_toLeftOf="@+id/guideline_vertical_left"
                     />
 
             <EditText
@@ -103,7 +103,7 @@
                     android:textAlignment="center"
                     app:layout_constraintTop_toBottomOf="@+id/loan_product"
                     app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_left"
-                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/guideline_vertical_middle_here"
                     />
 
             <TextView
@@ -132,12 +132,12 @@
                     app:layout_constraintTop_toTopOf="@+id/loan_spinner_title"
                     app:layout_constraintBottom_toBottomOf="@+id/loan_spinner_title"
                     app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_left"
-                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintRight_toLeftOf="@id/guideline_vertical_middle_here"
                     />
 
             <TextView
                     android:id="@+id/loan_creation_date_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/middle"
                     android:layout_margin="@dimen/basic"
@@ -149,7 +149,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/spinner_loan_categories"
                     app:layout_constraintBottom_toTopOf="@+id/loan_due_date"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="@+id/guideline_vertical_left"
+                    app:layout_constraintRight_toLeftOf="@+id/guideline_vertical_left"
                     />
 
             <TextView
@@ -163,7 +163,7 @@
                     android:textSize="@dimen/text_size_max"
                     app:layout_constraintTop_toBottomOf="@+id/spinner_loan_categories"
                     app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_left"
-                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintRight_toRightOf="@id/guideline_vertical_middle_here"
                     />
 
 
@@ -181,7 +181,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/loan_creation_date"
                     app:layout_constraintBottom_toBottomOf="@id/loan_due_date"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="@+id/guideline_vertical_left"
+                    app:layout_constraintRight_toLeftOf="@+id/guideline_vertical_left"
                     />
 
             <TextView
@@ -227,11 +227,11 @@
                     app:layout_constraintTop_toTopOf="@+id/loan_due_date"
                     app:layout_constraintBottom_toBottomOf="@+id/loan_due_date"
                     app:layout_constraintLeft_toRightOf="@+id/mBtnCancelDate"
-                    app:layout_constraintRight_toRightOf="parent"/>
+                    app:layout_constraintRight_toLeftOf="@id/guideline_vertical_middle_here"/>
 
             <TextView
                     android:id="@+id/loan_returned_date_title"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/middle"
                     android:layout_margin="@dimen/basic"
@@ -242,9 +242,8 @@
                     android:text="@string/back"
                     android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@+id/loan_due_date"
-                    app:layout_constraintBottom_toTopOf="@+id/warning_message"
                     app:layout_constraintLeft_toLeftOf="parent"
-                    app:layout_constraintRight_toRightOf="@+id/guideline_vertical_left"
+                    app:layout_constraintRight_toLeftOf="@+id/guideline_vertical_left"
                     />
 
             <TextView
@@ -258,27 +257,9 @@
                     android:textAlignment="center"
                     android:visibility="gone"
                     app:layout_constraintTop_toBottomOf="@+id/loan_due_date"
-                    app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_left"
-                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintRight_toRightOf="@+id/guideline_vertical_middle_here"
+                    app:layout_constraintLeft_toRightOf="@id/guideline_vertical_left"
                     />
-
-            <TextView
-                    android:id="@+id/warning_message"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/basic"
-                    android:textStyle="italic"
-                    android:textColor="@color/black"
-                    android:text="@string/mandatory_information"
-                    android:textSize="@dimen/text_size"
-                    android:gravity="center_vertical"
-                    android:background="@color/light_pink"
-                    android:padding="@dimen/middle"
-                    android:drawablePadding="@dimen/middle"
-                    android:drawableStart="@drawable/ic_warning_pink"
-                    app:layout_constraintTop_toBottomOf="@id/loan_returned_date_title"
-                    app:layout_constraintLeft_toLeftOf="parent"/>
 
             <TextView
                     android:id="@+id/feedback"
@@ -288,9 +269,9 @@
                     android:singleLine="false"
                     android:textColor="#000"
                     android:layout_margin="@dimen/middle"
-                    app:layout_constraintTop_toBottomOf="@+id/warning_message"
+                    app:layout_constraintTop_toBottomOf="@id/loan_type"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintLeft_toLeftOf="@id/guideline_vertical_middle_here"
                     app:layout_constraintRight_toRightOf="parent"/>
 
             <androidx.constraintlayout.widget.Guideline
@@ -300,12 +281,17 @@
                     android:orientation="vertical"
                     app:layout_constraintGuide_percent="0.95"/>
             <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/guideline_vertical_middle_here"
+                    android:layout_width="1dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_percent="0.5"/>
+            <androidx.constraintlayout.widget.Guideline
                     android:id="@+id/guideline_vertical_left"
                     android:layout_width="1dp"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    app:layout_constraintGuide_percent="0.2"/>
-
+                    app:layout_constraintGuide_percent="0.15"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
@@ -315,13 +301,19 @@
             android:layout_width="wrap_content"
             android:layout_height="1dp"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.85"/>
+            app:layout_constraintGuide_percent="0.75"/>
     <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_horizontal"
             android:layout_width="wrap_content"
             android:layout_height="1dp"
             android:orientation="horizontal"
             app:layout_constraintGuide_percent="0.95"/>
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_vertical_middle"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5"/>
     <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_vertical"
             android:layout_width="1dp"
@@ -338,7 +330,7 @@
             android:src="@drawable/ic_edit"
             app:fabSize="normal"
             app:maxImageSize="40dp"
-            android:visibility="gone"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal"
             app:layout_constraintRight_toLeftOf="@+id/guideline_vertical"/>
 

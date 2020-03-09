@@ -79,13 +79,15 @@
         <item>Books</item>
         <item>Clothes</item>
         <item>Electronic</item>
-        <item>Instruments</item>
         <item>Games</item>
+        <item>Instruments</item>
+        <item>Jewelry</item>
+        <item>Kitchen</item>
         <item>Money</item>
         <item>Music</item>
         <item>Sport</item>
         <item>Tools</item>
-        <item>Kitchen</item>
+        <item>Ticket</item>
     </string-array>
 
     <array name="product_category_icon">
@@ -94,13 +96,15 @@
         <item>@drawable/ic_books</item>
         <item>@drawable/ic_clothes</item>
         <item>@drawable/ic_electronic</item>
-        <item>@drawable/ic_music_instrument</item>
         <item>@drawable/ic_games</item>
+        <item>@drawable/ic_instrument</item>
+        <item>@drawable/ic_jewelry</item>
+        <item>@drawable/ic_kitchen</item>
         <item>@drawable/ic_money</item>
         <item>@drawable/ic_music</item>
         <item>@drawable/ic_sport</item>
         <item>@drawable/ic_tools</item>
-        <item>@drawable/ic_kitchen</item>
+        <item>@drawable/ic_ticket</item>
     </array>
 
 </resources>
