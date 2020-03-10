@@ -20,11 +20,19 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
     /**
      * This method populates the date into the recyclerView ViewHolder
      */
-    fun updateWithLoaner(loaner: Loaner, position: Int, context: Context) {
+    fun updateWithLoaner(loaner: Loaner, position: Int, context: Context, mode:String) {
         val primaryLightColor = ContextCompat.getColor(context, R.color.primaryLightColor)
         val primaryColor = ContextCompat.getColor(context, R.color.primaryColor)
-        if (position % 2 == 0) item.setBackgroundColor(primaryLightColor)
-        else item.setBackgroundColor(primaryColor)
+        val ligthGrey =  ContextCompat.getColor(context, R.color.light_grey)
+        val darkGrey =  ContextCompat.getColor(context, R.color.grey)
+
+        if (mode == context.getString(R.string.standard)) {
+            if (position % 2 == 0) item.setBackgroundColor(primaryLightColor)
+            else item.setBackgroundColor(primaryColor)
+        } else {
+            if (position % 2 == 0) item.setBackgroundColor(ligthGrey)
+            else item.setBackgroundColor(darkGrey)
+        }
 
         name.text = loaner.name
 

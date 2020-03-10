@@ -124,11 +124,11 @@ class LoanPagerActivity: BaseActivity() {
      */
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.menu_archive -> {
-            startLoanPagerActivity(getString(R.string.archive))
+            switchArchiveStandardMode()
             true
         }
         R.id.menu_pending-> {
-            startLoanPagerActivity(getString(R.string.standard))
+            switchArchiveStandardMode()
             true
         }
         R.id.menu_profile ->{
@@ -141,6 +141,41 @@ class LoanPagerActivity: BaseActivity() {
         }
     }
 
+    /**
+     * Switch from archive to standard / standard to archive mode
+     */
+    fun switchArchiveStandardMode() {
+        when (mMode) {
+            getString(R.string.standard) -> enableArchiveMode()
+            getString(R.string.archive) -> disableArchiveMode()
+        }
+
+        if (viewPager.currentItem == 0) {
+            configurePager()
+            viewPager.currentItem = 0
+        } else {
+            configurePager()
+            viewPager.currentItem = 1
+        }
+    }
+
+    /**
+     * Enable archive mode
+     */
+    fun enableArchiveMode() {
+        mMode = getString(R.string.archive)
+        mPendingButton.setVisible(true)
+        mArchiveButton.setVisible(false)
+    }
+
+    /**
+     * Disable archive mode
+     */
+    fun disableArchiveMode() {
+        mMode = getString(R.string.standard)
+        mPendingButton.setVisible(false)
+        mArchiveButton.setVisible(true)
+    }
 
     /**
      * Create the loan alertDialog popup
