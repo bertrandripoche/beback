@@ -20,6 +20,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loan
+import com.depuisletemps.beback.model.LoanAward
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.customview.CategoryAdapter
@@ -426,7 +427,6 @@ class LoanDetailActivity: BaseActivity() {
             if (loan_due_date.text.toString().equals("")) batch.update(loanRef,"due_date", Utils.getTimeStampFromString("01/01/3000"))
             if (!loan_due_date.text.toString().equals("")) batch.update(loanRef, "due_date", Utils.getTimeStampFromString(loan_due_date.text.toString()))
         }.addOnCompleteListener {
-            //Toast.makeText(this, "Saved in Firestore", Toast.LENGTH_SHORT).show()
             displayCustomToast(
                 getString(R.string.saved),
                 R.drawable.bubble_3
@@ -449,20 +449,28 @@ class LoanDetailActivity: BaseActivity() {
         val loanRef = mDb.collection("loans").document(loan.id)
         val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
 
+        var points: Long = 1
+        if (getStringFromDate(loan.due_date?.toDate()) != "01/01/3000" && loan.returned_date != null) {
+            val dueDateLocalDate = Utils.getLocalDateFromString(loan_due_date.text.toString())
+            val returnedLocalDate = Utils.getLocalDateFromString(getStringFromDate(loan.returned_date!!.toDate()))
+            val daysDiff: Int = Utils.getDifferenceDays(dueDateLocalDate, returnedLocalDate)
+            points = getPoints(daysDiff).toLong()
+        }
+
         mDb.runBatch { batch ->
             batch.delete(loanRef)
             batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(-1))
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(-1))
+            batch.update(loanerRef, awardsByType(loan.type), FieldValue.increment(-points))
         }.addOnCompleteListener {
             displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_3)
-//            Toast.makeText(context,  getString(R.string.deleted_message, loan.product), Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e ->
             Log.w(TAG, "Transaction failure.", e)
         }
 
         Snackbar.make(activity_loan_detail, loan.product, Snackbar.LENGTH_LONG)
             .setAction(getString(R.string.undo)) {
-                undeleteTheLoan(loan)
+                undeleteTheLoan(loan, points)
             }.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
                 override fun onShown(transientBottomBar: Snackbar?) {
                 }
@@ -480,7 +488,7 @@ class LoanDetailActivity: BaseActivity() {
      * This method undeletes the previously detetedItem
      * @param loan is a Loan representing the loan object
      */
-    private fun undeleteTheLoan(loan: Loan) {
+    private fun undeleteTheLoan(loan: Loan, points: Long) {
         val loanRef = mDb.collection("loans").document(loan.id)
         val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners")
             .document(loan.recipient_id)
@@ -491,6 +499,7 @@ class LoanDetailActivity: BaseActivity() {
             batch.set(loanerRef, loanerData, SetOptions.merge())
             batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(+1))
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(+1))
+            batch.update(loanerRef, awardsByType(loan.type), FieldValue.increment(points))
         }.addOnCompleteListener {
             displayCustomToast(
                 getString(R.string.undeleted_message, loan.product),
@@ -512,12 +521,21 @@ class LoanDetailActivity: BaseActivity() {
         val loanRef = mDb.collection("loans").document(loan.id)
         val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
 
+        var points: Long = 1
+        if (getStringFromDate(loan.due_date?.toDate()) != "01/01/3000" && loan.returned_date != null) {
+            val dueDateLocalDate = Utils.getLocalDateFromString(loan_due_date.text.toString())
+            val returnedLocalDate = Utils.getLocalDateFromString(getStringFromDate(loan.returned_date!!.toDate()))
+            val daysDiff: Int = Utils.getDifferenceDays(dueDateLocalDate, returnedLocalDate)
+            points = getPoints(daysDiff).toLong()
+        }
+
         mDb.runBatch { batch ->
             batch.update(loanRef, "returned_date", null)
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(-1))
             batch.update(loanerRef, loan.type, FieldValue.increment(+1))
             batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(-1))
+            batch.update(loanerRef, awardsByType(loan.type), FieldValue.increment(-points))
         }.addOnCompleteListener {
             if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2)
             else displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2)
@@ -527,7 +545,7 @@ class LoanDetailActivity: BaseActivity() {
 
         Snackbar.make(activity_loan_detail, loan.product, Snackbar.LENGTH_LONG)
             .setAction(getString(R.string.undo)) {
-                rearchiveTheLoan(loan)
+                rearchiveTheLoan(loan, points)
             }.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
                 override fun onShown(transientBottomBar: Snackbar?) {
                 }
@@ -544,7 +562,7 @@ class LoanDetailActivity: BaseActivity() {
      * This method archives the selected item
      * @param loan is a Loan representing the loan object
      */
-    private fun rearchiveTheLoan(loan: Loan) {
+    private fun rearchiveTheLoan(loan: Loan, points: Long) {
         val loanRef = mDb.collection("loans").document(loan.id)
         val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
 
@@ -556,6 +574,7 @@ class LoanDetailActivity: BaseActivity() {
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(+1))
             batch.update(loanerRef, loan.type, FieldValue.increment(-1))
             batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(+1))
+            batch.update(loanerRef, awardsByType(loan.type), FieldValue.increment(+points))
         }.addOnCompleteListener {
             if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1)
             else displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1)
@@ -594,4 +613,29 @@ class LoanDetailActivity: BaseActivity() {
         }
     }
 
+    /**
+     * This method returns the opposite field, eg : Borrowing -> Ended_borrowing
+     * @param type is the type of loan of the Loan object
+     * @return a String which is the "opposite" status of the loan type
+     */
+    private fun awardsByType(type: String): String {
+        return when (type) {
+            LoanType.BORROWING.type -> LoanAward.MINE.type
+            else -> LoanAward.THEIR.type
+        }
+    }
+
+    /**
+     * This method returns the number of points given to user (for borrowing) or recipient (for lending and delivery)
+     * @param daysDiff is the difference of days between returned date and due date
+     * @return a Int which is the number of points to attribute
+     */
+    private fun getPoints(daysDiff: Int): Int {
+        return when {
+            daysDiff > 30 -> 4
+            daysDiff > 7 -> 3
+            daysDiff >= 0 -> 2
+            else -> 1
+        }
+    }
 }

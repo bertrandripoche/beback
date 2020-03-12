@@ -25,10 +25,13 @@ class LoanerHelper {
             ended_lending: Int,
             ended_borrowing: Int,
             delivery: Int,
+            ended_delivery: Int,
             requestorId: String,
-            recipientId: String
+            recipientId: String,
+            myPoints: Int,
+            theirPoints: Int
         ): Task<Void> {
-            val loanerToCreate = Loaner(recipientId, lending, borrowing, ended_lending, ended_borrowing, delivery)
+            val loanerToCreate = Loaner(recipientId, lending, borrowing, ended_lending, ended_borrowing, delivery, ended_delivery, myPoints, theirPoints)
             return getLoanersCollection(requestorId).document(recipientId).set(loanerToCreate, SetOptions.merge())
         }
 

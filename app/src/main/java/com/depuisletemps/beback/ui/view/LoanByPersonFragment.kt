@@ -52,7 +52,6 @@ class LoanByPersonFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         configureRecyclerView()
-        configureOnClickRecyclerView()
         setBackgroundForRecyclerView()
     }
 
@@ -93,23 +92,6 @@ class LoanByPersonFragment: Fragment() {
             fragment_loan_by_person_recycler_view.layoutManager = LinearLayoutManager(context, orientation, false)
             fragment_loan_by_person_recycler_view.adapter = mAdapter
         }
-    }
-
-    fun configureOnClickRecyclerView() {
-        ItemClickSupport.addTo(fragment_loan_by_person_recycler_view, R.layout.loanactivity_recyclerview_item_loaner)
-            .setOnItemClickListener(object : ItemClickSupport.OnItemClickListener {
-                override fun onItemClicked(
-                    recyclerView: RecyclerView?,
-                    position: Int,
-                    v: View
-                ) {
-                    Toast.makeText(
-                        v.context,
-                        "Oh le joli test $position",
-                        Toast.LENGTH_LONG
-                    ).show()
-                }
-            })
     }
 
     /**

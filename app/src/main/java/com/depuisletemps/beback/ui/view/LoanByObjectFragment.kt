@@ -18,10 +18,13 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loan
+import com.depuisletemps.beback.model.LoanAward
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.recyclerview.ItemClickSupport
 import com.depuisletemps.beback.ui.recyclerview.LoanAdapter
+import com.depuisletemps.beback.utils.Utils
+import com.depuisletemps.beback.utils.Utils.Companion.getStringFromDate
 import com.depuisletemps.beback.utils.Utils.Companion.getTimeStampFromString
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.snackbar.Snackbar
@@ -30,6 +33,8 @@ import com.google.firebase.firestore.*
 import com.google.firebase.Timestamp
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.android.synthetic.main.activity_add_loan.*
+import kotlinx.android.synthetic.main.activity_add_loan.loan_due_date
+import kotlinx.android.synthetic.main.activity_loan_detail.*
 import kotlinx.android.synthetic.main.custom_toast.*
 import kotlinx.android.synthetic.main.fragment_loan_by_object.*
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.*
@@ -159,12 +164,21 @@ class LoanByObjectFragment: Fragment() {
 
         val returnedDate: Timestamp = Timestamp.now()
 
+        var points: Long = 1
+        if (getStringFromDate(loan.due_date?.toDate()) != "01/01/3000") {
+            val dueDateLocalDate = Utils.getLocalDateFromString(getStringFromDate(loan.due_date?.toDate()))
+            val returnedLocalDate = Utils.getLocalDateFromString(getStringFromDate(returnedDate.toDate()))
+            val daysDiff: Int = Utils.getDifferenceDays(dueDateLocalDate,returnedLocalDate)
+            points = getPoints(daysDiff).toLong()
+        }
+
         mDb.runBatch { batch ->
             batch.update(loanRef, "returned_date", returnedDate)
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(+1))
             batch.update(loanerRef, loan.type, FieldValue.increment(-1))
             batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(+1))
+            batch.update(loanerRef, awardsByType(loan.type), FieldValue.increment(points))
         }.addOnCompleteListener {
             if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1)
             else displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1)
@@ -174,7 +188,7 @@ class LoanByObjectFragment: Fragment() {
 
         Snackbar.make(fragment_loan_by_object_layout, loan.product,Snackbar.LENGTH_LONG)
             .setAction(getString(R.string.undo), View.OnClickListener{
-                unarchiveTheLoan(tag, loan)
+                unarchiveTheLoan(tag, loan, points)
             }).show()
     }
 
@@ -183,7 +197,7 @@ class LoanByObjectFragment: Fragment() {
      * @param tag is a String representing the id of the loan
      * @param loan is a Loan representing the loan object
      */
-    private fun unarchiveTheLoan(tag: String, loan: Loan) {
+    private fun unarchiveTheLoan(tag: String, loan: Loan, points: Long) {
         val loanRef = mDb.collection("loans").document(tag)
         val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
 
@@ -193,6 +207,7 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(-1))
             batch.update(loanerRef, loan.type, FieldValue.increment(+1))
             batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(-1))
+            batch.update(loanerRef, awardsByType(loan.type), FieldValue.increment(-points))
         }.addOnCompleteListener {
             if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2)
             else displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2)
@@ -309,15 +324,41 @@ class LoanByObjectFragment: Fragment() {
     }
 
     /**
-     * This method send the opposite field, eg : Borrowing -> Ended_borrowing
+     * This method returns the opposite field, eg : Borrowing -> Ended_borrowing
      * @param type is the type of loan of the Loan object
      * @return a String which is the "opposite" status of the loan type
      */
-    fun reverseTypeField(type: String): String {
-        when (type) {
-            LoanType.LENDING.type -> return LoanType.ENDED_LENDING.type
-            LoanType.BORROWING.type -> return LoanType.ENDED_BORROWING.type
-            else -> return LoanType.ENDED_DELIVERY.type
+    private fun reverseTypeField(type: String): String {
+        return when (type) {
+            LoanType.LENDING.type -> LoanType.ENDED_LENDING.type
+            LoanType.BORROWING.type -> LoanType.ENDED_BORROWING.type
+            else -> LoanType.ENDED_DELIVERY.type
+        }
+    }
+
+    /**
+     * This method returns the opposite field, eg : Borrowing -> Ended_borrowing
+     * @param type is the type of loan of the Loan object
+     * @return a String which is the "opposite" status of the loan type
+     */
+    private fun awardsByType(type: String): String {
+        return when (type) {
+            LoanType.BORROWING.type -> LoanAward.MINE.type
+            else -> LoanAward.THEIR.type
+        }
+    }
+
+    /**
+     * This method returns the number of points given to user (for borrowing) or recipient (for lending and delivery)
+     * @param daysDiff is the difference of days between returned date and due date
+     * @return a Int which is the number of points to attribute
+     */
+    private fun getPoints(daysDiff: Int): Int {
+        return when {
+            daysDiff > 30 -> 4
+            daysDiff > 7 -> 3
+            daysDiff >= 0 -> 2
+            else -> 1
         }
     }
 

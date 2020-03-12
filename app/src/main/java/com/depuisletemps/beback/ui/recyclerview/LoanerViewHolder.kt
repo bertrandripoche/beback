@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
@@ -28,6 +29,7 @@ import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loaner.view
 class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
     val item = itemview
     val name: TextView = itemview.item_loaner_name
+    val rateIcon: ImageView = itemview.item_loaner_rate
     val flexboxLayout: FlexboxLayout = itemview.findViewById(R.id.item_flexbox)
     /**
      * This method populates the date into the recyclerView ViewHolder
@@ -43,24 +45,39 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
 
         name.text = loaner.name
 
+        val endedBorrowing:Int = loaner.ended_borrowing ?: 0
+        val endedLending:Int = loaner.ended_lending ?: 0
+        val endedDelivery:Int = loaner.ended_delivery ?: 0
+        val theirPoints:Int = loaner.their_points ?: 0
+        var rate: Double = -1.0
+        if ((endedBorrowing + endedLending + endedDelivery) != 0)
+            rate = (theirPoints / (endedBorrowing + endedLending + endedDelivery)).toDouble()
+        when {
+            rate > 3.5 -> rateIcon.setImageResource(R.drawable.ic_rate_0)
+            rate > 3.0 -> rateIcon.setImageResource(R.drawable.ic_rate_1)
+            rate > 2.5 -> rateIcon.setImageResource(R.drawable.ic_rate_2)
+            rate > 2.0 -> rateIcon.setImageResource(R.drawable.ic_rate_3)
+            rate > 1.5 -> rateIcon.setImageResource(R.drawable.ic_rate_4)
+            else -> rateIcon.setImageResource(R.drawable.ic_rate_5)
+        }
+
         lateinit var query: Query
         if (mode == context.getString(R.string.standard)) {
-            if (position % 2 == 0) item.setBackgroundColor(primaryColor)
-            else item.setBackgroundColor(primaryLightColor)
+            if (position % 2 == 0) item.setBackgroundColor(primaryLightColor)
+            else item.setBackgroundColor(primaryColor)
             query = mLoansRef.whereEqualTo("requestor_id", requestorId)
                 .whereEqualTo("recipient_id", name.text.toString())
                 .whereEqualTo("returned_date", null)
                 .orderBy("due_date", Query.Direction.ASCENDING)
         } else {
-            if (position % 2 == 0) item.setBackgroundColor(darkGrey)
-            else item.setBackgroundColor(ligthGrey)
+            if (position % 2 == 0) item.setBackgroundColor(ligthGrey)
+            else item.setBackgroundColor(darkGrey)
             query = mLoansRef.whereEqualTo("requestor_id", requestorId)
                 .whereEqualTo("recipient_id", name.text.toString())
                 .whereGreaterThan("returned_date", Utils.getTimeStampFromString("01/01/1970")!! )
                 .orderBy("returned_date", Query.Direction.ASCENDING)
         }
 
-        val loansHashMap:HashMap<String,String> = HashMap()
         query.get()
             .addOnSuccessListener { documents ->
                 flexboxLayout.removeAllViews()
