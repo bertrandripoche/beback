@@ -82,12 +82,15 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                 val todayLocalDate = LocalDate.now()
                 val daysDiff: Int = getDifferenceDays(todayLocalDate, dueDateLocalDate)
 
-                if (daysDiff < 0) {
-                    dueDate.setTextColor(black)
-                    dueDatePic.setImageResource(R.drawable.ic_coffin)
-                } else if (daysDiff < 7) dueDate.setTextColor(red)
-                else if (daysDiff < 14) dueDate.setTextColor(secondaryDarkColor)
-                else dueDate.setTextColor(green)
+                when {
+                    daysDiff < 0 -> {
+                        dueDate.setTextColor(black)
+                        dueDatePic.setImageResource(R.drawable.ic_coffin)
+                    }
+                    daysDiff < 3 -> dueDate.setTextColor(red)
+                    daysDiff < 7 -> dueDate.setTextColor(secondaryDarkColor)
+                    else -> dueDate.setTextColor(green)
+                }
             }
         } else {
             dueDatePic.setImageResource(R.drawable.ic_checked)

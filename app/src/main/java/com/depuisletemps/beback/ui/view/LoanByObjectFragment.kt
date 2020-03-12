@@ -167,9 +167,7 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(+1))
         }.addOnCompleteListener {
             if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1)
-            // Toast.makeText(context, getString(R.string.received_message, loan.product), Toast.LENGTH_SHORT).show()
             else displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1)
-            //Toast.makeText(context, getString(R.string.archived_message, loan.product), Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e ->
             Log.w(TAG, "Transaction failure.", e)
         }
@@ -197,9 +195,7 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(-1))
         }.addOnCompleteListener {
             if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2)
-            //Toast.makeText(context, getString(R.string.not_received_message, loan.product), Toast.LENGTH_SHORT).show()
             else displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2)
-            //Toast.makeText(context, getString(R.string.unarchived_message, loan.product), Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e ->
             Log.w(TAG, "Transaction failure.", e)
         }
@@ -219,8 +215,7 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, loan.type, FieldValue.increment(-1))
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
         }.addOnCompleteListener {
-            displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_3)
-//            Toast.makeText(context,  getString(R.string.deleted_message, loan.product), Toast.LENGTH_SHORT).show()
+            displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_4)
         }.addOnFailureListener { e ->
             Log.w(TAG, "Transaction failure.", e)
         }
@@ -240,7 +235,6 @@ class LoanByObjectFragment: Fragment() {
         val loanRef = mDb.collection("loans").document()
         val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
         val loanerData = hashMapOf("name" to loan.recipient_id)
-        //val loan = Loan(loanRef.id, loan.requestor_id, loan.recipient_id, loan.type, loan.product, loan.product_category, loan.creation_date, loan.due_date, loan.returned_date)
 
         mDb.runBatch { batch ->
             batch.set(loanRef,loan)
@@ -248,8 +242,7 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, loan.type, FieldValue.increment(+1))
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
         }.addOnCompleteListener {
-            displayCustomToast(getString(R.string.undeleted_message, loan.product), R.drawable.bubble_4)
-            //Toast.makeText(context,  getString(R.string.undeleted_message, loan.product), Toast.LENGTH_SHORT).show()
+            displayCustomToast(getString(R.string.undeleted_message, loan.product), R.drawable.bubble_3)
         }.addOnFailureListener { e ->
             Log.w(TAG, "Transaction failure.", e)
         }

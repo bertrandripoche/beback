@@ -72,7 +72,7 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                             LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT
                         )
-                        linearLayoutlayoutParams.setMargins(25, 0, 25, 30)
+                        linearLayoutlayoutParams.setMargins(25, 15, 25, 15)
                         linearLayout.layoutParams = linearLayoutlayoutParams
 
                         val imageView = AppCompatImageView(context)
