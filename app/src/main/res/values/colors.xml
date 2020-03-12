@@ -18,11 +18,13 @@
     <color name="light_grey">#CCC</color>
     <color name="grey">#999</color>
     <color name="dark_grey">#666</color>
+    <color name="light_green">#78A15F</color>
     <color name="green">#228022</color>
     <color name="dark_green">#386b17</color>
     <color name="orange">#FF5722</color>
     <color name="light_orange">#FF8A50</color>
     <color name="red">#DF2F2E</color>
+    <color name="light_red">#FF8080</color>
     <color name="light_pink">#FC99AF</color>
     <color name="pink">#C20044</color>
 

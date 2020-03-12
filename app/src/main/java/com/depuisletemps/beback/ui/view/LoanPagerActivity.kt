@@ -1,5 +1,6 @@
 package com.depuisletemps.beback.ui.view
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,12 +11,9 @@ import android.widget.Button
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.ui.customview.ViewPagerAdapter
-import kotlinx.android.synthetic.main.activity_loan.*
 import kotlinx.android.synthetic.main.activity_loan_pager.*
-import kotlinx.android.synthetic.main.activity_loan_pager.mBtnAdd
 
 
 class LoanPagerActivity: BaseActivity() {
@@ -190,6 +188,9 @@ class LoanPagerActivity: BaseActivity() {
         val dialogView = layoutInflater.inflate(R.layout.add_loan_alert_dialog, null)
         alertDialogBuilder.setView(dialogView)
         val alertDialog = alertDialogBuilder.create()
+        alertDialog.setOnCancelListener(DialogInterface.OnCancelListener {
+            mIsLoanAlertDialogDisplayed = false
+        })
         alertDialog.show()
 
         activateButtonListeners(dialogView, alertDialog)
@@ -214,8 +215,8 @@ class LoanPagerActivity: BaseActivity() {
         }
         val btn_cancel = dialogView.findViewById<Button>(R.id.btn_cancel)
         btn_cancel.setOnClickListener {
-            alertDialog.cancel()
             mIsLoanAlertDialogDisplayed = false
+            alertDialog.cancel()
         }
     }
 

@@ -44,11 +44,11 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         val secondaryDarkColor = ContextCompat.getColor(context, R.color.secondaryDarkColor)
 
         if (mode == context.getString(R.string.standard)) {
-            if (position % 2 == 0) item.setBackgroundColor(primaryLightColor)
-            else item.setBackgroundColor(primaryColor)
+            if (position % 2 == 0) item.setBackgroundColor(primaryColor)
+            else item.setBackgroundColor(primaryLightColor)
         } else {
-            if (position % 2 == 0) item.setBackgroundColor(ligthGrey)
-            else item.setBackgroundColor(darkGrey)
+            if (position % 2 == 0) item.setBackgroundColor(darkGrey)
+            else item.setBackgroundColor(ligthGrey)
         }
 
         category.setImageResource(utils.getIconFromCategory(loan.product_category))

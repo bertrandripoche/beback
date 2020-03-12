@@ -206,6 +206,7 @@ class LoanDetailActivity: BaseActivity() {
                         feedback.setText(R.string.happy)
                     }
                 } else {
+                    loan_returned_date.setTextColor(greenColor)
                     feedback.setTextColor(greenColor)
                     feedback.setBackgroundResource(R.drawable.bubble_1)
                     feedback.setText(R.string.happy)

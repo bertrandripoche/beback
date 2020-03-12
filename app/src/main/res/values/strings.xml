@@ -86,8 +86,8 @@
         <item>Money</item>
         <item>Music</item>
         <item>Sport</item>
-        <item>Tools</item>
         <item>Ticket</item>
+        <item>Tools</item>
     </string-array>
 
     <array name="product_category_icon">
@@ -103,8 +103,8 @@
         <item>@drawable/ic_money</item>
         <item>@drawable/ic_music</item>
         <item>@drawable/ic_sport</item>
-        <item>@drawable/ic_tools</item>
         <item>@drawable/ic_ticket</item>
+        <item>@drawable/ic_tools</item>
     </array>
 
 </resources>
