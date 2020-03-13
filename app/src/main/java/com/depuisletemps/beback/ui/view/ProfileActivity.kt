@@ -13,16 +13,12 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
-import com.depuisletemps.beback.model.LoanStatus
-import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.model.User
-import com.depuisletemps.beback.utils.Utils
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.SetOptions
-import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.android.synthetic.main.activity_profile.mBtnEdit
 import kotlinx.android.synthetic.main.custom_toast.*
@@ -40,30 +36,26 @@ class ProfileActivity: BaseActivity() {
     var mPseudo: String = ""
     var mMail: String = ""
     var mId: String = ""
-    var mCurrentFirst: String = ""
-    var mCurrentLast: String = ""
-    var mCurrentPseudo: String = ""
-    var mCurrentMail: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
 
         configureToolbar()
+        getSavedInstanceData(savedInstanceState)
 
         getUserInfos()
-        getSavedInstanceData(savedInstanceState)
 
         configureTextWatchers()
 
-        mBtnEdit.setOnClickListener(View.OnClickListener {
+        mBtnEdit.setOnClickListener{
             if (isFormValid())
                 editFirestoreUser(mId)
             else {
                 Toast.makeText(applicationContext, R.string.invalid_edit_profile_form, Toast.LENGTH_LONG)
                     .show()
             }
-        })
+        }
 
         mBtnLogout.setOnClickListener {
             Snackbar.make(activity_profile, R.string.logout, Snackbar.LENGTH_LONG)
@@ -83,21 +75,29 @@ class ProfileActivity: BaseActivity() {
 
     fun getSavedInstanceData(savedInstanceState: Bundle?) {
         if (savedInstanceState != null){
-            if (savedInstanceState.getString("first") != null) firstname.setText(savedInstanceState.getString("first")!!)
-            if (savedInstanceState.getString("last") != null) lastname.setText(savedInstanceState.getString("last")!!)
-            if (savedInstanceState.getString("pseudo") != null) pseudo.setText(savedInstanceState.getString("pseudo")!!)
-            if (savedInstanceState.getString("mail") != null) mail.setText(savedInstanceState.getString("mail")!!)
+            firstname.setText(savedInstanceState.getString("first"))
+            lastname.setText(savedInstanceState.getString("last")!!)
+            pseudo.setText(savedInstanceState.getString("pseudo")!!)
+            mail.text = savedInstanceState.getString("mail")!!
+            mFirst = savedInstanceState.getString("mFirst")!!
+            mLast = savedInstanceState.getString("mLast")!!
+            mPseudo = savedInstanceState.getString("mPseudo")!!
+            mMail = savedInstanceState.getString("mail")!!
             mFirstTime = false
             setEditBtnState()
+            setTextColor()
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        outState.putString("mFirst", mFirst)
+        outState.putString("mLast", mLast)
+        outState.putString("mPseudo", mPseudo)
         outState.putString("first", firstname.text.toString())
         outState.putString("last", lastname.text.toString())
         outState.putString("pseudo", pseudo.text.toString())
-        outState.putString("mail", mail.text.toString())
+        outState.putString("mail", mMail)
     }
 
     /**

@@ -38,6 +38,7 @@
     <string name="due_date">%1$s/%2$s/%3$d </string>
     <string name="pick">PICK</string>
     <string name="mandatory_information">* = required, wouldn\'t make sense\nwithout it, isn\'t it ?</string>
+    <string name="mandatory_information_land">* = required, wouldn\'t make sense\nwithout it, isn\'t it ?</string>
     <string name="invalid_form">Damned it !\nI forgot the required fields !</string>
     <string name="lent_to">Lent to</string>
     <string name="borrowed_from">Borrowed from</string>
