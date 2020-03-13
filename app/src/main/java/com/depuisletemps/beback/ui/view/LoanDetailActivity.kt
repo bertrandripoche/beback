@@ -71,6 +71,30 @@ class LoanDetailActivity: BaseActivity() {
         mCategories = this.resources.getStringArray(R.array.product_category)
         mCategoriesIcons = this.resources.obtainTypedArray(R.array.product_category_icon)
 
+        getSavedInstanceData(savedInstanceState)
+        getLoan()
+
+
+        configureButtons()
+        configureToolbar()
+        configureSpinner()
+        configureTextWatchers()
+    }
+
+    fun configureButtons() {
+        mBtnEdit.setOnClickListener{
+            if (isFormValid())
+                editFirestoreLoan()
+            else {
+                Toast.makeText(applicationContext, R.string.invalid_edit_form, Toast.LENGTH_LONG)
+                    .show()
+            }
+        }
+        mBtnDelete.setOnClickListener{deleteTheLoan(mLoan!!)}
+        mBtnUnarchive.setOnClickListener{unarchiveTheLoan(mLoan!!)}
+    }
+
+    fun getSavedInstanceData(savedInstanceState: Bundle?) {
         if (savedInstanceState != null){
             mFirstTime = false
             if (savedInstanceState.getString("dueDateSet") != "01/01/3000")
@@ -82,29 +106,6 @@ class LoanDetailActivity: BaseActivity() {
             if (savedInstanceState.getString("loanId") != null) mLoanId = savedInstanceState.getString("loanId")!!
             setEditBtnState()
         }
-
-        getLoan()
-
-        mBtnEdit.setOnClickListener(View.OnClickListener {
-            if (isFormValid())
-                editFirestoreLoan()
-            else {
-                Toast.makeText(applicationContext, R.string.invalid_edit_form, Toast.LENGTH_LONG)
-                    .show()
-            }
-        })
-
-        mBtnDelete.setOnClickListener(View.OnClickListener {
-            deleteTheLoan(mLoan!!)
-        })
-
-        mBtnUnarchive.setOnClickListener(View.OnClickListener {
-            unarchiveTheLoan(mLoan!!)
-        })
-
-        configureToolbar()
-        configureSpinner()
-        configureTextWatchers()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

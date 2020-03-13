@@ -34,6 +34,7 @@
                     android:id="@+id/firstname_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/basic"
                     android:padding="@dimen/middle"
                     android:textSize="@dimen/text_size_max"
                     android:textAlignment="center"
@@ -159,8 +160,26 @@
                     app:layout_constraintRight_toRightOf="parent"
                     />
 
+        <TextView
+                android:id="@+id/warning_message"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/basic"
+                android:textStyle="italic"
+                android:textColor="@color/black"
+                android:text="@string/mandatory_information"
+                android:textSize="@dimen/text_size"
+                android:gravity="center_vertical"
+                android:background="@color/light_pink"
+                android:padding="@dimen/middle"
+                android:drawablePadding="@dimen/middle"
+                android:drawableStart="@drawable/ic_warning_pink"
+                app:layout_constraintTop_toBottomOf="@id/mail_title"
+                app:layout_constraintLeft_toLeftOf="parent"/>
 
-    <androidx.constraintlayout.widget.Guideline
+
+
+        <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_vertical_left"
             android:layout_width="1dp"
             android:layout_height="wrap_content"
