@@ -42,14 +42,10 @@ import kotlinx.android.synthetic.main.activity_add_loan.mBtnCancelDate
 import kotlinx.android.synthetic.main.activity_add_loan.spinner_loan_categories
 import kotlinx.android.synthetic.main.activity_loan_detail.*
 import kotlinx.android.synthetic.main.custom_toast.*
-import kotlinx.android.synthetic.main.fragment_loan_by_object.*
-import kotlinx.android.synthetic.main.spinner_loan_categories.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.joda.time.LocalDate
 import java.text.DecimalFormat
 import java.util.*
-import kotlin.reflect.typeOf
-
 
 class LoanDetailActivity: BaseActivity() {
     private val TAG = "LoanDetailActivity"
@@ -123,7 +119,8 @@ class LoanDetailActivity: BaseActivity() {
     }
 
     /**
-     * This method sets the background color depending on the type of loan we do (lending, borrowing)
+     * This method fills the existing information for th loan
+     * @param loan is the Loan object representing the current loan data
      */
     private fun configureScreen(loan: Loan?) {
         val greenColor = ContextCompat.getColor(this, R.color.green)
@@ -231,7 +228,7 @@ class LoanDetailActivity: BaseActivity() {
     }
 
     /**
-     * This method gets loan type from
+     * This method gets loan info
      */
     private fun getLoan() {
         val i = intent
@@ -393,7 +390,7 @@ class LoanDetailActivity: BaseActivity() {
     }
 
     /**
-    * This method create a loan entry in the Firebase database "loan" collection
+    * This method edits a loan entry in the Firebase database "loans" collection
     */
     private fun editFirestoreLoan(){
         val categories: Array<String> =

@@ -136,7 +136,7 @@ class LoanPagerActivity: BaseActivity() {
             true
         }
         R.id.menu_profile ->{
-            Toast.makeText(this,"Profile action", Toast.LENGTH_LONG).show()
+            startProfileActivity()
             true
         }
 
@@ -232,6 +232,14 @@ class LoanPagerActivity: BaseActivity() {
     fun startAddLoanActivity(type: String) {
         val intent = Intent(this, AddLoanActivity::class.java)
         intent.putExtra("type", type)
+        startActivity(intent)
+    }
+
+    /**
+     * This method starts the Profile activity
+     */
+    fun startProfileActivity() {
+        val intent = Intent(this, ProfileActivity::class.java)
         startActivity(intent)
     }
 }

@@ -71,6 +71,15 @@
     <string name="invalid_edit_form">Hummm well…\nNothing changed</string>
     <string name="saved">That\'s in the box, boss !</string>
     <string name="category_icon">Category Icon</string>
+    <string name="my_profile">My profile</string>
+    <string name="my_firstname">…what the hell my firstname is…</string>
+    <string name="firstname">First</string>
+    <string name="my_lastname">…what the hell my lasstname is…</string>
+    <string name="lastname">Last</string>
+    <string name="my_pseudo">…but let\'s call me…</string>
+    <string name="pseudo">Alias</string>
+    <string name="mail">Mail</string>
+    <string name="logout">Logout</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">

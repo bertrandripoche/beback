@@ -37,6 +37,13 @@
                     android:name="android.support.PARENT_ACTIVITY"
                     android:value="com.depuisletemps.beback.ui.view.LoanPagerActivity" />
         </activity>
+        <activity
+                android:name="com.depuisletemps.beback.ui.view.ProfileActivity"
+                android:parentActivityName="com.depuisletemps.beback.ui.view.LoanPagerActivity">
+            <meta-data
+                    android:name="android.support.PARENT_ACTIVITY"
+                    android:value="com.depuisletemps.beback.ui.view.LoanPagerActivity" />
+        </activity>
     </application>
     <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>

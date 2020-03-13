@@ -7,4 +7,6 @@ data class User (
     var lastname:String?,
     var pseudo:String?,
     var pic: String?
-)
+) {
+    constructor() : this("","",null,null,null,null)
+}
