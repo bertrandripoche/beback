@@ -31,7 +31,7 @@ class LoanPagerActivity: BaseActivity() {
 
         configureToolbar()
         configurePager()
-        mMode = getLoanMode()
+        mMode = getLoanMode(savedInstanceState)
 
         mBtnAdd.setOnClickListener(View.OnClickListener {
             createLoanAlertDialog()
@@ -42,9 +42,12 @@ class LoanPagerActivity: BaseActivity() {
      * This method returns the mode from the bundle
      * @return the placeId or null
      */
-    private fun getLoanMode(): String {
+    private fun getLoanMode(savedInstanceState: Bundle?): String {
+        if (savedInstanceState != null) return savedInstanceState.getString("mode")!!
+
         val extras: Bundle? = this.intent.extras
         if (extras?.getString(getString(R.string.mode)) != null) return extras.getString(getString(R.string.mode))
+
         return getString(R.string.standard)
     }
 
@@ -57,12 +60,15 @@ class LoanPagerActivity: BaseActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         if (mIsLoanAlertDialogDisplayed) outState?.putBoolean("loanAlertDialogDisplayed", true)
+        outState.putString("mode", mMode)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
-        if (savedInstanceState != null)
+        if (savedInstanceState != null) {
             if (savedInstanceState.getBoolean("loanAlertDialogDisplayed"))  createLoanAlertDialog()
+        }
+
     }
 
     /**
