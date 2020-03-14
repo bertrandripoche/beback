@@ -53,8 +53,6 @@ class LoanDetailActivity: BaseActivity() {
     var mWho:String = ""
     var mProductCategory:String = ""
     var mDue:String = ""
-    var mCurrentWhat:String = ""
-    var mCurrentWho:String = ""
     var mCurrentProductCategory:String = ""
     var mCurrentDue:String = ""
     var mLoanId: String = ""
@@ -71,9 +69,8 @@ class LoanDetailActivity: BaseActivity() {
         mCategories = this.resources.getStringArray(R.array.product_category)
         mCategoriesIcons = this.resources.obtainTypedArray(R.array.product_category_icon)
 
-        getSavedInstanceData(savedInstanceState)
         getLoan()
-
+        getSavedInstanceData(savedInstanceState)
 
         configureButtons()
         configureToolbar()
@@ -81,7 +78,25 @@ class LoanDetailActivity: BaseActivity() {
         configureTextWatchers()
     }
 
-    fun configureButtons() {
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (loan_due_date.text != "") outState.putString("dueDateSet", loan_due_date.text.toString())
+        else outState.putString("dueDateSet", "01/01/3000")
+        outState.putString("mWhat", mWhat)
+        outState.putString("mWho", mWho)
+        outState.putString("whatSaved", loan_product.text.toString())
+        outState.putString("whoSaved", loan_recipient.text.toString())
+        outState.putString("dueSaved", mDue)
+        outState.putString("productCategorySaved", mCategories[spinner_loan_categories.selectedItemPosition])
+        outState.putString("loanId", mLoanId)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
+    private fun configureButtons() {
         mBtnEdit.setOnClickListener{
             if (isFormValid())
                 editFirestoreLoan()
@@ -94,29 +109,51 @@ class LoanDetailActivity: BaseActivity() {
         mBtnUnarchive.setOnClickListener{unarchiveTheLoan(mLoan!!)}
     }
 
-    fun getSavedInstanceData(savedInstanceState: Bundle?) {
-        if (savedInstanceState != null){
-            mFirstTime = false
-            if (savedInstanceState.getString("dueDateSet") != "01/01/3000")
-                setPickDate(savedInstanceState.getString("dueDateSet"))
-            if (savedInstanceState.getString("whatSaved") != null) mCurrentWhat = savedInstanceState.getString("whatSaved")!!
-            if (savedInstanceState.getString("whoSaved") != null) mCurrentWho = savedInstanceState.getString("whoSaved")!!
-            if (savedInstanceState.getString("productCategorySaved") != null) mCurrentProductCategory = savedInstanceState.getString("productCategorySaved")!!
-            if (savedInstanceState.getString("dueSaved") != null) mCurrentDue = savedInstanceState.getString("dueSaved")!!
-            if (savedInstanceState.getString("loanId") != null) mLoanId = savedInstanceState.getString("loanId")!!
-            setEditBtnState()
-        }
+    /**
+     * This method configures the toolbar
+     */
+    private fun configureToolbar() {
+        setSupportActionBar(toolbar)
+        val ab = supportActionBar
+        Objects.requireNonNull(ab)!!.setDisplayHomeAsUpEnabled(true)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        if (loan_due_date.text != "") outState.putString("dueDateSet", loan_due_date.text.toString())
-        else outState.putString("dueDateSet", "01/01/3000")
-        outState.putString("whatSaved", mWhat)
-        outState.putString("whoSaved", mWho)
-        outState.putString("productCategorySaved", mCategories[spinner_loan_categories.selectedItemPosition])
-        outState.putString("dueSaved", mDue)
-        outState.putString("loanId", mDue)
+    /**
+     * This method configuree the spinner
+     */
+    private fun configureSpinner() {
+        val spinner = findViewById<View>(R.id.spinner_loan_categories) as Spinner
+
+        val categoryAdapter = CategoryAdapter(applicationContext, mCategoriesIcons, mCategories, "small")
+        spinner.adapter = categoryAdapter
+
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                setEditBtnState()
+                if (mLoan?.returned_date == null) {
+                    if (spinner.selectedView != null) {
+                        val greyColor = ContextCompat.getColor(applicationContext, R.color.grey)
+                        val text: TextView =
+                            (spinner.selectedView as ConstraintLayout).getViewById(R.id.text_category) as TextView
+                        if (position != mCategories.indexOf(mProductCategory)) text.setTextColor(
+                            Color.BLACK
+                        )
+                        else text.setTextColor(greyColor)
+                    }
+                }
+            }
+        }
+
+    }
+
+    /**
+     * Method to configure the textWatchers on the fields which requires it
+     */
+    fun configureTextWatchers() {
+        loan_product.addTextChangedListener(textWatcher)
+        loan_recipient.addTextChangedListener(textWatcher)
     }
 
     /**
@@ -214,10 +251,10 @@ class LoanDetailActivity: BaseActivity() {
             } else {
                 mBtnEdit.visibility = View.VISIBLE
                 if (getStringFromDate(loan.due_date?.toDate()) != "01/01/3000" && mFirstTime) setPickDate(getStringFromDate(loan.due_date?.toDate()))
-                loan_product.hint = loan.product
-                loan_recipient.hint = loan.recipient_id
-                loan_due_date.setTextColor(greyColor)
+                if (mFirstTime) loan_product.setText(loan.product)
+                if (mFirstTime) loan_recipient.setText(loan.recipient_id)
                 loan_creation_date.setTextColor(greyColor)
+                setEditFieldsTextColor()
             }
 
             if (mFirstTime) spinner_loan_categories.setSelection(mUtils.getIndexFromCategory(loan.product_category))
@@ -226,6 +263,38 @@ class LoanDetailActivity: BaseActivity() {
         }
 
         disableFloatButton()
+    }
+
+    /**
+     * Method to describe the actions to complete on text writing
+     */
+    val textWatcher: TextWatcher = object : TextWatcher {
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+        override fun afterTextChanged(s: Editable) {
+            // Enable-disable Floating Action Button
+            setEditBtnState()
+            setEditFieldsTextColor()
+        }
+    }
+
+    private fun getSavedInstanceData(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null){
+            mFirstTime = false
+            if (savedInstanceState.getString("dueDateSet") != "01/01/3000")
+                setPickDate(savedInstanceState.getString("dueDateSet"))
+            if (savedInstanceState.getString("mWhat") != null) mWhat = savedInstanceState.getString("mWhat")!!
+            if (savedInstanceState.getString("mWho") != null) mWho = savedInstanceState.getString("mWho")!!
+            if (savedInstanceState.getString("whatSaved") != null) loan_product.setText(savedInstanceState.getString("whatSaved")!!)
+            if (savedInstanceState.getString("whoSaved") != null) loan_recipient.setText(savedInstanceState.getString("whoSaved")!!)
+            if (savedInstanceState.getString("productCategorySaved") != null) mCurrentProductCategory = savedInstanceState.getString("productCategorySaved")!!
+            if (savedInstanceState.getString("dueSaved") != null) mCurrentDue = savedInstanceState.getString("dueSaved")!!
+            if (savedInstanceState.getString("loanId") != null) mLoanId = savedInstanceState.getString("loanId")!!
+            setEditBtnState()
+            setEditFieldsTextColor()
+        }
     }
 
     /**
@@ -248,56 +317,15 @@ class LoanDetailActivity: BaseActivity() {
     }
 
     /**
-     * This method configures the toolbar
+     * This method enable/disable the edit button
      */
-    private fun configureToolbar() {
-        setSupportActionBar(toolbar)
-        val ab = supportActionBar
-        Objects.requireNonNull(ab)!!.setDisplayHomeAsUpEnabled(true)
-    }
+    fun setEditFieldsTextColor() {
+        val blackColor = ContextCompat.getColor(this, R.color.black)
+        val greyColor = ContextCompat.getColor(this, R.color.grey)
 
-    /**
-     * This method configuree the spinner
-     */
-    private fun configureSpinner() {
-        val spinner = findViewById<View>(R.id.spinner_loan_categories) as Spinner
-
-        val categoryAdapter = CategoryAdapter(applicationContext, mCategoriesIcons, mCategories, "small")
-        spinner.adapter = categoryAdapter
-
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener{
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-            }
-            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                setEditBtnState()
-                if (mLoan?.returned_date == null) {
-                    if (spinner.selectedView != null) {
-                        val darkGreyColor = ContextCompat.getColor(applicationContext, R.color.dark_grey)
-                        val text: TextView =
-                            (spinner.selectedView as ConstraintLayout).getViewById(R.id.text_category) as TextView
-                        if (position != mCategories.indexOf(mProductCategory)) text.setTextColor(
-                            Color.BLACK
-                        )
-                        else text.setTextColor(darkGreyColor)
-                    }
-                }
-            }
-        }
-
-    }
-
-    /**
-     * Method to describe the actions to complete on text writing
-     */
-    val textWatcher: TextWatcher = object : TextWatcher {
-        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
-
-        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
-        override fun afterTextChanged(s: Editable) {
-            // Enable-disable Floating Action Button
-            setEditBtnState()
-        }
+        if (loan_product.text.toString() != mWhat) loan_product.setTextColor(blackColor) else loan_product.setTextColor(greyColor)
+        if (loan_recipient.text.toString() != mWho) loan_recipient.setTextColor(blackColor) else loan_recipient.setTextColor(greyColor)
+        if (loan_due_date.text != mDue) loan_due_date.setTextColor(blackColor) else loan_due_date.setTextColor(greyColor)
     }
 
     /**
@@ -366,14 +394,6 @@ class LoanDetailActivity: BaseActivity() {
         loan_due_date.setBackgroundColor(primaryColor)
         mBtnCancelDate.visibility = View.GONE
         setEditBtnState()
-    }
-
-    /**
-     * Method to configure the textWatchers on the fields which requires it
-     */
-     fun configureTextWatchers() {
-        loan_product.addTextChangedListener(textWatcher)
-        loan_recipient.addTextChangedListener(textWatcher)
     }
 
     /**

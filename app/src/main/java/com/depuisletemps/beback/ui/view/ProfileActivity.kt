@@ -86,7 +86,7 @@ class ProfileActivity: BaseActivity() {
             mMail = savedInstanceState.getString("mail")!!
             mFirstTime = false
             setEditBtnState()
-            setTextColor()
+            setEditFieldsTextColor()
         }
     }
 
@@ -161,7 +161,7 @@ class ProfileActivity: BaseActivity() {
         override fun afterTextChanged(s: Editable) {
             // Enable-disable Floating Action Button
             setEditBtnState()
-            setTextColor()
+            setEditFieldsTextColor()
         }
     }
 
@@ -179,7 +179,7 @@ class ProfileActivity: BaseActivity() {
     /**
      * This method enable/disable the edit button
      */
-    fun setTextColor() {
+    fun setEditFieldsTextColor() {
         val blackColor = ContextCompat.getColor(this, R.color.black)
         val greyColor = ContextCompat.getColor(this, R.color.grey)
 
@@ -187,8 +187,6 @@ class ProfileActivity: BaseActivity() {
         if (lastname.text.toString() != mLast) lastname.setTextColor(blackColor) else lastname.setTextColor(greyColor)
         if (pseudo.text.toString() != mPseudo) pseudo.setTextColor(blackColor) else pseudo.setTextColor(greyColor)
     }
-
-
 
     /**
      * Method to configure the textWatchers on the fields which requires it
