@@ -41,6 +41,8 @@ class Constant {
         const val LAST = "last"
         const val PSEUDO = "pseudo"
         const val MAIL = "mail"
+        const val FIRSTNAME = "firstname"
+        const val LASTNAME = "lastname"
 
         const val MWHAT = "mWhat"
         const val MWHO = "mWho"

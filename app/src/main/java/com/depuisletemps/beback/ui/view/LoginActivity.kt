@@ -3,6 +3,7 @@ package com.depuisletemps.beback.ui.view
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.LinearLayout
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.api.UserHelper
@@ -16,6 +17,7 @@ import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
 
@@ -105,13 +107,29 @@ class LoginActivity : BaseActivity() {
 
         val id:String = user?.uid ?: ""
         val mail:String = user?.email ?: ""
-        val pic:String = user?.photoUrl.toString() ?: ""
+        val pic:String = user?.photoUrl.toString()
         val displayName:String = user?.displayName ?: ""
         val firstname:String = displayName.split(" ")[0]
         val lastname:String = displayName.split(" ")[1]
 
-         addUserInFirestore(id, mail, firstname, lastname, "", pic)
+         checkUserInDb(id, mail, firstname, lastname, "", pic)
      }
+
+    /**
+     * This method checks existence of user in Firestore db
+     */
+    fun checkUserInDb(id: String, mail:String, firstname: String, lastname:String, pseudo:String, pic:String) {
+        val userRef = mDb.collection(Constant.USERS_COLLECTION).document(id)
+        userRef.get()
+            .addOnSuccessListener { document ->
+                if (document == null) {
+                    addUserInFirestore(id, mail, firstname, lastname, "", pic)
+                }
+            }
+            .addOnFailureListener { exception ->
+                Log.d(TAG, getString(R.string.transaction_failure), exception)
+            }
+    }
 
     /**
      * This method adds the user in Firestore
