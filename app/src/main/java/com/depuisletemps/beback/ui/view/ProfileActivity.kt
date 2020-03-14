@@ -58,6 +58,7 @@ class ProfileActivity: BaseActivity() {
         }
 
         mBtnLogout.setOnClickListener {
+            displayCustomToast(getString(R.string.sign_out_message, firstname.text.toString()), R.drawable.bubble_1)
             Snackbar.make(activity_profile, R.string.logout, Snackbar.LENGTH_LONG)
                 .setAction(getString(R.string.undo)) {
                 }.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {

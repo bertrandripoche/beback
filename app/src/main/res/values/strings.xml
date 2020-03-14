@@ -82,6 +82,7 @@
     <string name="mail">Mail</string>
     <string name="logout">Logout</string>
     <string name="invalid_edit_profile_form">Well... nothing changed\nor a mandatory field\n is desperately empty</string>
+    <string name="sign_out_message">Bye bye %1$s</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">

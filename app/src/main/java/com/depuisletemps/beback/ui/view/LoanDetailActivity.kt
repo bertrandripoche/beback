@@ -222,7 +222,7 @@ class LoanDetailActivity: BaseActivity() {
 
             if (mFirstTime) spinner_loan_categories.setSelection(mUtils.getIndexFromCategory(loan.product_category))
             else spinner_loan_categories.setSelection(mUtils.getIndexFromCategory(mCurrentProductCategory))
-            loan_creation_date.setText(getStringFromDate(loan.creation_date?.toDate()))
+            loan_creation_date.text = getStringFromDate(loan.creation_date?.toDate())
         }
 
         disableFloatButton()
