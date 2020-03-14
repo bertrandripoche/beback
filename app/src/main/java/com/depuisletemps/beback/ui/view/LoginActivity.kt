@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.api.UserHelper
 import com.depuisletemps.beback.model.LoanType
+import com.depuisletemps.beback.utils.Constant
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.AuthUI.IdpConfig
 import com.firebase.ui.auth.AuthUI.IdpConfig.*
@@ -29,29 +30,26 @@ class LoginActivity : BaseActivity() {
 
         checkLoginAndDisplayAppropriateScreen()
 
-        buttonFacebookLogin.setOnClickListener{createSignInIntent("facebook")}
-        buttonGoogleLogin.setOnClickListener{createSignInIntent("google")}
-        buttonMailLogin.setOnClickListener{createSignInIntent("mail")}
+        buttonFacebookLogin.setOnClickListener{createSignInIntent(Constant.FB)}
+        buttonGoogleLogin.setOnClickListener{createSignInIntent(Constant.GOOGLE)}
+        buttonMailLogin.setOnClickListener{createSignInIntent(Constant.MAIL)}
     }
 
     /**
      * This method check if someone is already logged (and in such case, start the loan activity)
      */
-    fun checkLoginAndDisplayAppropriateScreen() {
+    private fun checkLoginAndDisplayAppropriateScreen() {
         if (isCurrentUserLogged()) startLoanPagerActivity(getString(R.string.standard))
     }
 
     /**
      * This method creates the Sign-In intent to trigger the sign-in procedure
      */
-    fun createSignInIntent(login: String) {
-        val provider: IdpConfig
-        provider = if (login == resources.getString(R.string.google)) {
-            GoogleBuilder().build()
-        } else if (login == resources.getString(R.string.facebook)) {
-            FacebookBuilder().build()
-        } else {
-            EmailBuilder().build()
+    private fun createSignInIntent(login: String) {
+        val provider: IdpConfig = when (login) {
+            resources.getString(R.string.google) -> GoogleBuilder().build()
+            resources.getString(R.string.facebook) -> FacebookBuilder().build()
+            else -> EmailBuilder().build()
         }
 
         startActivityForResult(
@@ -95,7 +93,7 @@ class LoginActivity : BaseActivity() {
      * @param coordinatorLayout is the element where the snackbar should be displayed
      * @param message is the message we want to display
      */
-    fun showSnackBar(linearLayout: LinearLayout, message: String) {
+    private fun showSnackBar(linearLayout: LinearLayout, message: String) {
         Snackbar.make(linearLayout, message, Snackbar.LENGTH_SHORT).show()
     }
 

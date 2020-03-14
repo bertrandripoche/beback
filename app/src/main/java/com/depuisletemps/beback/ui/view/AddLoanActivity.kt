@@ -13,18 +13,15 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
-import com.depuisletemps.beback.api.LoanHelper
-import com.depuisletemps.beback.api.LoanerHelper
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.customview.CategoryAdapter
+import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils.Companion.getTimeStampFromString
-import com.google.android.gms.tasks.Task
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_add_loan.*
@@ -90,13 +87,13 @@ class AddLoanActivity: BaseActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (loan_due_date.text != "") outState.putString("dueDateSet", loan_due_date.text.toString())
+        if (loan_due_date.text != "") outState.putString(Constant.DUE_DATE_SET, loan_due_date.text.toString())
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
         if (savedInstanceState != null)
-            if (savedInstanceState.getString("dueDateSet") != "")  setPickDate(savedInstanceState.getString("dueDateSet"))
+            if (savedInstanceState.getString(Constant.DUE_DATE_SET) != "")  setPickDate(savedInstanceState.getString("dueDateSet"))
     }
 
     /**
@@ -104,7 +101,7 @@ class AddLoanActivity: BaseActivity() {
      */
     private fun getLoanType(): String {
         val i = intent
-        return i.extras?.getString("type") ?: ""
+        return i.extras?.getString(Constant.TYPE) ?: ""
     }
 
     /**
@@ -227,12 +224,12 @@ class AddLoanActivity: BaseActivity() {
         val productCategory:String = categories[spinner_loan_categories.selectedItemPosition]
         val creationDate = Timestamp.now()
         var dueDate = loan_due_date.text.toString()
-        if (dueDate == "") dueDate = "01/01/3000"
+        if (dueDate == "") dueDate = Constant.FAR_AWAY_DATE
         val returnedDate = null
 
-        val loanRef = mDb.collection("loans").document()
-        val loanerRef = mDb.collection("users").document(requestorId).collection("loaners").document(recipientId)
-        val loanerData = hashMapOf("name" to recipientId)
+        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document()
+        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(requestorId).collection(Constant.LOANERS_COLLECTION).document(recipientId)
+        val loanerData = hashMapOf(Constant.NAME to recipientId)
         val loan = Loan(loanRef.id, requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), returnedDate)
 
         mDb.runBatch { batch ->
@@ -241,10 +238,10 @@ class AddLoanActivity: BaseActivity() {
             batch.update(loanerRef, loan.type, FieldValue.increment(+1))
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
         }.addOnCompleteListener {
-            Toast.makeText(this, "Saved in Firestore", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.saved), Toast.LENGTH_SHORT).show()
             startLoanPagerActivity(getString(R.string.standard))
         }.addOnFailureListener { e ->
-            Log.w(TAG, "Transaction failure.", e)
+            Log.w(TAG, getString(R.string.transaction_failure), e)
         }
 
     }

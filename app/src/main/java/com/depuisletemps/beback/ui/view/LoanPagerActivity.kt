@@ -8,11 +8,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.ui.customview.ViewPagerAdapter
+import com.depuisletemps.beback.utils.Constant
 import kotlinx.android.synthetic.main.activity_loan_pager.*
 
 
@@ -23,7 +23,7 @@ class LoanPagerActivity: BaseActivity() {
     lateinit var mPendingButton: MenuItem
     lateinit var mProfileButton: MenuItem
     var mIsLoanAlertDialogDisplayed:Boolean = false
-    var mMode: String = "standard"
+    var mMode: String = Constant.STANDARD
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,9 +33,7 @@ class LoanPagerActivity: BaseActivity() {
         configurePager()
         mMode = getLoanMode(savedInstanceState)
 
-        mBtnAdd.setOnClickListener(View.OnClickListener {
-            createLoanAlertDialog()
-        })
+        mBtnAdd.setOnClickListener{createLoanAlertDialog()}
     }
 
     /**
@@ -43,7 +41,7 @@ class LoanPagerActivity: BaseActivity() {
      * @return the placeId or null
      */
     private fun getLoanMode(savedInstanceState: Bundle?): String {
-        if (savedInstanceState != null) return savedInstanceState.getString("mode")!!
+        if (savedInstanceState != null) return savedInstanceState.getString(Constant.MODE)!!
 
         val extras: Bundle? = this.intent.extras
         if (extras?.getString(getString(R.string.mode)) != null) return extras.getString(getString(R.string.mode))
@@ -59,14 +57,14 @@ class LoanPagerActivity: BaseActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (mIsLoanAlertDialogDisplayed) outState?.putBoolean("loanAlertDialogDisplayed", true)
-        outState.putString("mode", mMode)
+        if (mIsLoanAlertDialogDisplayed) outState?.putBoolean(Constant.LOAN_ALERTDIALOG_DISPLAYED, true)
+        outState.putString(Constant.MODE, mMode)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
         if (savedInstanceState != null) {
-            if (savedInstanceState.getBoolean("loanAlertDialogDisplayed"))  createLoanAlertDialog()
+            if (savedInstanceState.getBoolean(Constant.LOAN_ALERTDIALOG_DISPLAYED))  createLoanAlertDialog()
         }
 
     }
@@ -209,15 +207,15 @@ class LoanPagerActivity: BaseActivity() {
     fun activateButtonListeners(dialogView: View, alertDialog: AlertDialog) {
         val btn_loaner = dialogView.findViewById<Button>(R.id.btn_loaner)
         btn_loaner.setOnClickListener{
-            startAddLoanActivity("lending")
+            startAddLoanActivity(Constant.LENDING)
         }
         val btn_borrower= dialogView.findViewById<Button>(R.id.btn_borrower)
         btn_borrower.setOnClickListener{
-            startAddLoanActivity("borrowing")
+            startAddLoanActivity(Constant.BORROWING)
         }
         val btn_delivery= dialogView.findViewById<Button>(R.id.btn_delivery)
         btn_delivery.setOnClickListener{
-            startAddLoanActivity("delivery")
+            startAddLoanActivity(Constant.DELIVERY)
         }
         val btn_cancel = dialogView.findViewById<Button>(R.id.btn_cancel)
         btn_cancel.setOnClickListener {
@@ -231,7 +229,7 @@ class LoanPagerActivity: BaseActivity() {
      */
     fun startAddLoanActivity(type: String) {
         val intent = Intent(this, AddLoanActivity::class.java)
-        intent.putExtra("type", type)
+        intent.putExtra(Constant.TYPE, type)
         startActivity(intent)
     }
 

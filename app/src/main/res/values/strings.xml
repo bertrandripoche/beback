@@ -83,6 +83,9 @@
     <string name="logout">Logout</string>
     <string name="invalid_edit_profile_form">Well... nothing changed\nor a mandatory field\n is desperately empty</string>
     <string name="sign_out_message">Bye bye %1$s</string>
+    <string name="transaction_failure">Transaction failure</string>
+    <string name="unknown_error">Damned, we hit an unknown error !</string>
+    <string name="error_getting_docs">Couldn\'t get these damned docs !</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">

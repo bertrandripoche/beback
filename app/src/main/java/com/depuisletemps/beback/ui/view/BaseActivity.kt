@@ -67,7 +67,7 @@ open class BaseActivity: AppCompatActivity() {
         return OnFailureListener {
             Toast.makeText(
                 applicationContext,
-                "Damned, we hit an unknown error",
+                getString(R.string.unknown_error),
                 Toast.LENGTH_LONG
             ).show()
         }

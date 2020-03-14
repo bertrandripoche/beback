@@ -23,6 +23,7 @@ import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.recyclerview.ItemClickSupport
 import com.depuisletemps.beback.ui.recyclerview.LoanAdapter
+import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.Companion.getStringFromDate
 import com.depuisletemps.beback.utils.Utils.Companion.getTimeStampFromString
@@ -32,13 +33,8 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import com.google.firebase.Timestamp
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
-import kotlinx.android.synthetic.main.activity_add_loan.*
-import kotlinx.android.synthetic.main.activity_add_loan.loan_due_date
-import kotlinx.android.synthetic.main.activity_loan_detail.*
 import kotlinx.android.synthetic.main.custom_toast.*
 import kotlinx.android.synthetic.main.fragment_loan_by_object.*
-import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.*
-
 
 class LoanByObjectFragment: Fragment() {
 
@@ -68,7 +64,7 @@ class LoanByObjectFragment: Fragment() {
         configureOnClickRecyclerView()
         setBackgroundForRecyclerView()
 
-        if (mMode == "Standard") {
+        if (mMode == Constant.STANDARD) {
 
             val simpleCallback = object :
                 ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
@@ -159,13 +155,13 @@ class LoanByObjectFragment: Fragment() {
      * @param loan is a Loan representing the loan object
      */
     private fun archiveTheLoan(tag: String, loan: Loan) {
-        val loanRef = mDb.collection("loans").document(tag)
-        val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
+        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(tag)
+        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
 
         val returnedDate: Timestamp = Timestamp.now()
 
         var points: Long = 1
-        if (getStringFromDate(loan.due_date?.toDate()) != "01/01/3000") {
+        if (getStringFromDate(loan.due_date?.toDate()) != Constant.FAR_AWAY_DATE) {
             val dueDateLocalDate = Utils.getLocalDateFromString(getStringFromDate(loan.due_date?.toDate()))
             val returnedLocalDate = Utils.getLocalDateFromString(getStringFromDate(returnedDate.toDate()))
             val daysDiff: Int = Utils.getDifferenceDays(dueDateLocalDate,returnedLocalDate)
@@ -173,7 +169,7 @@ class LoanByObjectFragment: Fragment() {
         }
 
         mDb.runBatch { batch ->
-            batch.update(loanRef, "returned_date", returnedDate)
+            batch.update(loanRef, Constant.RETURNED_DATE, returnedDate)
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(+1))
             batch.update(loanerRef, loan.type, FieldValue.increment(-1))
@@ -183,7 +179,7 @@ class LoanByObjectFragment: Fragment() {
             if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1)
             else displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1)
         }.addOnFailureListener { e ->
-            Log.w(TAG, "Transaction failure.", e)
+            Log.w(TAG, getString(R.string.transaction_failure), e)
         }
 
         Snackbar.make(fragment_loan_by_object_layout, loan.product,Snackbar.LENGTH_LONG)
@@ -198,11 +194,11 @@ class LoanByObjectFragment: Fragment() {
      * @param loan is a Loan representing the loan object
      */
     private fun unarchiveTheLoan(tag: String, loan: Loan, points: Long) {
-        val loanRef = mDb.collection("loans").document(tag)
-        val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
+        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(tag)
+        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
 
         mDb.runBatch { batch ->
-            batch.update(loanRef, "returned_date", null)
+            batch.update(loanRef, Constant.RETURNED_DATE, null)
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(-1))
             batch.update(loanerRef, loan.type, FieldValue.increment(+1))
@@ -212,7 +208,7 @@ class LoanByObjectFragment: Fragment() {
             if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2)
             else displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2)
         }.addOnFailureListener { e ->
-            Log.w(TAG, "Transaction failure.", e)
+            Log.w(TAG, getString(R.string.transaction_failure), e)
         }
     }
 
@@ -222,8 +218,8 @@ class LoanByObjectFragment: Fragment() {
      * @param loan is a Loan representing the loan object
      */
     private fun deleteTheLoan(tag: String, loan: Loan) {
-        val loanRef = mDb.collection("loans").document(tag)
-        val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
+        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(tag)
+        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
 
         mDb.runBatch { batch ->
             batch.delete(loanRef)
@@ -232,7 +228,7 @@ class LoanByObjectFragment: Fragment() {
         }.addOnCompleteListener {
             displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_4)
         }.addOnFailureListener { e ->
-            Log.w(TAG, "Transaction failure.", e)
+            Log.w(TAG, getString(R.string.transaction_failure), e)
         }
 
         Snackbar.make(fragment_loan_by_object_layout, loan.product,Snackbar.LENGTH_LONG)
@@ -247,9 +243,9 @@ class LoanByObjectFragment: Fragment() {
      * @param loan is a Loan representing the loan object
      */
     private fun undeleteTheLoan(loan: Loan) {
-        val loanRef = mDb.collection("loans").document()
-        val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
-        val loanerData = hashMapOf("name" to loan.recipient_id)
+        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document()
+        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
+        val loanerData = hashMapOf(Constant.NAME to loan.recipient_id)
 
         mDb.runBatch { batch ->
             batch.set(loanRef,loan)
@@ -259,7 +255,7 @@ class LoanByObjectFragment: Fragment() {
         }.addOnCompleteListener {
             displayCustomToast(getString(R.string.undeleted_message, loan.product), R.drawable.bubble_3)
         }.addOnFailureListener { e ->
-            Log.w(TAG, "Transaction failure.", e)
+            Log.w(TAG, getString(R.string.transaction_failure), e)
         }
     }
 
@@ -274,13 +270,13 @@ class LoanByObjectFragment: Fragment() {
         val requesterId: String = mUser?.uid ?: ""
 
         val query: Query
-        mLoansRef = mDb.collection("loans")
+        mLoansRef = mDb.collection(Constant.LOANS_COLLECTION)
         if (mMode == getString(R.string.standard)) {
-            query = mLoansRef.whereEqualTo("requestor_id", requesterId)
-                .whereEqualTo("returned_date", null).orderBy("due_date", Query.Direction.ASCENDING)
+            query = mLoansRef.whereEqualTo(Constant.REQUESTOR_ID, requesterId)
+                .whereEqualTo(Constant.RETURNED_DATE, null).orderBy(Constant.DUE_DATE, Query.Direction.ASCENDING)
         } else {
-            query = mLoansRef.whereEqualTo("requestor_id", requesterId)
-                .whereGreaterThan("returned_date", getTimeStampFromString("01/01/1970")!! ).orderBy("returned_date", Query.Direction.ASCENDING)
+            query = mLoansRef.whereEqualTo(Constant.REQUESTOR_ID, requesterId)
+                .whereGreaterThan(Constant.RETURNED_DATE, getTimeStampFromString(Constant.FAR_PAST_DATE)!! ).orderBy(Constant.RETURNED_DATE, Query.Direction.ASCENDING)
         }
 
         val options = FirestoreRecyclerOptions.Builder<Loan>().setQuery(query, Loan::class.java).build()
@@ -400,7 +396,7 @@ class LoanByObjectFragment: Fragment() {
      */
     fun startLoanDetailActivity(tag: String) {
         val intent = Intent(context, LoanDetailActivity::class.java)
-        intent.putExtra("loanId", tag)
+        intent.putExtra(Constant.LOAN_ID, tag)
         startActivity(intent)
     }
 }

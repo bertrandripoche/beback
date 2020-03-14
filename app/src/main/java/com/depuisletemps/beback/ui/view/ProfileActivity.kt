@@ -14,6 +14,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.User
+import com.depuisletemps.beback.utils.Constant
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -76,14 +77,14 @@ class ProfileActivity: BaseActivity() {
 
     fun getSavedInstanceData(savedInstanceState: Bundle?) {
         if (savedInstanceState != null){
-            firstname.setText(savedInstanceState.getString("first"))
-            lastname.setText(savedInstanceState.getString("last")!!)
-            pseudo.setText(savedInstanceState.getString("pseudo")!!)
-            mail.text = savedInstanceState.getString("mail")!!
-            mFirst = savedInstanceState.getString("mFirst")!!
-            mLast = savedInstanceState.getString("mLast")!!
-            mPseudo = savedInstanceState.getString("mPseudo")!!
-            mMail = savedInstanceState.getString("mail")!!
+            firstname.setText(savedInstanceState.getString(Constant.FIRST))
+            lastname.setText(savedInstanceState.getString(Constant.LAST)!!)
+            pseudo.setText(savedInstanceState.getString(Constant.PSEUDO)!!)
+            mail.text = savedInstanceState.getString(Constant.MAIL)!!
+            mFirst = savedInstanceState.getString(Constant.MFIRST)!!
+            mLast = savedInstanceState.getString(Constant.MLAST)!!
+            mPseudo = savedInstanceState.getString(Constant.MPSEUDO)!!
+            mMail = savedInstanceState.getString(Constant.MAIL)!!
             mFirstTime = false
             setEditBtnState()
             setEditFieldsTextColor()
@@ -92,13 +93,13 @@ class ProfileActivity: BaseActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        outState.putString("mFirst", mFirst)
-        outState.putString("mLast", mLast)
-        outState.putString("mPseudo", mPseudo)
-        outState.putString("first", firstname.text.toString())
-        outState.putString("last", lastname.text.toString())
-        outState.putString("pseudo", pseudo.text.toString())
-        outState.putString("mail", mMail)
+        outState.putString(Constant.MFIRST, mFirst)
+        outState.putString(Constant.MLAST, mLast)
+        outState.putString(Constant.MPSEUDO, mPseudo)
+        outState.putString(Constant.FIRST, firstname.text.toString())
+        outState.putString(Constant.LAST, lastname.text.toString())
+        outState.putString(Constant.PSEUDO, pseudo.text.toString())
+        outState.putString(Constant.MAIL, mMail)
     }
 
     /**
@@ -106,7 +107,7 @@ class ProfileActivity: BaseActivity() {
      */
     private fun getUserInfos() {
         mUserFb = getCurrentUser()
-        val docRef = mDb.collection("users").document(mUserFb!!.uid)
+        val docRef = mDb.collection(Constant.USERS_COLLECTION).document(mUserFb!!.uid)
 
         docRef.get()
             .addOnSuccessListener { documentSnapshot ->
@@ -153,7 +154,7 @@ class ProfileActivity: BaseActivity() {
     /**
      * Method to describe the actions to complete on text writing
      */
-    val textWatcher: TextWatcher = object : TextWatcher {
+    private val textWatcher: TextWatcher = object : TextWatcher {
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
@@ -218,7 +219,7 @@ class ProfileActivity: BaseActivity() {
     * This method edits a user entry in the Firebase database "users" collection
     */
     private fun editFirestoreUser(id: String){
-        val userRef = mDb.collection("users").document(id)
+        val userRef = mDb.collection(Constant.USERS_COLLECTION).document(id)
 
         mUser.firstname = firstname.text.toString()
         mUser.lastname = lastname.text.toString()
@@ -233,7 +234,7 @@ class ProfileActivity: BaseActivity() {
             )
             startLoanPagerActivity(getString(R.string.standard))
         }.addOnFailureListener { e ->
-            Log.w(TAG, "Transaction failure.", e)
+            Log.w(TAG, getString(R.string.transaction_failure), e)
         }
 
     }

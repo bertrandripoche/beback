@@ -1,6 +1,5 @@
 package com.depuisletemps.beback.utils
 
-import android.content.Context
 import com.depuisletemps.beback.R
 import com.google.firebase.Timestamp
 import org.joda.time.Days

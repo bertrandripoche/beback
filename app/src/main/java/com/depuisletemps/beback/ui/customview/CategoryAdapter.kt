@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
+import com.depuisletemps.beback.utils.Constant
 
 class CategoryAdapter(var context: Context, var icons: TypedArray, var categories: Array<String>, val size:String) :  BaseAdapter() {
     internal var inflater: LayoutInflater
@@ -32,17 +32,15 @@ class CategoryAdapter(var context: Context, var icons: TypedArray, var categorie
 
     override fun getView(i: Int, view: View?, viewGroup: ViewGroup): View {
 
-        lateinit var view: View
-        when (size) {
-            "small" -> view = inflater.inflate(R.layout.spinner_loan_categories_small, null)
-            else -> view = inflater.inflate(R.layout.spinner_loan_categories, null)
+        var v: View = when (size) {
+            Constant.SMALL -> inflater.inflate(R.layout.spinner_loan_categories_small, null)
+            else -> inflater.inflate(R.layout.spinner_loan_categories, null)
         }
-        val icon = view.findViewById<View>(R.id.image_category) as ImageView?
-        val names = view.findViewById<View>(R.id.text_category) as TextView?
+        val icon = v.findViewById<View>(R.id.image_category) as ImageView?
+        val names = v.findViewById<View>(R.id.text_category) as TextView?
         icon!!.setImageDrawable(icons.getDrawable(i))
         names!!.text = categories[i]
-        return view
+        return v
     }
-
 
 }

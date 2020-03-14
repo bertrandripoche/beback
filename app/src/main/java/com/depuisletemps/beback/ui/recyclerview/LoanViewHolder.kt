@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanType
+import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.Companion.getDifferenceDays
 import com.depuisletemps.beback.utils.Utils.Companion.getLocalDateFromString
@@ -39,8 +40,8 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         val green = ContextCompat.getColor(context, R.color.green)
         val primaryLightColor = ContextCompat.getColor(context, R.color.primaryLightColor)
         val primaryColor = ContextCompat.getColor(context, R.color.primaryColor)
-        val ligthGrey =  ContextCompat.getColor(context, R.color.light_grey)
-        val darkGrey =  ContextCompat.getColor(context, R.color.grey)
+        val ligthGrey = ContextCompat.getColor(context, R.color.light_grey)
+        val darkGrey = ContextCompat.getColor(context, R.color.grey)
         val secondaryDarkColor = ContextCompat.getColor(context, R.color.secondaryDarkColor)
 
         if (mode == context.getString(R.string.standard)) {
@@ -64,12 +65,12 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
             loanType.setImageResource(R.drawable.ic_delivery)
             recipient.setTextColor(secondaryDarkColor)
         }
-        if (mode == "Standard") {
+        if (mode.equals(Constant.STANDARD)) {
             if (loan.due_date != null) {
                 val due_date_Date = loan.due_date?.toDate()
                 dueDate.text = getStringFromDate(due_date_Date)
             }
-            if (!dueDate.text.equals("01/01/3000")) {
+            if (dueDate.text != Constant.FAR_AWAY_DATE) {
                 dueDatePic.visibility = View.VISIBLE
                 dueDate.visibility = View.VISIBLE
             } else {

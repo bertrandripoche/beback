@@ -24,6 +24,7 @@ import com.depuisletemps.beback.model.LoanAward
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.customview.CategoryAdapter
+import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.Companion.getStringFromDate
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -80,15 +81,15 @@ class LoanDetailActivity: BaseActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (loan_due_date.text != "") outState.putString("dueDateSet", loan_due_date.text.toString())
-        else outState.putString("dueDateSet", "01/01/3000")
-        outState.putString("mWhat", mWhat)
-        outState.putString("mWho", mWho)
-        outState.putString("whatSaved", loan_product.text.toString())
-        outState.putString("whoSaved", loan_recipient.text.toString())
-        outState.putString("dueSaved", mDue)
-        outState.putString("productCategorySaved", mCategories[spinner_loan_categories.selectedItemPosition])
-        outState.putString("loanId", mLoanId)
+        if (loan_due_date.text != "") outState.putString(Constant.DUE_DATE_SET, loan_due_date.text.toString())
+        else outState.putString(Constant.DUE_DATE_SET, Constant.FAR_AWAY_DATE)
+        outState.putString(Constant.MWHAT, mWhat)
+        outState.putString(Constant.MWHO, mWho)
+        outState.putString(Constant.WHATSAVED, loan_product.text.toString())
+        outState.putString(Constant.WHOSAVED, loan_recipient.text.toString())
+        outState.putString(Constant.DUESAVED, mDue)
+        outState.putString(Constant.PRODUCT_CATEGORYSAVED, mCategories[spinner_loan_categories.selectedItemPosition])
+        outState.putString(Constant.LOAN_ID, mLoanId)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -208,7 +209,7 @@ class LoanDetailActivity: BaseActivity() {
                 loan_product.setText(loan.product)
                 loan_recipient.setText(loan.recipient_id)
 
-                if (getStringFromDate(loan.due_date?.toDate()) == "01/01/3000") {
+                if (getStringFromDate(loan.due_date?.toDate()) == Constant.FAR_AWAY_DATE) {
                     loan_due_date_title.visibility = View.GONE
                     loan_due_date.visibility = View.GONE
                 } else {
@@ -250,7 +251,7 @@ class LoanDetailActivity: BaseActivity() {
 
             } else {
                 mBtnEdit.visibility = View.VISIBLE
-                if (getStringFromDate(loan.due_date?.toDate()) != "01/01/3000" && mFirstTime) setPickDate(getStringFromDate(loan.due_date?.toDate()))
+                if (getStringFromDate(loan.due_date?.toDate()) != Constant.FAR_AWAY_DATE && mFirstTime) setPickDate(getStringFromDate(loan.due_date?.toDate()))
                 if (mFirstTime) loan_product.setText(loan.product)
                 if (mFirstTime) loan_recipient.setText(loan.recipient_id)
                 loan_creation_date.setTextColor(greyColor)
@@ -283,7 +284,7 @@ class LoanDetailActivity: BaseActivity() {
     private fun getSavedInstanceData(savedInstanceState: Bundle?) {
         if (savedInstanceState != null){
             mFirstTime = false
-            if (savedInstanceState.getString("dueDateSet") != "01/01/3000")
+            if (savedInstanceState.getString("dueDateSet") != Constant.FAR_AWAY_DATE)
                 setPickDate(savedInstanceState.getString("dueDateSet"))
             if (savedInstanceState.getString("mWhat") != null) mWhat = savedInstanceState.getString("mWhat")!!
             if (savedInstanceState.getString("mWho") != null) mWho = savedInstanceState.getString("mWho")!!
@@ -303,7 +304,7 @@ class LoanDetailActivity: BaseActivity() {
     private fun getLoan() {
         val i = intent
         mLoanId = i.extras?.getString("loanId") ?: ""
-        val docRef = mDb.collection("loans").document(mLoanId)
+        val docRef = mDb.collection(Constant.LOANS_COLLECTION).document(mLoanId)
         docRef.get()
             .addOnSuccessListener { documentSnapshot ->
                 mLoan = documentSnapshot.toObject(Loan::class.java)
@@ -352,7 +353,7 @@ class LoanDetailActivity: BaseActivity() {
         return !loan_product.text.toString().equals("")
                 || !loan_recipient.text.toString().equals("")
                 || (!loan_due_date.text.toString().equals(mDue) && !loan_due_date.text.toString().equals(""))
-                || (mDue != "01/01/3000" && loan_due_date.text.toString() == "")
+                || (mDue != Constant.FAR_AWAY_DATE && loan_due_date.text.toString() == "")
                 || categories[spinner_loan_categories.selectedItemPosition] != mProductCategory
     }
 
@@ -416,17 +417,17 @@ class LoanDetailActivity: BaseActivity() {
     private fun editFirestoreLoan(){
         val categories: Array<String> =
             this.resources.getStringArray(R.array.product_category)
-        val loanRef = mDb.collection("loans").document(mLoan!!.id)
-        val loanerRef = mDb.collection("users").document(mLoan!!.requestor_id).collection("loaners").document(mLoan!!.recipient_id)
+        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(mLoan!!.id)
+        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(mLoan!!.requestor_id).collection(Constant.LOANERS_COLLECTION).document(mLoan!!.recipient_id)
 
         mDb.runBatch { batch ->
             if (categories[spinner_loan_categories.selectedItemPosition] != mProductCategory) batch.update(loanRef, "product_category", categories[spinner_loan_categories.selectedItemPosition])
-            if (!loan_product.text.toString().equals("")) batch.update(loanRef, "product", loan_product.text.toString())
+            if (!loan_product.text.toString().equals("")) batch.update(loanRef, Constant.PRODUCT, loan_product.text.toString())
             if (!loan_recipient.text.toString().equals("")) {
-                val loanerRefNew = mDb.collection("users").document(mLoan!!.requestor_id).collection("loaners").document(loan_recipient.text.toString())
-                val loanerData = hashMapOf("name" to loan_recipient.text.toString())
+                val loanerRefNew = mDb.collection(Constant.USERS_COLLECTION).document(mLoan!!.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan_recipient.text.toString())
+                val loanerData = hashMapOf(Constant.NAME to loan_recipient.text.toString())
 
-                batch.update(loanRef, "recipient_id", loan_recipient.text.toString())
+                batch.update(loanRef, Constant.RECIPIENT_ID, loan_recipient.text.toString())
                 when (mLoan!!.type) {
                     LoanType.LENDING.type -> batch.update(loanerRef, LoanType.LENDING.type, FieldValue.increment(-1))
                     LoanType.BORROWING.type -> batch.update(loanerRef, LoanType.BORROWING.type, FieldValue.increment(-1))
@@ -442,8 +443,8 @@ class LoanDetailActivity: BaseActivity() {
                     LoanType.DELIVERY.type -> batch.update(loanerRefNew, LoanType.DELIVERY.type, FieldValue.increment(+1))
                 }
             }
-            if (loan_due_date.text.toString().equals("")) batch.update(loanRef,"due_date", Utils.getTimeStampFromString("01/01/3000"))
-            if (!loan_due_date.text.toString().equals("")) batch.update(loanRef, "due_date", Utils.getTimeStampFromString(loan_due_date.text.toString()))
+            if (loan_due_date.text.toString().equals("")) batch.update(loanRef,Constant.DUE_DATE, Utils.getTimeStampFromString(Constant.FAR_AWAY_DATE))
+            if (!loan_due_date.text.toString().equals("")) batch.update(loanRef, Constant.DUE_DATE, Utils.getTimeStampFromString(loan_due_date.text.toString()))
         }.addOnCompleteListener {
             displayCustomToast(
                 getString(R.string.saved),
@@ -451,7 +452,7 @@ class LoanDetailActivity: BaseActivity() {
             )
             startLoanPagerActivity(getString(R.string.standard))
         }.addOnFailureListener { e ->
-            Log.w(TAG, "Transaction failure.", e)
+            Log.w(TAG, getString(R.string.transaction_failure), e)
         }
     }
 
@@ -464,11 +465,11 @@ class LoanDetailActivity: BaseActivity() {
     }
 
     private fun deleteTheLoan(loan: Loan) {
-        val loanRef = mDb.collection("loans").document(loan.id)
-        val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
+        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(loan.id)
+        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
 
         var points: Long = 1
-        if (getStringFromDate(loan.due_date?.toDate()) != "01/01/3000" && loan.returned_date != null) {
+        if (getStringFromDate(loan.due_date?.toDate()) != Constant.FAR_AWAY_DATE && loan.returned_date != null) {
             val dueDateLocalDate = Utils.getLocalDateFromString(loan_due_date.text.toString())
             val returnedLocalDate = Utils.getLocalDateFromString(getStringFromDate(loan.returned_date!!.toDate()))
             val daysDiff: Int = Utils.getDifferenceDays(dueDateLocalDate, returnedLocalDate)
@@ -483,7 +484,7 @@ class LoanDetailActivity: BaseActivity() {
         }.addOnCompleteListener {
             displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_3)
         }.addOnFailureListener { e ->
-            Log.w(TAG, "Transaction failure.", e)
+            Log.w(TAG, getString(R.string.transaction_failure), e)
         }
 
         Snackbar.make(activity_loan_detail, loan.product, Snackbar.LENGTH_LONG)
@@ -507,10 +508,10 @@ class LoanDetailActivity: BaseActivity() {
      * @param loan is a Loan representing the loan object
      */
     private fun undeleteTheLoan(loan: Loan, points: Long) {
-        val loanRef = mDb.collection("loans").document(loan.id)
-        val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners")
+        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(loan.id)
+        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION)
             .document(loan.recipient_id)
-        val loanerData = hashMapOf("name" to loan.recipient_id)
+        val loanerData = hashMapOf(Constant.NAME to loan.recipient_id)
 
         mDb.runBatch { batch ->
             batch.set(loanRef, loan)
@@ -526,7 +527,7 @@ class LoanDetailActivity: BaseActivity() {
 
             //Toast.makeText(context,  getString(R.string.undeleted_message, loan.product), Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e ->
-            Log.w(TAG, "Transaction failure.", e)
+            Log.w(TAG, getString(R.string.transaction_failure), e)
         }
     }
 
@@ -536,11 +537,11 @@ class LoanDetailActivity: BaseActivity() {
      * @param loan is a Loan representing the loan object
      */
     private fun unarchiveTheLoan(loan: Loan) {
-        val loanRef = mDb.collection("loans").document(loan.id)
-        val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
+        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(loan.id)
+        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
 
         var points: Long = 1
-        if (getStringFromDate(loan.due_date?.toDate()) != "01/01/3000" && loan.returned_date != null) {
+        if (getStringFromDate(loan.due_date?.toDate()) != Constant.FAR_AWAY_DATE && loan.returned_date != null) {
             val dueDateLocalDate = Utils.getLocalDateFromString(loan_due_date.text.toString())
             val returnedLocalDate = Utils.getLocalDateFromString(getStringFromDate(loan.returned_date!!.toDate()))
             val daysDiff: Int = Utils.getDifferenceDays(dueDateLocalDate, returnedLocalDate)
@@ -548,7 +549,7 @@ class LoanDetailActivity: BaseActivity() {
         }
 
         mDb.runBatch { batch ->
-            batch.update(loanRef, "returned_date", null)
+            batch.update(loanRef, Constant.RETURNED_DATE, null)
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(-1))
             batch.update(loanerRef, loan.type, FieldValue.increment(+1))
@@ -558,7 +559,7 @@ class LoanDetailActivity: BaseActivity() {
             if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2)
             else displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2)
         }.addOnFailureListener { e ->
-            Log.w(TAG, "Transaction failure.", e)
+            Log.w(TAG, getString(R.string.transaction_failure), e)
         }
 
         Snackbar.make(activity_loan_detail, loan.product, Snackbar.LENGTH_LONG)
@@ -581,13 +582,13 @@ class LoanDetailActivity: BaseActivity() {
      * @param loan is a Loan representing the loan object
      */
     private fun rearchiveTheLoan(loan: Loan, points: Long) {
-        val loanRef = mDb.collection("loans").document(loan.id)
-        val loanerRef = mDb.collection("users").document(loan.requestor_id).collection("loaners").document(loan.recipient_id)
+        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(loan.id)
+        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
 
         val returnedDate: Timestamp = Timestamp.now()
 
         mDb.runBatch { batch ->
-            batch.update(loanRef, "returned_date", returnedDate)
+            batch.update(loanRef, Constant.RETURNED_DATE, returnedDate)
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(+1))
             batch.update(loanerRef, loan.type, FieldValue.increment(-1))
@@ -597,7 +598,7 @@ class LoanDetailActivity: BaseActivity() {
             if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1)
             else displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1)
         }.addOnFailureListener { e ->
-            Log.w(TAG, "Transaction failure.", e)
+            Log.w(TAG, getString(R.string.transaction_failure), e)
         }
     }
 

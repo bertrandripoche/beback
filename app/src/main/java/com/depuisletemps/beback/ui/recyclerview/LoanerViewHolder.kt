@@ -5,7 +5,6 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -16,9 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loaner
 import com.depuisletemps.beback.ui.view.LoanDetailActivity
+import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
-import com.google.android.flexbox.AlignItems
-import com.google.android.flexbox.AlignSelf
 import com.google.android.flexbox.FlexboxLayout
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
@@ -40,7 +38,7 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         val ligthGrey =  ContextCompat.getColor(context, R.color.light_grey)
         val darkGrey =  ContextCompat.getColor(context, R.color.grey)
         var mDb: FirebaseFirestore = FirebaseFirestore.getInstance()
-        val mLoansRef: CollectionReference = mDb.collection("loans")
+        val mLoansRef: CollectionReference = mDb.collection(Constant.LOANS_COLLECTION)
         var utils = Utils()
 
         name.text = loaner.name
@@ -65,17 +63,17 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         if (mode == context.getString(R.string.standard)) {
             if (position % 2 == 0) item.setBackgroundColor(primaryLightColor)
             else item.setBackgroundColor(primaryColor)
-            query = mLoansRef.whereEqualTo("requestor_id", requestorId)
-                .whereEqualTo("recipient_id", name.text.toString())
-                .whereEqualTo("returned_date", null)
-                .orderBy("due_date", Query.Direction.ASCENDING)
+            query = mLoansRef.whereEqualTo(Constant.REQUESTOR_ID, requestorId)
+                .whereEqualTo(Constant.RECIPIENT_ID, name.text.toString())
+                .whereEqualTo(Constant.RETURNED_DATE, null)
+                .orderBy(Constant.DUE_DATE, Query.Direction.ASCENDING)
         } else {
             if (position % 2 == 0) item.setBackgroundColor(ligthGrey)
             else item.setBackgroundColor(darkGrey)
-            query = mLoansRef.whereEqualTo("requestor_id", requestorId)
-                .whereEqualTo("recipient_id", name.text.toString())
-                .whereGreaterThan("returned_date", Utils.getTimeStampFromString("01/01/1970")!! )
-                .orderBy("returned_date", Query.Direction.ASCENDING)
+            query = mLoansRef.whereEqualTo(Constant.REQUESTOR_ID, requestorId)
+                .whereEqualTo(Constant.RECIPIENT_ID, name.text.toString())
+                .whereGreaterThan(Constant.RETURNED_DATE, Utils.getTimeStampFromString(Constant.FAR_PAST_DATE)!! )
+                .orderBy(Constant.RETURNED_DATE, Query.Direction.ASCENDING)
         }
 
         query.get()
@@ -98,18 +96,18 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                         linearLayout.addView(imageView, linearLayoutlayoutParams)
                         linearLayout.addView(textView, linearLayoutlayoutParams)
                         imageView.setBackgroundResource(R.drawable.semi_round_white_color_button)
-                        imageView.setImageResource(utils.getIconFromCategory(document.data.getValue("product_category").toString()))
+                        imageView.setImageResource(utils.getIconFromCategory(document.data.getValue(Constant.PRODUCT_CATEGORY).toString()))
                         val paramsImage: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT
                         )
                         imageView.layoutParams = paramsImage
 
-                        textView.text = document.data.getValue("product").toString()
-                        when (document.data.getValue("type").toString()) {
-                            "lending" -> textView.setBackgroundResource(R.drawable.semi_round_green_button)
-                            "borrowing" -> textView.setBackgroundResource(R.drawable.semi_round_red_button)
-                            "delivery" -> textView.setBackgroundResource(R.drawable.semi_round_yellow_color_button)
+                        textView.text = document.data.getValue(Constant.PRODUCT).toString()
+                        when (document.data.getValue(Constant.TYPE).toString()) {
+                            Constant.LENDING -> textView.setBackgroundResource(R.drawable.semi_round_green_button)
+                            Constant.BORROWING -> textView.setBackgroundResource(R.drawable.semi_round_red_button)
+                            Constant.DELIVERY -> textView.setBackgroundResource(R.drawable.semi_round_yellow_color_button)
                         }
                         textView.setTypeface(null, Typeface.BOLD)
                         val params: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
@@ -125,7 +123,7 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                         linearLayout.isClickable = true
                         linearLayout.setOnClickListener{
                             val intent = Intent(context, LoanDetailActivity::class.java)
-                            intent.putExtra("loanId", document.data.getValue("id").toString())
+                            intent.putExtra(Constant.LOAN_ID, document.data.getValue(Constant.ID).toString())
                             startActivity(context,intent,null)
                         }
                     }

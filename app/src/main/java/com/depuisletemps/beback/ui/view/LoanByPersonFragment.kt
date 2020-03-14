@@ -5,24 +5,19 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
-import com.depuisletemps.beback.model.Loan
+import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.Loaner
-import com.depuisletemps.beback.ui.recyclerview.ItemClickSupport
-import com.depuisletemps.beback.ui.recyclerview.LoanAdapter
 import com.depuisletemps.beback.ui.recyclerview.LoanerAdapter
-import com.depuisletemps.beback.utils.Utils
+import com.depuisletemps.beback.utils.Constant
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import kotlinx.android.synthetic.main.fragment_loan_by_object.*
 import kotlinx.android.synthetic.main.fragment_loan_by_person.*
 
 class LoanByPersonFragment: Fragment() {
@@ -65,11 +60,11 @@ class LoanByPersonFragment: Fragment() {
         val requesterId: String = mUser?.uid ?: ""
 
         val query: Query
-        mLoanersRef = mDb.collection("users").document(requesterId).collection("loaners")
+        mLoanersRef = mDb.collection(Constant.USERS_COLLECTION).document(requesterId).collection(Constant.LOANERS_COLLECTION)
         if (mMode == getString(R.string.standard)) {
-            query = mLoanersRef.whereGreaterThanOrEqualTo("pending", 1).orderBy("pending", Query.Direction.ASCENDING)
+            query = mLoanersRef.whereGreaterThanOrEqualTo(LoanStatus.PENDING.type, 1).orderBy(LoanStatus.PENDING.type, Query.Direction.ASCENDING)
         } else {
-            query = mLoanersRef.whereGreaterThanOrEqualTo("ended", 1).orderBy("ended", Query.Direction.ASCENDING)
+            query = mLoanersRef.whereGreaterThanOrEqualTo(LoanStatus.ENDED.type, 1).orderBy(LoanStatus.ENDED.type, Query.Direction.ASCENDING)
         }
 
         query.get()
@@ -79,7 +74,7 @@ class LoanByPersonFragment: Fragment() {
                 }
             }
             .addOnFailureListener { exception ->
-                Log.w(TAG, "Error getting documents: ", exception)
+                Log.w(TAG, getString(R.string.error_getting_docs), exception)
             }
 
         val options = FirestoreRecyclerOptions.Builder<Loaner>().setQuery(query, Loaner::class.java).build()
