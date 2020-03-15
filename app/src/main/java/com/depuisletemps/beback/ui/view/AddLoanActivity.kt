@@ -8,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.widget.ArrayAdapter
 import android.widget.Spinner
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -23,6 +24,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -34,6 +36,7 @@ import java.util.*
 class AddLoanActivity: BaseActivity() {
     private val TAG = "AddLoanActivity"
     lateinit var mType:String
+    val mUser: FirebaseUser? = getCurrentUser()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -82,7 +85,32 @@ class AddLoanActivity: BaseActivity() {
             loan_recipient.hint = getString(R.string.delivery_hint)
             loan_type_pic.setImageResource(R.drawable.ic_delivery_black)
         }
+
+        val loanRecipientNamesListAdapter = ArrayAdapter<String>(
+                        this,
+                        android.R.layout.simple_dropdown_item_1line, getLoanRecipientList())
+        loan_recipient.setAdapter(loanRecipientNamesListAdapter)
+
         disableFloatButton()
+    }
+
+    private fun getLoanRecipientList(): List<String>? {
+        if (mUser != null) {
+            var nameToPopulate = arrayListOf<String>()
+            val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(mUser.uid).collection(Constant.LOANERS_COLLECTION)
+            loanerRef
+                .get()
+                .addOnSuccessListener { result ->
+                    for (document in result) {
+                        nameToPopulate.add(document.data.getValue(Constant.NAME).toString())
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    Log.d(TAG, "Error getting documents: ", exception)
+                }
+            return nameToPopulate
+        }
+        return null
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

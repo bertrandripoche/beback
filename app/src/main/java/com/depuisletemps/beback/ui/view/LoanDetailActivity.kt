@@ -11,10 +11,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.Gravity
 import android.view.View
-import android.widget.AdapterView
-import android.widget.Spinner
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -69,6 +66,7 @@ class LoanDetailActivity: BaseActivity() {
 
         mCategories = this.resources.getStringArray(R.array.product_category)
         mCategoriesIcons = this.resources.obtainTypedArray(R.array.product_category_icon)
+        val textView = findViewById<AutoCompleteTextView>(R.id.loan_recipient)
 
         getLoan()
         getSavedInstanceData(savedInstanceState)
@@ -146,7 +144,6 @@ class LoanDetailActivity: BaseActivity() {
                 }
             }
         }
-
     }
 
     /**
