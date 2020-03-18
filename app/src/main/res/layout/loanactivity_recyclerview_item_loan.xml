@@ -20,7 +20,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:gravity="center_vertical"
-            android:textSize="@dimen/title_size_small"
+            android:textSize="@dimen/text_size_max"
             android:paddingEnd="@dimen/middle"
             android:textStyle="bold"
             android:textColor="@color/black"
@@ -30,55 +30,64 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
-    <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/item_due_date_pic"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:scaleType="centerCrop"
-            android:visibility="visible"
-            android:src="@drawable/ic_due_date"
-            app:layout_constraintLeft_toRightOf="@+id/guideline_vertical"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/item_loan_type"
-            />
-
-    <TextView
-            android:id="@+id/item_due_date"
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:gravity="center_vertical"
-            android:textSize="@dimen/text_size_max"
-            android:textStyle="bold"
+            android:layout_height="match_parent"
             android:layout_marginEnd="@dimen/default_margin"
-            android:visibility="visible"
-            app:layout_constraintTop_toTopOf="@id/item_due_date_pic"
-            app:layout_constraintBottom_toBottomOf="@id/item_due_date_pic"
-            app:layout_constraintLeft_toRightOf="@+id/item_due_date_pic"
-            />
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent">
 
-    <androidx.appcompat.widget.AppCompatImageView
-            android:id="@+id/item_loan_type"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_borrowing"
-            app:layout_constraintLeft_toRightOf="@+id/guideline_vertical"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/item_due_date_pic"
-            />
+        <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/item_due_date_pic"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="centerCrop"
+                android:visibility="visible"
+                android:src="@drawable/ic_due_date"
+                app:layout_constraintLeft_toLeftOf="@+id/item_loan_type"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/item_loan_type"
+                />
 
-    <TextView
-            android:id="@+id/item_recipient"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/text_size_max"
-            android:paddingEnd="@dimen/basic"
-            android:gravity="center_vertical"
-            android:textStyle="italic"
-            android:textColor="@color/red"
-            app:layout_constraintBottom_toBottomOf="@+id/item_loan_type"
-            app:layout_constraintTop_toTopOf="@+id/item_loan_type"
-            app:layout_constraintLeft_toRightOf="@+id/item_loan_type"/>
+        <TextView
+                android:id="@+id/item_due_date"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:gravity="center_vertical"
+                android:textSize="@dimen/text_size_max"
+                android:textStyle="bold"
+                android:visibility="visible"
+                app:layout_constraintTop_toTopOf="@id/item_due_date_pic"
+                app:layout_constraintBottom_toBottomOf="@id/item_due_date_pic"
+                app:layout_constraintLeft_toRightOf="@+id/item_due_date_pic"
+                />
+
+        <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/item_loan_type"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_borrowing"
+                app:layout_constraintRight_toLeftOf="@+id/item_recipient"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/item_due_date_pic"
+                />
+
+        <TextView
+                android:id="@+id/item_recipient"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_size_max"
+                android:paddingEnd="@dimen/basic"
+                android:gravity="center_vertical"
+                android:textStyle="italic"
+                android:textColor="@color/red"
+                app:layout_constraintBottom_toBottomOf="@+id/item_loan_type"
+                app:layout_constraintTop_toTopOf="@+id/item_loan_type"
+                app:layout_constraintRight_toRightOf="parent"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_vertical"

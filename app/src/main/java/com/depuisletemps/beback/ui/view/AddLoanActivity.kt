@@ -1,9 +1,11 @@
 package com.depuisletemps.beback.ui.view
 
+import android.Manifest
 import android.app.DatePickerDialog
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -24,8 +26,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
+import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.joda.time.LocalDate
@@ -86,31 +88,48 @@ class AddLoanActivity: BaseActivity() {
             loan_type_pic.setImageResource(R.drawable.ic_delivery_black)
         }
 
-        val loanRecipientNamesListAdapter = ArrayAdapter<String>(
-                        this,
-                        android.R.layout.simple_dropdown_item_1line, getLoanRecipientList())
-        loan_recipient.setAdapter(loanRecipientNamesListAdapter)
+        if (mUser != null) {
+            var nameToPopulate = arrayListOf<String>()
+
+            runWithPermissions(Manifest.permission.READ_CONTACTS) {
+                val phones = contentResolver.query(
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
+                )
+                while (phones!!.moveToNext()) {
+                    val name =
+                        phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                    if (!nameToPopulate.contains(name)) nameToPopulate.add(name)
+                }
+
+                val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(mUser.uid)
+                    .collection(Constant.LOANERS_COLLECTION)
+                loanerRef
+                    .get()
+                    .addOnSuccessListener { result ->
+                        for (document in result) nameToPopulate.add(document.data.getValue(Constant.NAME).toString())
+
+                        val loanRecipientNamesListAdapter = ArrayAdapter<String>(
+                            this,
+                            android.R.layout.simple_dropdown_item_1line, nameToPopulate)
+                        loan_recipient.setAdapter(loanRecipientNamesListAdapter)
+                        loan_recipient.threshold = 1
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.d(TAG, getString(R.string.error_getting_docs), exception)
+                    }
+            }
+        }
 
         disableFloatButton()
     }
 
-    private fun getLoanRecipientList(): List<String>? {
-        if (mUser != null) {
-            var nameToPopulate = arrayListOf<String>()
-            val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(mUser.uid).collection(Constant.LOANERS_COLLECTION)
-            loanerRef
-                .get()
-                .addOnSuccessListener { result ->
-                    for (document in result) {
-                        nameToPopulate.add(document.data.getValue(Constant.NAME).toString())
-                    }
-                }
-                .addOnFailureListener { exception ->
-                    Log.d(TAG, "Error getting documents: ", exception)
-                }
-            return nameToPopulate
-        }
-        return null
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -281,4 +300,5 @@ class AddLoanActivity: BaseActivity() {
             ViewCompat.setBackgroundTintList(button, tint)
         }
     }
+
 }

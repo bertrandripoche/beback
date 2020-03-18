@@ -71,4 +71,7 @@ dependencies {
     // VIEWPAGER
     implementation 'androidx.viewpager2:viewpager2:1.0.0'
 
+    // QUICKPERMISSIONS
+    implementation 'com.github.quickpermissions:quickpermissions-kotlin:0.4.0'
+
 }
