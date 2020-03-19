@@ -10,9 +10,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.Spinner
-import android.widget.Toast
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
@@ -29,6 +27,15 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 import kotlinx.android.synthetic.main.activity_add_loan.*
+import kotlinx.android.synthetic.main.activity_add_loan.loan_due_date
+import kotlinx.android.synthetic.main.activity_add_loan.loan_product
+import kotlinx.android.synthetic.main.activity_add_loan.loan_recipient
+import kotlinx.android.synthetic.main.activity_add_loan.loan_recipient_title
+import kotlinx.android.synthetic.main.activity_add_loan.loan_type
+import kotlinx.android.synthetic.main.activity_add_loan.loan_type_pic
+import kotlinx.android.synthetic.main.activity_add_loan.mBtnCancelDate
+import kotlinx.android.synthetic.main.activity_add_loan.spinner_loan_categories
+import kotlinx.android.synthetic.main.activity_loan_detail.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.joda.time.LocalDate
 import java.text.DecimalFormat
@@ -37,7 +44,7 @@ import java.util.*
 
 class AddLoanActivity: BaseActivity() {
     private val TAG = "AddLoanActivity"
-    lateinit var mType:String
+    lateinit var mType: String
     val mUser: FirebaseUser? = getCurrentUser()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +55,12 @@ class AddLoanActivity: BaseActivity() {
         configureSpinner()
         configureTextWatchers()
         configureScreenFromType()
+        configureButtons()
+    }
+
+    private fun configureButtons() {
+        val yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
+        val greyColor = ContextCompat.getColor(this, R.color.light_grey)
 
         mBtnSubmit.setOnClickListener(View.OnClickListener {
             if (isFormValid())
@@ -57,6 +70,46 @@ class AddLoanActivity: BaseActivity() {
                     .show()
             }
         })
+
+        notif_d_day.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                notif_d_day.setBackgroundColor(yellowColor)
+                unsetToggle(notif_one_day)
+                unsetToggle(notif_one_week)
+            } else {
+                notif_d_day.setBackgroundColor(greyColor)
+            }
+        })
+
+        notif_one_day.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                notif_one_day.setBackgroundColor(yellowColor)
+                unsetToggle(notif_one_week)
+                unsetToggle(notif_d_day)
+            } else {
+                notif_one_day.setBackgroundColor(greyColor)
+            }
+        })
+
+        notif_one_week.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                notif_one_week.setBackgroundColor(yellowColor)
+                unsetToggle(notif_one_day)
+                unsetToggle(notif_d_day)
+            } else {
+                notif_one_week.setBackgroundColor(greyColor)
+            }
+        })
+    }
+
+    /**
+     * This method unsets the toggle button
+     */
+    fun unsetToggle(btn: ToggleButton) {
+        val greyColor = ContextCompat.getColor(this, R.color.light_grey)
+
+        btn.isChecked = false
+        btn.setBackgroundColor(greyColor)
     }
 
     /**
@@ -114,7 +167,8 @@ class AddLoanActivity: BaseActivity() {
 
                         val loanRecipientNamesListAdapter = ArrayAdapter<String>(
                             this,
-                            android.R.layout.simple_dropdown_item_1line, nameToPopulate)
+                            android.R.layout.simple_dropdown_item_1line, nameToPopulate
+                        )
                         loan_recipient.setAdapter(loanRecipientNamesListAdapter)
                         loan_recipient.threshold = 1
                     }
@@ -134,13 +188,28 @@ class AddLoanActivity: BaseActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (loan_due_date.text != "") outState.putString(Constant.DUE_DATE_SET, loan_due_date.text.toString())
+        if (loan_due_date.text != "") outState.putString(
+            Constant.DUE_DATE_SET,
+            loan_due_date.text.toString()
+        )
+        if (loan_notif_date.text != "") outState.putString(
+            Constant.NOTIF_DATE,
+            loan_notif_date.text.toString()
+        )
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
-        if (savedInstanceState != null)
-            if (savedInstanceState.getString(Constant.DUE_DATE_SET) != "")  setPickDate(savedInstanceState.getString("dueDateSet"))
+        if (savedInstanceState != null) {
+            if (savedInstanceState.getString(Constant.DUE_DATE_SET) != "")
+                setPickDate(
+                    savedInstanceState.getString(Constant.DUE_DATE_SET), getString(R.string.due)
+                )
+            if (savedInstanceState.getString(Constant.NOTIF_DATE) != "")
+                setPickDate(
+                    savedInstanceState.getString(Constant.NOTIF_DATE), getString(R.string.notif)
+                )
+        }
     }
 
     /**
@@ -193,13 +262,31 @@ class AddLoanActivity: BaseActivity() {
     fun clickDataPicker(view: View) {
         val df = DecimalFormat("00")
         val today = LocalDate.now()
-        val year:Int = today.year
-        val month:Int = today.monthOfYear-1
+        val year: Int = today.year
+        val month: Int = today.monthOfYear - 1
         val day = today.dayOfMonth
 
-        val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            setPickDate(getString(R.string.due_date, df.format(dayOfMonth), df.format(monthOfYear+1), year))
-        }, year, month, day)
+        val btn: String = when (view.id) {
+            R.id.mBtnPick -> getString(R.string.due)
+            else -> getString(R.string.notif)
+        }
+
+        val dpd = DatePickerDialog(
+            this,
+            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                setPickDate(
+                    getString(
+                        R.string.due_date,
+                        df.format(dayOfMonth),
+                        df.format(monthOfYear + 1),
+                        year
+                    ), btn
+                )
+            },
+            year,
+            month,
+            day
+        )
         dpd.datePicker.minDate = System.currentTimeMillis()
         dpd.show()
     }
@@ -207,12 +294,23 @@ class AddLoanActivity: BaseActivity() {
     /**
      * This method set the date picked in the accurate field
      */
-    private fun setPickDate(date: String?) {
+    private fun setPickDate(date: String?, btn: String) {
         if (date != null) {
-            loan_due_date.text = date
-            val primaryLightColor = ContextCompat.getColor(this, R.color.primaryLightColor)
-            loan_due_date.setBackgroundColor(primaryLightColor)
-            mBtnCancelDate.visibility = View.VISIBLE
+            when (btn) {
+                getString(R.string.due) -> {
+                    loan_due_date.text = date
+                    val primaryLightColor = ContextCompat.getColor(this, R.color.primaryLightColor)
+                    loan_due_date.setBackgroundColor(primaryLightColor)
+                    mBtnCancelDate.visibility = View.VISIBLE
+                }
+                getString(R.string.notif) -> {
+                    loan_notif_date.text = date
+                    val primaryLightColor = ContextCompat.getColor(this, R.color.primaryLightColor)
+                    loan_notif_date.setBackgroundColor(primaryLightColor)
+                    mBtnCancelNotif.visibility = View.VISIBLE
+                }
+            }
+            setToggleButton()
         }
     }
 
@@ -220,10 +318,41 @@ class AddLoanActivity: BaseActivity() {
      * This method empties the due date field
      */
     fun cancelDate(view: View) {
-        loan_due_date.text = ""
-        val primaryColor = ContextCompat.getColor(this, R.color.primaryColor)
-        loan_due_date.setBackgroundColor(primaryColor)
-        mBtnCancelDate.visibility = View.GONE
+        val btn: String = when (view.id) {
+            R.id.mBtnCancelDate -> getString(R.string.due)
+            else -> getString(R.string.notif)
+        }
+
+        when (btn) {
+            getString(R.string.due) -> {
+                loan_due_date.text = ""
+                val primaryColor = ContextCompat.getColor(this, R.color.primaryColor)
+                loan_due_date.setBackgroundColor(primaryColor)
+                mBtnCancelDate.visibility = View.GONE
+            }
+            getString(R.string.notif) -> {
+                loan_notif_date.text = ""
+                val primaryColor = ContextCompat.getColor(this, R.color.primaryColor)
+                loan_notif_date.setBackgroundColor(primaryColor)
+                mBtnCancelNotif.visibility = View.GONE
+            }
+        }
+        setToggleButton()
+    }
+
+    /**
+     * Method to display/hide the toggle notification buttons
+     */
+    private fun setToggleButton() {
+        if (loan_due_date.text != "" && loan_notif_date.text == "")
+        {
+            loan_notif_date.visibility = View.INVISIBLE
+            toggle_btns.visibility = View.VISIBLE
+        } else {
+            loan_notif_date.visibility = View.VISIBLE
+            toggle_btns.visibility = View.INVISIBLE
+        }
+
     }
 
     /**

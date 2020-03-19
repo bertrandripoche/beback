@@ -36,6 +36,8 @@
     <string name="due">DUE</string>
     <string name="due_date_hint">Due date \&#x27A1;</string>
     <string name="due_date">%1$s/%2$s/%3$d </string>
+    <string name="notif">Notif</string>
+    <string name="notif_date_hint">Notif date \&#x27A1;</string>
     <string name="pick">PICK</string>
     <string name="mandatory_information">* = required, wouldn\'t make sense\nwithout it, isn\'t it ?</string>
     <string name="mandatory_information_land">* = required, wouldn\'t make sense\nwithout it, isn\'t it ?</string>
@@ -86,6 +88,9 @@
     <string name="transaction_failure">Transaction failure</string>
     <string name="unknown_error">Damned, we hit an unknown error !</string>
     <string name="error_getting_docs">Couldn\'t get these damned docs !</string>
+    <string name="d_day">D-day</string>
+    <string name="d_minus_one">D-1</string>
+    <string name="d_minus_one_week">D-7</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">

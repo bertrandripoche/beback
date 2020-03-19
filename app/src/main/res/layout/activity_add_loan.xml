@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/activity_add_loan_container"
@@ -158,30 +159,147 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:background="@color/secondaryColor"
+            android:contentDescription="@string/cancel"
+            android:onClick="cancelDate"
+            android:paddingStart="@dimen/basic"
+            android:paddingEnd="@dimen/basic"
+            android:src="@drawable/ic_cancel"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/loan_due_date_title"
+            app:layout_constraintTop_toTopOf="@+id/loan_due_date_title"
+            app:layout_constraintLeft_toRightOf="@+id/loan_due_date"
+            app:layout_constraintRight_toLeftOf="@id/mBtnPick" />
+
+    <Button
+            android:id="@+id/mBtnPick"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="@dimen/basic"
+            android:layout_marginEnd="@dimen/basic"
+            android:background="@color/secondaryColor"
+            android:text="@string/pick"
+            android:onClick="clickDataPicker"
+            app:layout_constraintTop_toTopOf="@+id/loan_due_date_title"
+            app:layout_constraintBottom_toBottomOf="@+id/loan_due_date_title"
+            app:layout_constraintLeft_toRightOf="@+id/mBtnCancelDate"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+    <TextView
+            android:id="@+id/loan_notif_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/basic"
+            android:padding="@dimen/extra"
+            android:textSize="@dimen/text_size_max"
+            android:textAllCaps="true"
+            android:textAlignment="center"
+            android:gravity="center_vertical"
+            android:text="@string/notif"
+            app:layout_constraintTop_toBottomOf="@+id/loan_due_date_title"
+            app:layout_constraintBottom_toTopOf="@+id/warning_message"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="@+id/guideline_vertical_left"
+            />
+
+    <TextView
+            android:id="@+id/loan_notif_date"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/extra"
+            android:layout_margin="@dimen/basic"
+            android:hint="@string/notif_date_hint"
+            android:background="@color/primaryColor"
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size_max"
+            android:textAlignment="center"
+            app:layout_constraintTop_toTopOf="@+id/loan_notif_title"
+            app:layout_constraintBottom_toBottomOf="@+id/loan_notif_title"
+            app:layout_constraintLeft_toRightOf="@+id/loan_notif_title"
+            app:layout_constraintRight_toLeftOf="@+id/mBtnCancelNotif"
+            />
+
+    <ImageButton
+            android:id="@+id/mBtnCancelNotif"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:background="@color/secondaryColor"
             android:onClick="cancelDate"
             android:paddingEnd="@dimen/basic"
             android:paddingStart="@dimen/basic"
             android:src="@drawable/ic_cancel"
             android:visibility="gone"
             android:contentDescription="@string/cancel"
-            app:layout_constraintTop_toTopOf="@+id/loan_due_date"
-            app:layout_constraintBottom_toBottomOf="@+id/loan_due_date"
-            app:layout_constraintLeft_toRightOf="@+id/loan_due_date"
-            app:layout_constraintRight_toLeftOf="@id/mBtnPick"/>
+            app:layout_constraintTop_toTopOf="@+id/loan_notif_title"
+            app:layout_constraintBottom_toBottomOf="@+id/loan_notif_title"
+            app:layout_constraintLeft_toRightOf="@+id/loan_notif_date"
+            app:layout_constraintRight_toLeftOf="@id/mBtnPickNotif"/>
+
+    <LinearLayout
+                android:id="@+id/toggle_btns"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                android:layout_marginStart="@dimen/basic"
+                app:layout_constraintTop_toTopOf="@+id/loan_notif_title"
+                app:layout_constraintBottom_toBottomOf="@+id/loan_notif_title"
+                app:layout_constraintLeft_toRightOf="@+id/loan_notif_title"
+                app:layout_constraintRight_toLeftOf="@+id/mBtnPickNotif">
+
+            <ToggleButton
+                    android:id="@+id/notif_d_day"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/light_grey"
+                    android:layout_marginEnd="@dimen/basic"
+                    android:textOn="@string/d_day"
+                    android:textOff="@string/d_day"
+                    app:layout_constraintTop_toTopOf="@+id/loan_notif_title"
+                    app:layout_constraintBottom_toBottomOf="@+id/loan_notif_title"
+                    app:layout_constraintLeft_toRightOf="@+id/loan_notif_title"/>
+
+            <ToggleButton
+                    android:id="@+id/notif_one_day"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/light_grey"
+                    android:layout_marginEnd="@dimen/basic"
+                    android:textOn="@string/d_minus_one"
+                    android:textOff="@string/d_minus_one"
+                    app:layout_constraintTop_toTopOf="@+id/loan_notif_title"
+                    app:layout_constraintBottom_toBottomOf="@+id/loan_notif_title"
+                    app:layout_constraintLeft_toRightOf="@+id/notif_d_day"/>
+
+            <ToggleButton
+                    android:id="@+id/notif_one_week"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@color/light_grey"
+                    android:layout_marginEnd="@dimen/basic"
+                    android:textOn="@string/d_minus_one_week"
+                    android:textOff="@string/d_minus_one_week"
+                    app:layout_constraintTop_toTopOf="@+id/loan_notif_title"
+                    app:layout_constraintBottom_toBottomOf="@+id/loan_notif_title"
+                    app:layout_constraintLeft_toRightOf="@+id/notif_one_day"/>
+        </LinearLayout>
 
     <Button
-            android:id="@+id/mBtnPick"
+            android:id="@+id/mBtnPickNotif"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
-            android:background="@color/secondaryColor"
             android:layout_marginStart="@dimen/basic"
             android:layout_marginEnd="@dimen/basic"
+            android:background="@color/secondaryColor"
             android:text="@string/pick"
             android:onClick="clickDataPicker"
-            app:layout_constraintTop_toTopOf="@+id/loan_due_date"
-            app:layout_constraintBottom_toBottomOf="@+id/loan_due_date"
-            app:layout_constraintLeft_toRightOf="@+id/mBtnCancelDate"
+            app:layout_constraintTop_toTopOf="@+id/loan_notif_title"
+            app:layout_constraintBottom_toBottomOf="@+id/loan_notif_title"
+            app:layout_constraintLeft_toRightOf="@+id/mBtnCancelNotif"
             app:layout_constraintRight_toRightOf="parent"/>
+
 
     <TextView
             android:layout_width="match_parent"
@@ -196,7 +314,7 @@
             android:padding="@dimen/middle"
             android:drawablePadding="@dimen/middle"
             android:drawableStart="@drawable/ic_warning_pink"
-            app:layout_constraintTop_toBottomOf="@id/loan_due_date"
+            app:layout_constraintTop_toBottomOf="@id/loan_notif_title"
             app:layout_constraintLeft_toLeftOf="parent"/>
 
 

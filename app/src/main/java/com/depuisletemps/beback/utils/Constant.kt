@@ -20,6 +20,7 @@ class Constant {
         const val RETURNED_DATE = "returned_date"
         const val DUE_DATE = "due_date"
         const val DUE_DATE_SET = "dueDateSet"
+        const val NOTIF_DATE = "notif_date"
         const val FAR_AWAY_DATE = "01/01/3000"
         const val FAR_PAST_DATE = "01/01/1970"
 
