@@ -91,7 +91,7 @@
                     app:layout_constraintRight_toRightOf="@+id/guideline_vertical_left"
                     />
 
-            <EditText
+            <AutoCompleteTextView
                     android:id="@+id/loan_recipient"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

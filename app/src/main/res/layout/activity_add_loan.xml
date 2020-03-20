@@ -254,23 +254,17 @@
                     android:background="@color/light_grey"
                     android:layout_marginEnd="@dimen/basic"
                     android:textOn="@string/d_day"
-                    android:textOff="@string/d_day"
-                    app:layout_constraintTop_toTopOf="@+id/loan_notif_title"
-                    app:layout_constraintBottom_toBottomOf="@+id/loan_notif_title"
-                    app:layout_constraintLeft_toRightOf="@+id/loan_notif_title"/>
+                    android:textOff="@string/d_day"/>
 
             <ToggleButton
-                    android:id="@+id/notif_one_day"
+                    android:id="@+id/notif_three_days"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@color/light_grey"
                     android:layout_marginEnd="@dimen/basic"
-                    android:textOn="@string/d_minus_one"
-                    android:textOff="@string/d_minus_one"
-                    app:layout_constraintTop_toTopOf="@+id/loan_notif_title"
-                    app:layout_constraintBottom_toBottomOf="@+id/loan_notif_title"
-                    app:layout_constraintLeft_toRightOf="@+id/notif_d_day"/>
+                    android:textOn="@string/d_minus_three"
+                    android:textOff="@string/d_minus_three"/>
 
             <ToggleButton
                     android:id="@+id/notif_one_week"
@@ -280,10 +274,7 @@
                     android:background="@color/light_grey"
                     android:layout_marginEnd="@dimen/basic"
                     android:textOn="@string/d_minus_one_week"
-                    android:textOff="@string/d_minus_one_week"
-                    app:layout_constraintTop_toTopOf="@+id/loan_notif_title"
-                    app:layout_constraintBottom_toBottomOf="@+id/loan_notif_title"
-                    app:layout_constraintLeft_toRightOf="@+id/notif_one_day"/>
+                    android:textOff="@string/d_minus_one_week"/>
         </LinearLayout>
 
     <Button

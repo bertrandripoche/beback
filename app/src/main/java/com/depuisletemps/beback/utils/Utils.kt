@@ -61,9 +61,9 @@ class Utils {
             val formatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy")
             val localDate: LocalDate = LocalDate.parse(date, formatter)
             val dateFromLocalDate = java.sql.Date.valueOf(localDate.toString())
-            if (date != null) {
-                return Timestamp(dateFromLocalDate)
-            } else return null
+            return if (date != null) {
+                Timestamp(dateFromLocalDate)
+            } else null
         }
 
     }

@@ -89,8 +89,10 @@
     <string name="unknown_error">Damned, we hit an unknown error !</string>
     <string name="error_getting_docs">Couldn\'t get these damned docs !</string>
     <string name="d_day">D-day</string>
-    <string name="d_minus_one">D-1</string>
-    <string name="d_minus_one_week">D-7</string>
+    <string name="d_minus_three">D-3</string>
+    <string name="d_minus_one_week">D-7</string>This is a reminder about ${loan.product}.
+    <string name="notif_message">This is a reminder about %1$s.\nTap here to open the detail of your loan</string>
+
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">

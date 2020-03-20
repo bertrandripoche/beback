@@ -1,13 +1,15 @@
 package com.depuisletemps.beback.ui.view
 
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.widget.LinearLayout
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.api.UserHelper
-import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.utils.Constant
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.AuthUI.IdpConfig
@@ -17,7 +19,6 @@ import com.firebase.ui.auth.IdpResponse
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestoreException
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
 
@@ -31,6 +32,7 @@ class LoginActivity : BaseActivity() {
         setContentView(R.layout.activity_login)
 
         checkLoginAndDisplayAppropriateScreen()
+        createNotificationChannel()
 
         buttonFacebookLogin.setOnClickListener{createSignInIntent(Constant.FB)}
         buttonGoogleLogin.setOnClickListener{createSignInIntent(Constant.GOOGLE)}
@@ -136,6 +138,19 @@ class LoginActivity : BaseActivity() {
      */
     fun addUserInFirestore(id: String, mail:String, firstname: String, lastname:String, pseudo:String, pic:String): Task<Void> {
         return UserHelper.createUser(id, mail, firstname, lastname, pseudo, pic)
+    }
+
+    /**
+     * This method adds the user in Firestore
+     */
+    private fun createNotificationChannel() { // Needed for notification feature, need to be started first
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(Constant.CHANNEL_ID, Constant.CHANNEL_NAME, importance)
+            channel.description = Constant.CHANNEL_DESCRIPTION
+            val notificationManager = getSystemService(NotificationManager::class.java)
+            Objects.requireNonNull(notificationManager).createNotificationChannel(channel)
+        }
     }
 
     companion object {

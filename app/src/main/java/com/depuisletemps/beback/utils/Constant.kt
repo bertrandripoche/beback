@@ -5,6 +5,10 @@ class Constant {
         const val FB = "facebook"
         const val GOOGLE = "google"
 
+        const val CHANNEL_ID = "CHANNEL_ID"
+        const val CHANNEL_NAME = "Notification channel name"
+        const val CHANNEL_DESCRIPTION = "Notification channel description"
+
         const val USERS_COLLECTION = "users"
         const val LOANS_COLLECTION = "loans"
         const val LOANERS_COLLECTION = "loaners"

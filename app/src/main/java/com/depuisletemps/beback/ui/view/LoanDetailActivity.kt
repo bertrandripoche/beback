@@ -1,11 +1,13 @@
 package com.depuisletemps.beback.ui.view
 
+import android.Manifest
 import android.app.DatePickerDialog
 import android.content.res.ColorStateList
 import android.content.res.TypedArray
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -28,8 +30,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
+import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 import kotlinx.android.synthetic.main.activity_add_loan.loan_due_date
 import kotlinx.android.synthetic.main.activity_add_loan.loan_product
 import kotlinx.android.synthetic.main.activity_add_loan.loan_recipient
@@ -59,6 +63,7 @@ class LoanDetailActivity: BaseActivity() {
     var mFirstTime: Boolean = true
     lateinit var mCategories: Array<String>
     lateinit var mCategoriesIcons: TypedArray
+    val mUser: FirebaseUser? = getCurrentUser()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +71,6 @@ class LoanDetailActivity: BaseActivity() {
 
         mCategories = this.resources.getStringArray(R.array.product_category)
         mCategoriesIcons = this.resources.obtainTypedArray(R.array.product_category_icon)
-        val textView = findViewById<AutoCompleteTextView>(R.id.loan_recipient)
 
         getLoan()
         getSavedInstanceData(savedInstanceState)
@@ -258,6 +262,43 @@ class LoanDetailActivity: BaseActivity() {
             if (mFirstTime) spinner_loan_categories.setSelection(mUtils.getIndexFromCategory(loan.product_category))
             else spinner_loan_categories.setSelection(mUtils.getIndexFromCategory(mCurrentProductCategory))
             loan_creation_date.text = getStringFromDate(loan.creation_date?.toDate())
+        }
+
+        if (mUser != null) {
+            var nameToPopulate = arrayListOf<String>()
+
+            runWithPermissions(Manifest.permission.READ_CONTACTS) {
+                val phones = contentResolver.query(
+                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
+                )
+                while (phones!!.moveToNext()) {
+                    val name =
+                        phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                    if (!nameToPopulate.contains(name)) nameToPopulate.add(name)
+                }
+
+                val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(mUser.uid)
+                    .collection(Constant.LOANERS_COLLECTION)
+                loanerRef
+                    .get()
+                    .addOnSuccessListener { result ->
+                        for (document in result) nameToPopulate.add(document.data.getValue(Constant.NAME).toString())
+
+                        val loanRecipientNamesListAdapter = ArrayAdapter<String>(
+                            this,
+                            android.R.layout.simple_dropdown_item_1line, nameToPopulate
+                        )
+                        loan_recipient.setAdapter(loanRecipientNamesListAdapter)
+                        loan_recipient.threshold = 1
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.d(TAG, getString(R.string.error_getting_docs), exception)
+                    }
+            }
         }
 
         disableFloatButton()

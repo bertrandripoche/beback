@@ -246,14 +246,14 @@
                 android:textOff="@string/d_day"/>
 
         <ToggleButton
-                android:id="@+id/notif_one_day"
+                android:id="@+id/notif_three_days"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:background="@color/light_grey"
                 android:layout_marginEnd="@dimen/basic"
-                android:textOn="@string/d_minus_one"
-                android:textOff="@string/d_minus_one"/>
+                android:textOn="@string/d_minus_three"
+                android:textOff="@string/d_minus_three"/>
 
         <ToggleButton
                 android:id="@+id/notif_one_week"
