@@ -246,7 +246,7 @@ class LoanByObjectFragment: Fragment() {
      * @param loan is a Loan representing the loan object
      */
     private fun undeleteTheLoan(loan: Loan) {
-        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document()
+        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(loan.id)
         val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
         val loanerData = hashMapOf(Constant.NAME to loan.recipient_id)
 
