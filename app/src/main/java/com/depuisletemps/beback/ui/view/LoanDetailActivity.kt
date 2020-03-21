@@ -375,7 +375,7 @@ class LoanDetailActivity: BaseActivity() {
     }
 
     /**
-     * Method to configure the textWatchers on the fields which requires it
+     * Method to tell if the form is valid
      */
     fun isFormValid(): Boolean {
         val categories: Array<String> =
@@ -388,8 +388,8 @@ class LoanDetailActivity: BaseActivity() {
             else loan_due_date.setTextColor(darkGreyColor)
         }
 
-        return !loan_product.text.toString().equals("")
-                || !loan_recipient.text.toString().equals("")
+        return !loan_product.text.toString().equals(mWhat)
+                || !loan_recipient.text.toString().equals(mWho)
                 || (!loan_due_date.text.toString().equals(mDue) && !loan_due_date.text.toString().equals(""))
                 || (mDue != Constant.FAR_AWAY_DATE && loan_due_date.text.toString() == "")
                 || categories[spinner_loan_categories.selectedItemPosition] != mProductCategory
