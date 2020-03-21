@@ -18,7 +18,13 @@
     <item
             android:id="@+id/menu_profile"
             android:icon="@drawable/ic_profile"
-            app:showAsAction="always"
+            app:showAsAction="never"
             android:title="@string/profile">
+    </item>
+    <item
+            android:id="@+id/menu_about"
+            android:icon="@drawable/ic_about"
+            app:showAsAction="never"
+            android:title="@string/about">
     </item>
 </menu>

@@ -92,6 +92,7 @@
     <string name="d_minus_three">D-3</string>
     <string name="d_minus_one_week">D-7</string>This is a reminder about ${loan.product}.
     <string name="notif_message">This is a reminder about %1$s.\nTap here to open the detail of your loan</string>
+    <string name="about">About</string>
 
 
     <!--    PRODUCT CATEGORY-->

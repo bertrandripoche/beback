@@ -3,6 +3,7 @@ package com.depuisletemps.beback.ui.view
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
@@ -14,6 +15,7 @@ import com.depuisletemps.beback.R
 import com.depuisletemps.beback.ui.customview.ViewPagerAdapter
 import com.depuisletemps.beback.utils.Constant
 import kotlinx.android.synthetic.main.activity_loan_pager.*
+import java.lang.reflect.Method
 
 
 class LoanPagerActivity: BaseActivity() {
@@ -96,6 +98,27 @@ class LoanPagerActivity: BaseActivity() {
     private fun configureToolbar() {
         mToolbar = findViewById(R.id.toolbar)
         setSupportActionBar(mToolbar)
+    }
+
+    override fun onPrepareOptionsPanel(view: View?, menu: Menu): Boolean {
+        if (menu != null) {
+            if (menu.javaClass.simpleName == "MenuBuilder") {
+                try {
+                    val m: Method = menu.javaClass.getDeclaredMethod(
+                        "setOptionalIconsVisible", java.lang.Boolean.TYPE
+                    )
+                    m.setAccessible(true)
+                    m.invoke(menu, true)
+                } catch (e: Exception) {
+                    Log.e(
+                        javaClass.simpleName,
+                        "onMenuOpened...unable to set icons for overflow menu",
+                        e
+                    )
+                }
+            }
+        }
+        return super.onPrepareOptionsPanel(view, menu!!)
     }
 
     /**
