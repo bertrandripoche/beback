@@ -178,6 +178,7 @@ class LoanByObjectFragment: Fragment() {
         }.addOnCompleteListener {
             if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1)
             else displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1)
+            mAdapter.notifyDataSetChanged()
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
         }
@@ -207,6 +208,7 @@ class LoanByObjectFragment: Fragment() {
         }.addOnCompleteListener {
             if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2)
             else displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2)
+            mAdapter.notifyDataSetChanged()
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
         }
@@ -227,6 +229,7 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
         }.addOnCompleteListener {
             displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_4)
+            mAdapter.notifyDataSetChanged()
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
         }
@@ -254,6 +257,7 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
         }.addOnCompleteListener {
             displayCustomToast(getString(R.string.undeleted_message, loan.product), R.drawable.bubble_3)
+            mAdapter.notifyDataSetChanged()
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
         }

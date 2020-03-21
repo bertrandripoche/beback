@@ -45,6 +45,13 @@ class AddLoanActivity: BaseActivity() {
     private val TAG = "AddLoanActivity"
     lateinit var mType: String
     val mUser: FirebaseUser? = getCurrentUser()
+    var yellowColor: Int = 0
+    var greyColor: Int = 0
+    var blueColor: Int = 0
+    var blueDeeperColor: Int = 0
+    var blackColor: Int = 0
+    var redColor: Int = 0
+    var greenColor: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,12 +62,20 @@ class AddLoanActivity: BaseActivity() {
         configureTextWatchers()
         configureScreenFromType()
         configureButtons()
+        defineColors()
+    }
+
+    private fun defineColors() {
+        yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
+        greyColor = ContextCompat.getColor(this, R.color.light_grey)
+        blueColor = ContextCompat.getColor(this, R.color.primaryLightColor)
+        blueDeeperColor = ContextCompat.getColor(this, R.color.primaryColor)
+        blackColor = ContextCompat.getColor(this, R.color.black)
+        greenColor = ContextCompat.getColor(this, R.color.green)
+        redColor = ContextCompat.getColor(this, R.color.red)
     }
 
     private fun configureButtons() {
-        val yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
-        val greyColor = ContextCompat.getColor(this, R.color.light_grey)
-
         mBtnSubmit.setOnClickListener(View.OnClickListener {
             if (isFormValid())
                 createFirestoreLoan()
@@ -105,8 +120,6 @@ class AddLoanActivity: BaseActivity() {
      * This method unsets the toggle button
      */
     fun unsetToggle(btn: ToggleButton) {
-        val greyColor = ContextCompat.getColor(this, R.color.light_grey)
-
         btn.isChecked = false
         btn.setBackgroundColor(greyColor)
     }
@@ -116,9 +129,6 @@ class AddLoanActivity: BaseActivity() {
      */
     private fun configureScreenFromType() {
         mType = getLoanType()
-        val greenColor = ContextCompat.getColor(this, R.color.green)
-        val redColor = ContextCompat.getColor(this, R.color.red)
-        val yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
         if (mType.equals(LoanType.LENDING.type)) {
             loan_type.setBackgroundColor(greenColor)
             loan_type_pic.setBackgroundColor(greenColor)
@@ -284,14 +294,12 @@ class AddLoanActivity: BaseActivity() {
             when (btn) {
                 getString(R.string.due) -> {
                     loan_due_date.text = date
-                    val primaryLightColor = ContextCompat.getColor(this, R.color.primaryLightColor)
-                    loan_due_date.setBackgroundColor(primaryLightColor)
+                    loan_due_date.setBackgroundColor(blueColor)
                     mBtnCancelDate.visibility = View.VISIBLE
                 }
                 getString(R.string.notif) -> {
                     loan_notif_date.text = date
-                    val primaryLightColor = ContextCompat.getColor(this, R.color.primaryLightColor)
-                    loan_notif_date.setBackgroundColor(primaryLightColor)
+                    loan_notif_date.setBackgroundColor(blueColor)
                     mBtnCancelNotif.visibility = View.VISIBLE
                 }
             }
@@ -299,7 +307,7 @@ class AddLoanActivity: BaseActivity() {
             unsetToggle(notif_three_days)
             unsetToggle(notif_one_week)
             setToggleButton()
-            checkNotifBtns()
+            if (loan_due_date.text.toString() != "") checkNotifBtns()
         }
     }
 
@@ -317,8 +325,6 @@ class AddLoanActivity: BaseActivity() {
      * This methods disables the three days notif button
      */
     private fun disableThreeDaysNotifBtn() {
-        val blueColor = ContextCompat.getColor(this, R.color.primaryLightColor)
-        val greyColor = ContextCompat.getColor(this, R.color.grey)
         notif_three_days.isClickable = false
         notif_three_days.setBackgroundColor(blueColor)
         notif_three_days.setTextColor(greyColor)
@@ -328,8 +334,6 @@ class AddLoanActivity: BaseActivity() {
      * This methods disables the three days notif button
      */
     private fun disableOneWeekNotifBtn() {
-        val blueColor = ContextCompat.getColor(this, R.color.primaryLightColor)
-        val greyColor = ContextCompat.getColor(this, R.color.grey)
         notif_one_week.isClickable = false
         notif_one_week.setBackgroundColor(blueColor)
         notif_one_week.setTextColor(greyColor)
@@ -339,8 +343,6 @@ class AddLoanActivity: BaseActivity() {
      * This methods disables the three days notif button
      */
     private fun enableNotifBtn() {
-        val greyColor = ContextCompat.getColor(this, R.color.light_grey)
-        val blackColor = ContextCompat.getColor(this, R.color.black)
         notif_one_week.isClickable = true
         notif_one_week.setBackgroundColor(greyColor)
         notif_one_week.setTextColor(blackColor)
@@ -361,14 +363,12 @@ class AddLoanActivity: BaseActivity() {
         when (btn) {
             getString(R.string.due) -> {
                 loan_due_date.text = ""
-                val primaryColor = ContextCompat.getColor(this, R.color.primaryColor)
-                loan_due_date.setBackgroundColor(primaryColor)
+                loan_due_date.setBackgroundColor(blueDeeperColor)
                 mBtnCancelDate.visibility = View.GONE
             }
             getString(R.string.notif) -> {
                 loan_notif_date.text = ""
-                val primaryColor = ContextCompat.getColor(this, R.color.primaryColor)
-                loan_notif_date.setBackgroundColor(primaryColor)
+                loan_notif_date.setBackgroundColor(blueDeeperColor)
                 mBtnCancelNotif.visibility = View.GONE
             }
         }
@@ -409,14 +409,14 @@ class AddLoanActivity: BaseActivity() {
      * Make the float button enabled
      */
     fun enableFloatButton() {
-        setButtonTint(mBtnSubmit, ColorStateList.valueOf(ContextCompat.getColor(this,R.color.secondaryColor)) )
+        setButtonTint(mBtnSubmit, ColorStateList.valueOf(yellowColor) )
     }
 
     /**
      * Make the float button disabled
      */
     private fun disableFloatButton() {
-        setButtonTint(mBtnSubmit, ColorStateList.valueOf(ContextCompat.getColor(this,R.color.light_grey)) )
+        setButtonTint(mBtnSubmit, ColorStateList.valueOf(greyColor) )
     }
 
     /**
@@ -455,7 +455,7 @@ class AddLoanActivity: BaseActivity() {
             Log.w(TAG, getString(R.string.transaction_failure), e)
         }
 
-        if (notif_d_day.isChecked || notif_three_days.isChecked || notif_one_week.isChecked || loan_notif_date.text.toString() != getString(R.string.notif_date_hint))
+        if (notif_d_day.isChecked || notif_three_days.isChecked || notif_one_week.isChecked || loan_notif_date.text.toString() != "")
             createNotification(loanRef.id, product)
     }
 
@@ -480,11 +480,16 @@ class AddLoanActivity: BaseActivity() {
 
     private fun getNotifDate(): LocalDate {
         val dateNotif: LocalDate
-        if (loan_notif_date.text.toString() != "") dateNotif = Utils.getLocalDateFromString(loan_notif_date.text.toString())
-        else {
-            dateNotif = Utils.getLocalDateFromString(loan_due_date.text.toString())
-            if (notif_three_days.isChecked) dateNotif.minusDays(3)
-            if (notif_one_week.isChecked) dateNotif.minusDays(7)
+        if (loan_notif_date.text.toString() != "") {
+            if (loan_notif_date.text.toString() != "") dateNotif =
+                Utils.getLocalDateFromString(loan_notif_date.text.toString())
+            else {
+                dateNotif = Utils.getLocalDateFromString(loan_due_date.text.toString())
+                if (notif_three_days.isChecked) dateNotif.minusDays(3)
+                if (notif_one_week.isChecked) dateNotif.minusDays(7)
+            }
+        } else {
+            dateNotif = LocalDate.now()
         }
         return dateNotif
     }
@@ -497,7 +502,7 @@ class AddLoanActivity: BaseActivity() {
         val intent = Intent(this, AlertReceiver::class.java)
         intent.putExtra(Constant.LOAN_ID, loanId)
         intent.putExtra(Constant.PRODUCT, loanProduct)
-        val pendingIntent = PendingIntent.getBroadcast(this, 1, intent, 0)
+        val pendingIntent = PendingIntent.getBroadcast(this, loanId.hashCode(), intent, 0)
         alarmManager.setExact(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,

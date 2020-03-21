@@ -37,12 +37,6 @@ class AlertReceiver: BroadcastReceiver() {
                 .setContentTitle(title)
                 .setStyle(Notification.BigTextStyle().bigText(notif_message))
                 .setContentText(notif_message).build()
-//             mNotification = NotificationCompat.Builder(context,Constant.CHANNEL_ID)
-//                .setSmallIcon(R.drawable.icon)
-//                .setContentTitle(title)
-//                .setContentText(notif_message)
-//                .setAutoCancel(true)
-//                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
         } else {
             mNotification = Notification.Builder(context)
                 .setContentIntent(pendingIntent)
