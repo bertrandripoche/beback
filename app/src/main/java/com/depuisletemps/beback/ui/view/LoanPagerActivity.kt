@@ -107,7 +107,7 @@ class LoanPagerActivity: BaseActivity() {
                     val m: Method = menu.javaClass.getDeclaredMethod(
                         "setOptionalIconsVisible", java.lang.Boolean.TYPE
                     )
-                    m.setAccessible(true)
+                    m.isAccessible = true
                     m.invoke(menu, true)
                 } catch (e: Exception) {
                     Log.e(

@@ -9,6 +9,7 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.provider.ContactsContract
 import android.text.Editable
 import android.text.TextWatcher
@@ -25,6 +26,7 @@ import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.AlertReceiver
 import com.depuisletemps.beback.utils.Constant
+import com.depuisletemps.beback.utils.StringUtils
 import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.Companion.getTimeStampFromString
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -34,40 +36,56 @@ import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 import kotlinx.android.synthetic.main.activity_add_loan.*
+import kotlinx.android.synthetic.main.activity_add_loan.loan_due_date
+import kotlinx.android.synthetic.main.activity_add_loan.loan_notif_date
+import kotlinx.android.synthetic.main.activity_add_loan.loan_product
+import kotlinx.android.synthetic.main.activity_add_loan.loan_recipient
+import kotlinx.android.synthetic.main.activity_add_loan.loan_recipient_title
+import kotlinx.android.synthetic.main.activity_add_loan.loan_type
+import kotlinx.android.synthetic.main.activity_add_loan.loan_type_pic
+import kotlinx.android.synthetic.main.activity_add_loan.mBtnCancelDate
+import kotlinx.android.synthetic.main.activity_add_loan.mBtnCancelNotif
+import kotlinx.android.synthetic.main.activity_add_loan.notif_d_day
+import kotlinx.android.synthetic.main.activity_add_loan.notif_one_week
+import kotlinx.android.synthetic.main.activity_add_loan.notif_three_days
+import kotlinx.android.synthetic.main.activity_add_loan.spinner_loan_categories
+import kotlinx.android.synthetic.main.activity_add_loan.toggle_btns
+import kotlinx.android.synthetic.main.activity_loan_detail.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.joda.time.LocalDate
 import java.lang.Integer.parseInt
 import java.text.DecimalFormat
 import java.util.*
 
-
 class AddLoanActivity: BaseActivity() {
     private val TAG = "AddLoanActivity"
     lateinit var mType: String
-    val mUser: FirebaseUser? = getCurrentUser()
-    var yellowColor: Int = 0
-    var greyColor: Int = 0
-    var blueColor: Int = 0
-    var blueDeeperColor: Int = 0
-    var blackColor: Int = 0
-    var redColor: Int = 0
-    var greenColor: Int = 0
+    private val mUser: FirebaseUser? = getCurrentUser()
+    private var yellowColor: Int = 0
+    private var lightGreyColor: Int = 0
+    private var greyColor: Int = 0
+    private var blueColor: Int = 0
+    private var blueDeeperColor: Int = 0
+    private var blackColor: Int = 0
+    private var redColor: Int = 0
+    private var greenColor: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_loan)
 
+        defineColors()
         configureToolbar()
         configureSpinner()
         configureTextWatchers()
         configureScreenFromType()
         configureButtons()
-        defineColors()
     }
 
     private fun defineColors() {
         yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
-        greyColor = ContextCompat.getColor(this, R.color.light_grey)
+        lightGreyColor = ContextCompat.getColor(this, R.color.light_grey)
+        greyColor = ContextCompat.getColor(this, R.color.grey)
         blueColor = ContextCompat.getColor(this, R.color.primaryLightColor)
         blueDeeperColor = ContextCompat.getColor(this, R.color.primaryColor)
         blackColor = ContextCompat.getColor(this, R.color.black)
@@ -91,7 +109,7 @@ class AddLoanActivity: BaseActivity() {
                 unsetToggle(notif_three_days)
                 unsetToggle(notif_one_week)
             } else {
-                notif_d_day.setBackgroundColor(greyColor)
+                notif_d_day.setBackgroundColor(lightGreyColor)
             }
         })
 
@@ -101,7 +119,7 @@ class AddLoanActivity: BaseActivity() {
                 unsetToggle(notif_one_week)
                 unsetToggle(notif_d_day)
             } else {
-                notif_three_days.setBackgroundColor(greyColor)
+                notif_three_days.setBackgroundColor(lightGreyColor)
             }
         })
 
@@ -111,7 +129,7 @@ class AddLoanActivity: BaseActivity() {
                 unsetToggle(notif_three_days)
                 unsetToggle(notif_d_day)
             } else {
-                notif_one_week.setBackgroundColor(greyColor)
+                notif_one_week.setBackgroundColor(lightGreyColor)
             }
         })
     }
@@ -121,7 +139,16 @@ class AddLoanActivity: BaseActivity() {
      */
     fun unsetToggle(btn: ToggleButton) {
         btn.isChecked = false
-        btn.setBackgroundColor(greyColor)
+        btn.setBackgroundColor(lightGreyColor)
+    }
+
+    /**
+     * This method disables the toggle button
+     */
+    fun disableToggle(btn: ToggleButton) {
+        btn.isChecked = false
+        btn.setBackgroundColor(blueColor)
+        btn.setTextColor(greyColor)
     }
 
     /**
@@ -317,26 +344,9 @@ class AddLoanActivity: BaseActivity() {
     private fun checkNotifBtns() {
         val dueDate = Utils.getLocalDateFromString(loan_due_date.text.toString())
         val today = LocalDate.now()
-        if (Utils.getDifferenceDays(today, dueDate) < 4) disableThreeDaysNotifBtn()
-        if (Utils.getDifferenceDays(today, dueDate) < 8) disableOneWeekNotifBtn()
-    }
-
-    /**
-     * This methods disables the three days notif button
-     */
-    private fun disableThreeDaysNotifBtn() {
-        notif_three_days.isClickable = false
-        notif_three_days.setBackgroundColor(blueColor)
-        notif_three_days.setTextColor(greyColor)
-    }
-
-    /**
-     * This methods disables the three days notif button
-     */
-    private fun disableOneWeekNotifBtn() {
-        notif_one_week.isClickable = false
-        notif_one_week.setBackgroundColor(blueColor)
-        notif_one_week.setTextColor(greyColor)
+        if (Utils.getDifferenceDays(today, dueDate) < 0) disableToggle(notif_d_day)
+        if (Utils.getDifferenceDays(today, dueDate) < 4) disableToggle(notif_three_days)
+        if (Utils.getDifferenceDays(today, dueDate) < 8) disableToggle(notif_one_week)
     }
 
     /**
@@ -344,10 +354,10 @@ class AddLoanActivity: BaseActivity() {
      */
     private fun enableNotifBtn() {
         notif_one_week.isClickable = true
-        notif_one_week.setBackgroundColor(greyColor)
+        notif_one_week.setBackgroundColor(lightGreyColor)
         notif_one_week.setTextColor(blackColor)
         notif_three_days.isClickable = true
-        notif_three_days.setBackgroundColor(greyColor)
+        notif_three_days.setBackgroundColor(lightGreyColor)
         notif_three_days.setTextColor(blackColor)
     }
 
@@ -379,8 +389,7 @@ class AddLoanActivity: BaseActivity() {
      * Method to display/hide the toggle notification buttons
      */
     private fun setToggleButton() {
-        if (loan_due_date.text != "" && loan_notif_date.text == "")
-        {
+        if (loan_due_date.text != "" && loan_notif_date.text == "") {
             loan_notif_date.visibility = View.INVISIBLE
             toggle_btns.visibility = View.VISIBLE
         } else {
@@ -416,7 +425,7 @@ class AddLoanActivity: BaseActivity() {
      * Make the float button disabled
      */
     private fun disableFloatButton() {
-        setButtonTint(mBtnSubmit, ColorStateList.valueOf(greyColor) )
+        setButtonTint(mBtnSubmit, ColorStateList.valueOf(lightGreyColor) )
     }
 
     /**
@@ -426,9 +435,9 @@ class AddLoanActivity: BaseActivity() {
         val user: FirebaseUser? = getCurrentUser()
 
         val requestorId:String = user?.uid ?: ""
-        val recipientId:String = loan_recipient.text.toString()
+        val recipientId:String = StringUtils.capitalizeWord(loan_recipient.text.toString())
 
-        val product:String = loan_product.text.toString()
+        val product:String = StringUtils.capitalizeWord(loan_product.text.toString())
         val categories: Array<String> =
             this.resources.getStringArray(R.array.product_category)
 
@@ -438,10 +447,18 @@ class AddLoanActivity: BaseActivity() {
         if (dueDate == "") dueDate = Constant.FAR_AWAY_DATE
         val returnedDate = null
 
+        val notif: String? = when {
+            notif_d_day.isChecked -> Constant.NOTIF_D_DAY
+            notif_three_days.isChecked -> Constant.NOTIF_THREE_DAYS
+            notif_one_week.isChecked -> Constant.NOTIF_ONE_WEEK
+            loan_notif_date.text.toString() != "" -> loan_notif_date.text.toString()
+            else -> null
+        }
+
         val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document()
         val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(requestorId).collection(Constant.LOANERS_COLLECTION).document(recipientId)
         val loanerData = hashMapOf(Constant.NAME to recipientId)
-        val loan = Loan(loanRef.id, requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), returnedDate)
+        val loan = Loan(loanRef.id, requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), notif, returnedDate)
 
         mDb.runBatch { batch ->
             batch.set(loanRef,loan)
@@ -450,16 +467,16 @@ class AddLoanActivity: BaseActivity() {
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
         }.addOnCompleteListener {
             Toast.makeText(this, getString(R.string.saved), Toast.LENGTH_SHORT).show()
+            if (notif_d_day.isChecked || notif_three_days.isChecked || notif_one_week.isChecked || loan_notif_date.text.toString() != "")
+                createNotification(loanRef.id, product, mType, recipientId)
             startLoanPagerActivity(getString(R.string.standard))
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
         }
 
-        if (notif_d_day.isChecked || notif_three_days.isChecked || notif_one_week.isChecked || loan_notif_date.text.toString() != "")
-            createNotification(loanRef.id, product)
     }
 
-    private fun createNotification(loanId: String, loanProduct: String){
+    private fun createNotification(loanId: String, loanProduct: String, loanType: String, loanRecipient: String){
         val dateNotif: LocalDate = getNotifDate()
 
         val day: String = DateFormat.format("dd", dateNotif.toDate()).toString()
@@ -470,12 +487,12 @@ class AddLoanActivity: BaseActivity() {
         calendar.set(Calendar.YEAR, parseInt(year))
         calendar.set(Calendar.MONTH, monthForCalendar)
         calendar.set(Calendar.DAY_OF_MONTH, parseInt(day))
-        calendar.set(Calendar.HOUR_OF_DAY,21)
-        calendar.set(Calendar.MINUTE,47)
+        calendar.set(Calendar.HOUR_OF_DAY,8)
+        calendar.set(Calendar.MINUTE,3)
         calendar.set(Calendar.SECOND,0)
-        calendar.set(Calendar.AM_PM, Calendar.PM)
+        calendar.set(Calendar.AM_PM, Calendar.AM)
 
-        startAlarm(calendar, loanId, loanProduct)
+        startAlarm(calendar, loanId, loanProduct, loanType, loanRecipient)
     }
 
     private fun getNotifDate(): LocalDate {
@@ -497,12 +514,14 @@ class AddLoanActivity: BaseActivity() {
     /**
      * This method start the notification via the alertReceiver class and alarmManager
      */
-    fun startAlarm(calendar: Calendar, loanId: String, loanProduct: String) {
+    fun startAlarm(calendar: Calendar, loanId: String, loanProduct: String, loanType: String, loanRecipient: String) {
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(this, AlertReceiver::class.java)
         intent.putExtra(Constant.LOAN_ID, loanId)
         intent.putExtra(Constant.PRODUCT, loanProduct)
-        val pendingIntent = PendingIntent.getBroadcast(this, loanId.hashCode(), intent, 0)
+        intent.putExtra(Constant.TYPE, loanType)
+        intent.putExtra(Constant.RECIPIENT_ID, loanRecipient)
+        val pendingIntent = PendingIntent.getBroadcast(applicationContext, loanId.hashCode(), intent, 0)
         alarmManager.setExact(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,

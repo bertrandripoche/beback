@@ -196,7 +196,7 @@
             android:gravity="center_vertical"
             android:text="@string/notif"
             app:layout_constraintTop_toBottomOf="@+id/loan_due_date_title"
-            app:layout_constraintBottom_toTopOf="@+id/warning_message"
+            app:layout_constraintBottom_toTopOf="@+id/warning"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="@+id/guideline_vertical_left"
             />
@@ -293,6 +293,7 @@
 
 
     <TextView
+            android:id="@+id/warning"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/basic"

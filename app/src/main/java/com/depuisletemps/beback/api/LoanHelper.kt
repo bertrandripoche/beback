@@ -28,9 +28,10 @@ class LoanHelper {
             product_category: String,
             creation_date: Timestamp,
             due_date: Timestamp?,
+            notif: String?,
             returned_date: Timestamp?
         ): Task<DocumentReference> {
-            val loanToCreate = Loan(id,requestor_id, recipient_id, type, product, product_category, creation_date, due_date, returned_date)
+            val loanToCreate = Loan(id,requestor_id, recipient_id, type, product, product_category, creation_date, due_date, notif, returned_date)
             return getLoansCollection().add(loanToCreate)
         }
 

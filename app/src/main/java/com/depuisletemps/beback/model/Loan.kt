@@ -11,7 +11,8 @@ data class Loan (
     var product_category:String,
     var creation_date : Timestamp?,
     var due_date:Timestamp?,
+    var notif: String?,
     var returned_date:Timestamp?
 ){
-    constructor(): this("","","", "", "", "", null, null, null)
+    constructor(): this("","","", "", "", "", null, null, null, null)
 }

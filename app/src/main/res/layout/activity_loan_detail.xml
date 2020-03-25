@@ -281,6 +281,113 @@
                     app:layout_constraintLeft_toLeftOf="parent"/>
 
             <TextView
+                    android:id="@+id/loan_notif_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/basic"
+                    android:padding="@dimen/middle"
+                    android:textSize="@dimen/text_size_max"
+                    android:textAllCaps="true"
+                    android:textAlignment="center"
+                    android:gravity="center_vertical"
+                    android:text="@string/notif"
+                    app:layout_constraintTop_toBottomOf="@+id/loan_due_date_title"
+                    app:layout_constraintBottom_toTopOf="@+id/warning_message"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="@+id/guideline_vertical_left"
+                    />
+
+            <TextView
+                    android:id="@+id/loan_notif_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/middle"
+                    android:layout_margin="@dimen/basic"
+                    android:hint="@string/notif_date_hint"
+                    android:background="@color/primaryColor"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/text_size_max"
+                    android:textAlignment="center"
+                    app:layout_constraintTop_toTopOf="@+id/loan_notif_title"
+                    app:layout_constraintBottom_toBottomOf="@+id/loan_notif_title"
+                    app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_left"
+                    app:layout_constraintRight_toLeftOf="@+id/mBtnCancelNotif"
+                    />
+
+            <ImageButton
+                    android:id="@+id/mBtnCancelNotif"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:background="@color/secondaryColor"
+                    android:onClick="cancelDate"
+                    android:paddingEnd="@dimen/basic"
+                    android:paddingStart="@dimen/basic"
+                    android:src="@drawable/ic_cancel"
+                    android:visibility="gone"
+                    android:contentDescription="@string/cancel"
+                    app:layout_constraintTop_toTopOf="@+id/loan_notif_title"
+                    app:layout_constraintBottom_toBottomOf="@+id/loan_notif_title"
+                    app:layout_constraintLeft_toRightOf="@+id/loan_notif_date"
+                    app:layout_constraintRight_toLeftOf="@id/mBtnPickNotif"/>
+
+            <LinearLayout
+                    android:id="@+id/toggle_btns"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    android:layout_marginStart="@dimen/basic"
+                    app:layout_constraintTop_toTopOf="@+id/loan_notif_title"
+                    app:layout_constraintBottom_toBottomOf="@+id/loan_notif_title"
+                    app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_left"
+                    app:layout_constraintRight_toLeftOf="@+id/mBtnPickNotif">
+
+                <ToggleButton
+                        android:id="@+id/notif_d_day"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@color/light_grey"
+                        android:layout_marginEnd="@dimen/basic"
+                        android:textOn="@string/d_day"
+                        android:textOff="@string/d_day"/>
+
+                <ToggleButton
+                        android:id="@+id/notif_three_days"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@color/light_grey"
+                        android:layout_marginEnd="@dimen/basic"
+                        android:textOn="@string/d_minus_three"
+                        android:textOff="@string/d_minus_three"/>
+
+                <ToggleButton
+                        android:id="@+id/notif_one_week"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="@color/light_grey"
+                        android:layout_marginEnd="@dimen/basic"
+                        android:textOn="@string/d_minus_one_week"
+                        android:textOff="@string/d_minus_one_week"/>
+            </LinearLayout>
+
+            <Button
+                    android:id="@+id/mBtnPickNotif"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_marginStart="@dimen/basic"
+                    android:layout_marginEnd="@dimen/basic"
+                    android:background="@color/secondaryColor"
+                    android:text="@string/pick"
+                    android:onClick="clickDataPicker"
+                    app:layout_constraintTop_toTopOf="@+id/loan_notif_title"
+                    app:layout_constraintBottom_toBottomOf="@+id/loan_notif_title"
+                    app:layout_constraintLeft_toRightOf="@+id/mBtnCancelNotif"
+                    app:layout_constraintRight_toRightOf="parent"/>
+
+            <TextView
                     android:id="@+id/feedback"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"

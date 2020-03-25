@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.provider.Settings.Global.getString
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.depuisletemps.beback.R
@@ -20,9 +21,19 @@ class AlertReceiver: BroadcastReceiver() {
 
         val loanId = intent.getStringExtra(Constant.LOAN_ID)
         val loanProduct = intent.getStringExtra(Constant.PRODUCT)
+        val loanType = intent.getStringExtra(Constant.TYPE)
+        val loanRecipient = intent.getStringExtra(Constant.RECIPIENT_ID)
 
-        val title = context.getString(R.string.app_name)
-        val notif_message = context.getString(R.string.notif_message, loanProduct)
+        val title = when {
+            loanType == Constant.LENDING -> context.resources.getString(R.string.notif_lending)
+            loanType == Constant.BORROWING -> context.resources.getString(R.string.notif_borrowing)
+            else -> context.resources.getString(R.string.notif_delivery)
+        }
+        val notif_message = when {
+            loanType == Constant.LENDING -> context.resources.getString(R.string.notif_message_lending, loanProduct, loanRecipient)
+            loanType == Constant.BORROWING -> context.resources.getString(R.string.notif_message_borrowing, loanProduct, loanRecipient)
+            else -> context.resources.getString(R.string.notif_message_delivery, loanProduct, loanRecipient)
+        }
 
         val intent = Intent(context, LoanDetailActivity::class.java)
         intent.putExtra(Constant.LOAN_ID, loanId)

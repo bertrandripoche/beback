@@ -1,5 +1,10 @@
 package com.depuisletemps.beback.ui.view
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.app.PendingIntent.FLAG_CANCEL_CURRENT
+import android.app.PendingIntent.FLAG_UPDATE_CURRENT
+import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
@@ -23,15 +28,16 @@ import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.recyclerview.ItemClickSupport
 import com.depuisletemps.beback.ui.recyclerview.LoanAdapter
+import com.depuisletemps.beback.utils.AlertReceiver
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.Companion.getStringFromDate
 import com.depuisletemps.beback.utils.Utils.Companion.getTimeStampFromString
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
-import com.google.firebase.Timestamp
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.android.synthetic.main.custom_toast.*
 import kotlinx.android.synthetic.main.fragment_loan_by_object.*
@@ -178,6 +184,7 @@ class LoanByObjectFragment: Fragment() {
         }.addOnCompleteListener {
             if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1)
             else displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1)
+            stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id)
             mAdapter.notifyDataSetChanged()
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
@@ -200,6 +207,7 @@ class LoanByObjectFragment: Fragment() {
 
         mDb.runBatch { batch ->
             batch.update(loanRef, Constant.RETURNED_DATE, null)
+            batch.update(loanRef, Constant.NOTIF, null)
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(-1))
             batch.update(loanerRef, loan.type, FieldValue.increment(+1))
@@ -229,6 +237,7 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
         }.addOnCompleteListener {
             displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_4)
+            stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id)
             mAdapter.notifyDataSetChanged()
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
@@ -402,5 +411,20 @@ class LoanByObjectFragment: Fragment() {
         val intent = Intent(context, LoanDetailActivity::class.java)
         intent.putExtra(Constant.LOAN_ID, tag)
         startActivity(intent)
+    }
+
+    /**
+     * This method stop the notification and clear the shared preferences
+     */
+    fun stopAlarm(loanId: String, loanProduct: String, loanType: String, loanRecipient: String) {
+        val alarmManager = activity!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        val intent = Intent(context, AlertReceiver::class.java)
+        intent.putExtra(Constant.LOAN_ID, loanId)
+        intent.putExtra(Constant.PRODUCT, loanProduct)
+        intent.putExtra(Constant.TYPE, loanType)
+        intent.putExtra(Constant.RECIPIENT_ID, loanRecipient)
+        val pendingIntent = PendingIntent.getBroadcast(context, loanId.hashCode(), intent, FLAG_CANCEL_CURRENT)
+        alarmManager.cancel(pendingIntent)
     }
 }

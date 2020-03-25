@@ -19,8 +19,9 @@
             android:id="@+id/item_product"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:gravity="center_vertical"
             android:textSize="@dimen/text_size_max"
+            android:gravity="center_vertical"
+            android:paddingTop="@dimen/basic"
             android:paddingEnd="@dimen/middle"
             android:textStyle="bold"
             android:textColor="@color/black"
@@ -47,14 +48,14 @@
                 android:src="@drawable/ic_due_date"
                 app:layout_constraintLeft_toLeftOf="@+id/item_loan_type"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/item_loan_type"
                 />
 
         <TextView
                 android:id="@+id/item_due_date"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:gravity="center_vertical"
+                android:gravity="top"
+                android:layout_marginTop="@dimen/basic"
                 android:textSize="@dimen/text_size_max"
                 android:textStyle="bold"
                 android:visibility="visible"
@@ -71,7 +72,6 @@
                 android:src="@drawable/ic_borrowing"
                 app:layout_constraintRight_toLeftOf="@+id/item_recipient"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/item_due_date_pic"
                 />
 
         <TextView
@@ -80,7 +80,8 @@
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/text_size_max"
                 android:paddingEnd="@dimen/basic"
-                android:gravity="center_vertical"
+                android:paddingBottom="@dimen/basic"
+                android:gravity="bottom"
                 android:textStyle="italic"
                 android:textColor="@color/red"
                 app:layout_constraintBottom_toBottomOf="@+id/item_loan_type"

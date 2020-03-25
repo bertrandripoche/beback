@@ -1,7 +1,11 @@
 package com.depuisletemps.beback.ui.view
 
 import android.Manifest
+import android.app.AlarmManager
 import android.app.DatePickerDialog
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.content.res.TypedArray
 import android.graphics.Color
@@ -10,6 +14,7 @@ import android.os.Bundle
 import android.provider.ContactsContract
 import android.text.Editable
 import android.text.TextWatcher
+import android.text.format.DateFormat
 import android.util.Log
 import android.view.Gravity
 import android.view.View
@@ -23,6 +28,7 @@ import com.depuisletemps.beback.model.LoanAward
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.customview.CategoryAdapter
+import com.depuisletemps.beback.utils.AlertReceiver
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.Companion.getStringFromDate
@@ -34,15 +40,24 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
-import kotlinx.android.synthetic.main.activity_add_loan.loan_due_date
-import kotlinx.android.synthetic.main.activity_add_loan.loan_product
-import kotlinx.android.synthetic.main.activity_add_loan.loan_recipient
-import kotlinx.android.synthetic.main.activity_add_loan.loan_recipient_title
-import kotlinx.android.synthetic.main.activity_add_loan.loan_type
-import kotlinx.android.synthetic.main.activity_add_loan.loan_type_pic
-import kotlinx.android.synthetic.main.activity_add_loan.mBtnCancelDate
-import kotlinx.android.synthetic.main.activity_add_loan.spinner_loan_categories
+import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.activity_loan_detail.*
+import kotlinx.android.synthetic.main.activity_loan_detail.loan_due_date
+import kotlinx.android.synthetic.main.activity_loan_detail.loan_due_date_title
+import kotlinx.android.synthetic.main.activity_loan_detail.loan_notif_date
+import kotlinx.android.synthetic.main.activity_loan_detail.loan_product
+import kotlinx.android.synthetic.main.activity_loan_detail.loan_recipient
+import kotlinx.android.synthetic.main.activity_loan_detail.loan_recipient_title
+import kotlinx.android.synthetic.main.activity_loan_detail.loan_type
+import kotlinx.android.synthetic.main.activity_loan_detail.loan_type_pic
+import kotlinx.android.synthetic.main.activity_loan_detail.mBtnCancelDate
+import kotlinx.android.synthetic.main.activity_loan_detail.mBtnCancelNotif
+import kotlinx.android.synthetic.main.activity_loan_detail.mBtnPick
+import kotlinx.android.synthetic.main.activity_loan_detail.notif_d_day
+import kotlinx.android.synthetic.main.activity_loan_detail.notif_one_week
+import kotlinx.android.synthetic.main.activity_loan_detail.notif_three_days
+import kotlinx.android.synthetic.main.activity_loan_detail.spinner_loan_categories
+import kotlinx.android.synthetic.main.activity_loan_detail.toggle_btns
 import kotlinx.android.synthetic.main.custom_toast.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.joda.time.LocalDate
@@ -55,6 +70,8 @@ class LoanDetailActivity: BaseActivity() {
     var mWho:String = ""
     var mProductCategory:String = ""
     var mDue:String = ""
+    var mNotif:String? = null
+    var mNotifDiff: Boolean = false
     var mCurrentProductCategory:String = ""
     var mCurrentDue:String = ""
     var mLoanId: String = ""
@@ -64,21 +81,31 @@ class LoanDetailActivity: BaseActivity() {
     lateinit var mCategories: Array<String>
     lateinit var mCategoriesIcons: TypedArray
     val mUser: FirebaseUser? = getCurrentUser()
+    var yellowColor: Int = 0
+    var orangeColor: Int = 0
+    var lightGreyColor: Int = 0
+    var greyColor: Int = 0
+    var blueColor: Int = 0
+    var blueDeeperColor: Int = 0
+    var blackColor: Int = 0
+    var redColor: Int = 0
+    var greenColor: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loan_detail)
-
+        defineColors()
         mCategories = this.resources.getStringArray(R.array.product_category)
         mCategoriesIcons = this.resources.obtainTypedArray(R.array.product_category_icon)
 
-        getLoan()
-        getSavedInstanceData(savedInstanceState)
 
         configureButtons()
         configureToolbar()
         configureSpinner()
         configureTextWatchers()
+
+        getLoan()
+        getSavedInstanceData(savedInstanceState)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -92,11 +119,42 @@ class LoanDetailActivity: BaseActivity() {
         outState.putString(Constant.DUESAVED, mDue)
         outState.putString(Constant.PRODUCT_CATEGORYSAVED, mCategories[spinner_loan_categories.selectedItemPosition])
         outState.putString(Constant.LOAN_ID, mLoanId)
+        outState.putString(Constant.NOTIF_DATE, mNotif)
+    }
+
+    private fun getSavedInstanceData(savedInstanceState: Bundle?) {
+        if (savedInstanceState != null){
+            mFirstTime = false
+            if (savedInstanceState.getString(Constant.DUE_DATE_SET) != Constant.FAR_AWAY_DATE)
+                setPickDate(savedInstanceState.getString("dueDateSet"), getString(R.string.due))
+            if (savedInstanceState.getString(Constant.MWHAT) != null) mWhat = savedInstanceState.getString(Constant.MWHAT)!!
+            if (savedInstanceState.getString(Constant.MWHO) != null) mWho = savedInstanceState.getString(Constant.MWHO)!!
+            if (savedInstanceState.getString(Constant.WHATSAVED) != null) loan_product.setText(savedInstanceState.getString(Constant.WHATSAVED)!!)
+            if (savedInstanceState.getString(Constant.WHOSAVED) != null) loan_recipient.setText(savedInstanceState.getString(Constant.WHOSAVED)!!)
+            if (savedInstanceState.getString(Constant.PRODUCT_CATEGORYSAVED) != null) mCurrentProductCategory = savedInstanceState.getString(Constant.PRODUCT_CATEGORYSAVED)!!
+            if (savedInstanceState.getString(Constant.DUESAVED) != null) mCurrentDue = savedInstanceState.getString(Constant.DUESAVED)!!
+            if (savedInstanceState.getString(Constant.LOAN_ID) != null) mLoanId = savedInstanceState.getString(Constant.LOAN_ID)!!
+            if (savedInstanceState.getString(Constant.NOTIF_DATE) != null) mNotif = savedInstanceState.getString(Constant.NOTIF_DATE)!!
+            setEditBtnState()
+            setEditFieldsTextColor()
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
+    }
+
+    private fun defineColors() {
+        yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
+        orangeColor = ContextCompat.getColor(this, R.color.secondaryDarkColor)
+        lightGreyColor = ContextCompat.getColor(this, R.color.light_grey)
+        greyColor = ContextCompat.getColor(this, R.color.grey)
+        blueColor = ContextCompat.getColor(this, R.color.primaryLightColor)
+        blueDeeperColor = ContextCompat.getColor(this, R.color.primaryColor)
+        blackColor = ContextCompat.getColor(this, R.color.black)
+        greenColor = ContextCompat.getColor(this, R.color.green)
+        redColor = ContextCompat.getColor(this, R.color.red)
     }
 
     private fun configureButtons() {
@@ -108,6 +166,40 @@ class LoanDetailActivity: BaseActivity() {
                     .show()
             }
         }
+
+        notif_d_day.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                notif_d_day.setBackgroundColor(yellowColor)
+                if (notif_three_days.isChecked) unsetToggle(notif_three_days)
+                if (notif_one_week.isChecked) unsetToggle(notif_one_week)
+            } else {
+                notif_d_day.setBackgroundColor(lightGreyColor)
+            }
+            setEditBtnState()
+        })
+
+        notif_three_days.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                notif_three_days.setBackgroundColor(yellowColor)
+                if (notif_one_week.isChecked) unsetToggle(notif_one_week)
+                if (notif_d_day.isChecked) unsetToggle(notif_d_day)
+            } else {
+                notif_three_days.setBackgroundColor(lightGreyColor)
+            }
+            setEditBtnState()
+        })
+
+        notif_one_week.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                notif_one_week.setBackgroundColor(yellowColor)
+                if (notif_three_days.isChecked) unsetToggle(notif_three_days)
+                if (notif_d_day.isChecked) unsetToggle(notif_d_day)
+            } else {
+                notif_one_week.setBackgroundColor(lightGreyColor)
+            }
+            setEditBtnState()
+        })
+
         mBtnDelete.setOnClickListener{deleteTheLoan(mLoan!!)}
         mBtnUnarchive.setOnClickListener{unarchiveTheLoan(mLoan!!)}
     }
@@ -137,12 +229,9 @@ class LoanDetailActivity: BaseActivity() {
                 setEditBtnState()
                 if (mLoan?.returned_date == null) {
                     if (spinner.selectedView != null) {
-                        val greyColor = ContextCompat.getColor(applicationContext, R.color.grey)
                         val text: TextView =
                             (spinner.selectedView as ConstraintLayout).getViewById(R.id.text_category) as TextView
-                        if (position != mCategories.indexOf(mProductCategory)) text.setTextColor(
-                            Color.BLACK
-                        )
+                        if (position != mCategories.indexOf(mProductCategory)) text.setTextColor(Color.BLACK)
                         else text.setTextColor(greyColor)
                     }
                 }
@@ -163,36 +252,9 @@ class LoanDetailActivity: BaseActivity() {
      * @param loan is the Loan object representing the current loan data
      */
     private fun configureScreen(loan: Loan?) {
-        val greenColor = ContextCompat.getColor(this, R.color.green)
-        val redColor = ContextCompat.getColor(this, R.color.red)
-        val yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
-        val blueColor = ContextCompat.getColor(this, R.color.primaryColor)
-        val blackColor = ContextCompat.getColor(this, R.color.black)
-        val orangeColor = ContextCompat.getColor(this, R.color.secondaryDarkColor)
-        val greyColor = ContextCompat.getColor(this, R.color.dark_grey)
 
         if (loan != null) {
-            if (loan.type.equals(LoanType.LENDING.type)) {
-                loan_type.setBackgroundColor(greenColor)
-                loan_type_pic.setBackgroundColor(greenColor)
-                loan_recipient_title.text = getString(R.string.whom_no_star)
-                loan_type.text = getString(R.string.i_lended)
-                loan_type_pic.setImageResource(R.drawable.ic_loan_black)
-            } else if (loan.type.equals(LoanType.BORROWING.type)) {
-                loan_type.setBackgroundColor(redColor)
-                loan_type_pic.setBackgroundColor(redColor)
-                loan_recipient_title.text = getString(R.string.who_no_star)
-                loan_type.text = getString(R.string.i_borrowed)
-                loan_type_pic.setImageResource(R.drawable.ic_borrowing_black)
-            } else if (loan.type.equals(LoanType.DELIVERY.type)) {
-                loan_type.setBackgroundColor(yellowColor)
-                loan_type_pic.setBackgroundColor(yellowColor)
-                loan_recipient_title.text = getString(R.string.who_no_star)
-                loan_type.text = getString(R.string.i_wait)
-                loan_recipient.hint = getString(R.string.delivery_hint)
-                loan_creation_date_title.text = getString(R.string.since)
-                loan_type_pic.setImageResource(R.drawable.ic_delivery_black)
-            }
+            configureType(loan)
 
             if (loan.returned_date != null) {
                 mBtnDelete.visibility = View.VISIBLE
@@ -252,7 +314,7 @@ class LoanDetailActivity: BaseActivity() {
 
             } else {
                 mBtnEdit.visibility = View.VISIBLE
-                if (getStringFromDate(loan.due_date?.toDate()) != Constant.FAR_AWAY_DATE && mFirstTime) setPickDate(getStringFromDate(loan.due_date?.toDate()))
+                if (getStringFromDate(loan.due_date?.toDate()) != Constant.FAR_AWAY_DATE && mFirstTime) setPickDate(getStringFromDate(loan.due_date?.toDate()),getString(R.string.due))
                 if (mFirstTime) loan_product.setText(loan.product)
                 if (mFirstTime) loan_recipient.setText(loan.recipient_id)
                 loan_creation_date.setTextColor(greyColor)
@@ -262,6 +324,19 @@ class LoanDetailActivity: BaseActivity() {
             if (mFirstTime) spinner_loan_categories.setSelection(mUtils.getIndexFromCategory(loan.product_category))
             else spinner_loan_categories.setSelection(mUtils.getIndexFromCategory(mCurrentProductCategory))
             loan_creation_date.text = getStringFromDate(loan.creation_date?.toDate())
+
+            if (loan.notif != null) {
+                when (loan.notif) {
+                    Constant.NOTIF_D_DAY -> setToggle(notif_d_day)
+                    Constant.NOTIF_THREE_DAYS -> setToggle(notif_three_days)
+                    Constant.NOTIF_ONE_WEEK -> setToggle(notif_one_week)
+                    else -> {
+                        loan_notif_date.text = loan.notif
+                        loan_notif_date.setTextColor(greyColor)
+                        mBtnCancelNotif.visibility = View.VISIBLE
+                    }
+                }
+            }
         }
 
         if (mUser != null) {
@@ -300,8 +375,34 @@ class LoanDetailActivity: BaseActivity() {
                     }
             }
         }
-
         disableFloatButton()
+    }
+
+    /**
+     * This method configures the Type title section
+     */
+    private fun configureType(loan: Loan) {
+        if (loan.type.equals(LoanType.LENDING.type)) {
+            loan_type.setBackgroundColor(greenColor)
+            loan_type_pic.setBackgroundColor(greenColor)
+            loan_recipient_title.text = getString(R.string.whom_no_star)
+            loan_type.text = getString(R.string.i_lended)
+            loan_type_pic.setImageResource(R.drawable.ic_loan_black)
+        } else if (loan.type.equals(LoanType.BORROWING.type)) {
+            loan_type.setBackgroundColor(redColor)
+            loan_type_pic.setBackgroundColor(redColor)
+            loan_recipient_title.text = getString(R.string.who_no_star)
+            loan_type.text = getString(R.string.i_borrowed)
+            loan_type_pic.setImageResource(R.drawable.ic_borrowing_black)
+        } else if (loan.type.equals(LoanType.DELIVERY.type)) {
+            loan_type.setBackgroundColor(yellowColor)
+            loan_type_pic.setBackgroundColor(yellowColor)
+            loan_recipient_title.text = getString(R.string.who_no_star)
+            loan_type.text = getString(R.string.i_wait)
+            loan_recipient.hint = getString(R.string.delivery_hint)
+            loan_creation_date_title.text = getString(R.string.since)
+            loan_type_pic.setImageResource(R.drawable.ic_delivery_black)
+        }
     }
 
     /**
@@ -314,23 +415,6 @@ class LoanDetailActivity: BaseActivity() {
 
         override fun afterTextChanged(s: Editable) {
             // Enable-disable Floating Action Button
-            setEditBtnState()
-            setEditFieldsTextColor()
-        }
-    }
-
-    private fun getSavedInstanceData(savedInstanceState: Bundle?) {
-        if (savedInstanceState != null){
-            mFirstTime = false
-            if (savedInstanceState.getString("dueDateSet") != Constant.FAR_AWAY_DATE)
-                setPickDate(savedInstanceState.getString("dueDateSet"))
-            if (savedInstanceState.getString("mWhat") != null) mWhat = savedInstanceState.getString("mWhat")!!
-            if (savedInstanceState.getString("mWho") != null) mWho = savedInstanceState.getString("mWho")!!
-            if (savedInstanceState.getString("whatSaved") != null) loan_product.setText(savedInstanceState.getString("whatSaved")!!)
-            if (savedInstanceState.getString("whoSaved") != null) loan_recipient.setText(savedInstanceState.getString("whoSaved")!!)
-            if (savedInstanceState.getString("productCategorySaved") != null) mCurrentProductCategory = savedInstanceState.getString("productCategorySaved")!!
-            if (savedInstanceState.getString("dueSaved") != null) mCurrentDue = savedInstanceState.getString("dueSaved")!!
-            if (savedInstanceState.getString("loanId") != null) mLoanId = savedInstanceState.getString("loanId")!!
             setEditBtnState()
             setEditFieldsTextColor()
         }
@@ -350,6 +434,7 @@ class LoanDetailActivity: BaseActivity() {
                 mWhat = mLoan!!.product
                 mWho = mLoan!!.recipient_id
                 mDue = getStringFromDate(mLoan!!.due_date?.toDate())
+                mNotif = mLoan!!.notif
 
                 configureScreen(mLoan)
             }
@@ -359,9 +444,6 @@ class LoanDetailActivity: BaseActivity() {
      * This method enable/disable the edit button
      */
     fun setEditFieldsTextColor() {
-        val blackColor = ContextCompat.getColor(this, R.color.black)
-        val greyColor = ContextCompat.getColor(this, R.color.grey)
-
         if (loan_product.text.toString() != mWhat) loan_product.setTextColor(blackColor) else loan_product.setTextColor(greyColor)
         if (loan_recipient.text.toString() != mWho) loan_recipient.setTextColor(blackColor) else loan_recipient.setTextColor(greyColor)
         if (loan_due_date.text != mDue) loan_due_date.setTextColor(blackColor) else loan_due_date.setTextColor(greyColor)
@@ -380,7 +462,6 @@ class LoanDetailActivity: BaseActivity() {
     fun isFormValid(): Boolean {
         val categories: Array<String> =
             this.resources.getStringArray(R.array.product_category)
-        val blackColor = ContextCompat.getColor(this, R.color.black)
         val darkGreyColor = ContextCompat.getColor(this, R.color.dark_grey)
 
         if (loan_returned_date == null) {
@@ -388,11 +469,20 @@ class LoanDetailActivity: BaseActivity() {
             else loan_due_date.setTextColor(darkGreyColor)
         }
 
+        val currentNotif: String? = when {
+            notif_d_day.isChecked -> Constant.NOTIF_D_DAY
+            notif_three_days.isChecked -> Constant.NOTIF_THREE_DAYS
+            notif_one_week.isChecked -> Constant.NOTIF_ONE_WEEK
+            loan_notif_date.text.toString() != "" -> loan_notif_date.text.toString()
+            else -> null
+        }
+
         return !loan_product.text.toString().equals(mWhat)
                 || !loan_recipient.text.toString().equals(mWho)
                 || (!loan_due_date.text.toString().equals(mDue) && !loan_due_date.text.toString().equals(""))
                 || (mDue != Constant.FAR_AWAY_DATE && loan_due_date.text.toString() == "")
                 || categories[spinner_loan_categories.selectedItemPosition] != mProductCategory
+                || (currentNotif != mNotif || loan_due_date.text.toString() != mDue)
     }
 
     /**
@@ -405,8 +495,13 @@ class LoanDetailActivity: BaseActivity() {
         val month:Int = today.monthOfYear-1
         val day = today.dayOfMonth
 
+        val btn: String = when (view.id) {
+            R.id.mBtnPick -> getString(R.string.due)
+            else -> getString(R.string.notif)
+        }
+
         val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-            setPickDate(getString(R.string.due_date, df.format(dayOfMonth), df.format(monthOfYear+1), year))
+            setPickDate(getString(R.string.due_date, df.format(dayOfMonth), df.format(monthOfYear+1), year), btn)
             setEditBtnState()
         }, year, month, day)
         dpd.datePicker.minDate = System.currentTimeMillis()
@@ -416,23 +511,123 @@ class LoanDetailActivity: BaseActivity() {
     /**
      * This method set the date picked in the accurate field
      */
-    private fun setPickDate(date: String?) {
+    private fun setPickDate(date: String?, btn: String) {
         if (date != null) {
-            loan_due_date.text = date
-            loan_due_date.setTextColor(Color.BLACK)
-            mBtnCancelDate.visibility = View.VISIBLE
+            when (btn) {
+                getString(R.string.due) -> {
+                    loan_due_date.text = date
+                    loan_due_date.setBackgroundColor(blueColor)
+                    if (loan_due_date.text == mDue) loan_due_date.setTextColor(greyColor)
+                    else loan_due_date.setTextColor(blackColor)
+                    mBtnCancelDate.visibility = View.VISIBLE
+                }
+                getString(R.string.notif) -> {
+                    loan_notif_date.text = date
+                    loan_notif_date.setBackgroundColor(blueColor)
+                    if ((loan_notif_date.text == mNotif && loan_due_date.text == mDue)
+                        ||
+                        (loan_notif_date.text == mNotif && loan_due_date.text == "" && mDue == Constant.FAR_AWAY_DATE))
+                        loan_notif_date.setTextColor(greyColor)
+                    else loan_notif_date.setTextColor(blackColor)
+                    mBtnCancelNotif.visibility = View.VISIBLE
+                }
+            }
+            unsetToggle(notif_d_day)
+            unsetToggle(notif_three_days)
+            unsetToggle(notif_one_week)
+            setToggleButtons()
+            checkNotifBtns()
         }
+    }
+
+    /**
+     * This method unsets the toggle button
+     */
+    fun unsetToggle(btn: ToggleButton) {
+        btn.isChecked = false
+        btn.isClickable = true
+        btn.setBackgroundColor(lightGreyColor)
+        btn.setTextColor(blackColor)
+    }
+
+    /**
+     * This method sets the toggle button
+     */
+    fun setToggle(btn: ToggleButton) {
+        btn.isChecked = true
+        btn.setBackgroundColor(yellowColor)
+    }
+
+    /**
+     * This method disables the toggle button
+     */
+    fun disableToggle(btn: ToggleButton) {
+        btn.isChecked = false
+        btn.isClickable = false
+        btn.setBackgroundColor(blueColor)
+        btn.setTextColor(greyColor)
+    }
+
+    /**
+     * Method to display/hide the toggle notification buttons
+     */
+    private fun setToggleButtons() {
+        if (loan_due_date.text != "" && loan_notif_date.text == "") {
+            loan_notif_date.visibility = View.INVISIBLE
+            toggle_btns.visibility = View.VISIBLE
+        } else {
+            loan_notif_date.visibility = View.VISIBLE
+            toggle_btns.visibility = View.INVISIBLE
+        }
+        enableNotifBtn()
+    }
+
+    /**
+     * Method to check if the notifs buttons should be switched off
+     */
+    private fun checkNotifBtns() {
+        if (loan_due_date.text != "") {
+            val dueDate = Utils.getLocalDateFromString(loan_due_date.text.toString())
+            val today = LocalDate.now()
+            if (Utils.getDifferenceDays(today, dueDate) < 1) disableToggle(notif_d_day)
+            if (Utils.getDifferenceDays(today, dueDate) < 4) disableToggle(notif_three_days)
+            if (Utils.getDifferenceDays(today, dueDate) < 8) disableToggle(notif_one_week)
+        }
+    }
+
+    /**
+     * This methods disables the notif button
+     */
+    private fun enableNotifBtn() {
+        unsetToggle(notif_d_day)
+        unsetToggle(notif_three_days)
+        unsetToggle(notif_one_week)
     }
 
     /**
      * This method empties the due date field
      */
     fun cancelDate(view: View) {
-        loan_due_date.text = ""
-        val primaryColor = ContextCompat.getColor(this, R.color.primaryColor)
-        loan_due_date.setBackgroundColor(primaryColor)
-        mBtnCancelDate.visibility = View.GONE
+        val btn: String = when (view.id) {
+            R.id.mBtnCancelDate -> getString(R.string.due)
+            else -> getString(R.string.notif)
+        }
+
+        when (btn) {
+            getString(R.string.due) -> {
+                loan_due_date.text = ""
+                loan_due_date.setBackgroundColor(blueDeeperColor)
+                mBtnCancelDate.visibility = View.GONE
+            }
+            getString(R.string.notif) -> {
+                loan_notif_date.text = ""
+                loan_notif_date.setBackgroundColor(blueDeeperColor)
+                mBtnCancelNotif.visibility = View.GONE
+            }
+        }
         setEditBtnState()
+        setToggleButtons()
+        checkNotifBtns()
     }
 
     /**
@@ -521,6 +716,7 @@ class LoanDetailActivity: BaseActivity() {
             batch.update(loanerRef, awardsByType(loan.type), FieldValue.increment(-points))
         }.addOnCompleteListener {
             displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_3)
+            stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id)
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
         }
@@ -562,8 +758,6 @@ class LoanDetailActivity: BaseActivity() {
                 getString(R.string.undeleted_message, loan.product),
                 R.drawable.bubble_4
             )
-
-            //Toast.makeText(context,  getString(R.string.undeleted_message, loan.product), Toast.LENGTH_SHORT).show()
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
         }
@@ -662,12 +856,29 @@ class LoanDetailActivity: BaseActivity() {
      * @param type is the type of loan of the Loan object
      * @return a String which is the "opposite" status of the loan type
      */
-    fun reverseTypeField(type: String): String {
-        when (type) {
-            LoanType.LENDING.type -> return LoanType.ENDED_LENDING.type
-            LoanType.BORROWING.type -> return LoanType.ENDED_BORROWING.type
-            else -> return LoanType.ENDED_DELIVERY.type
+    private fun reverseTypeField(type: String): String {
+        return when (type) {
+            LoanType.LENDING.type -> LoanType.ENDED_LENDING.type
+            LoanType.BORROWING.type -> LoanType.ENDED_BORROWING.type
+            else -> LoanType.ENDED_DELIVERY.type
         }
+    }
+
+    /**
+     * This method stop the notification and clear the shared preferences
+     */
+    fun stopAlarm(loanId: String, loanProduct: String, loanType: String, loanRecipient: String) {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        val intent = Intent(this, AlertReceiver::class.java)
+        intent.putExtra(Constant.LOAN_ID, loanId)
+        intent.putExtra(Constant.PRODUCT, loanProduct)
+        intent.putExtra(Constant.TYPE, loanType)
+        intent.putExtra(Constant.RECIPIENT_ID, loanRecipient)
+        val pendingIntent = PendingIntent.getBroadcast(this, loanId.hashCode(), intent,
+            PendingIntent.FLAG_CANCEL_CURRENT
+        )
+        alarmManager.cancel(pendingIntent)
     }
 
     /**
@@ -694,5 +905,56 @@ class LoanDetailActivity: BaseActivity() {
             daysDiff >= 0 -> 2
             else -> 1
         }
+    }
+
+    private fun createNotification(loanId: String, loanProduct: String){
+        val dateNotif: LocalDate = getNotifDate()
+
+        val day: String = DateFormat.format("dd", dateNotif.toDate()).toString()
+        val month: String  = DateFormat.format("MM", dateNotif.toDate()).toString()
+        val year: String  = DateFormat.format("yyyy", dateNotif.toDate()).toString()
+        val monthForCalendar = Integer.parseInt(month) - 1
+        val calendar: Calendar = Calendar.getInstance()
+        calendar.set(Calendar.YEAR, Integer.parseInt(year))
+        calendar.set(Calendar.MONTH, monthForCalendar)
+        calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day))
+        calendar.set(Calendar.HOUR_OF_DAY,21)
+        calendar.set(Calendar.MINUTE,47)
+        calendar.set(Calendar.SECOND,0)
+        calendar.set(Calendar.AM_PM, Calendar.PM)
+
+        startAlarm(calendar, loanId, loanProduct)
+    }
+
+    private fun getNotifDate(): LocalDate {
+        val dateNotif: LocalDate
+        if (loan_notif_date.text.toString() != "") {
+            if (loan_notif_date.text.toString() != "") dateNotif =
+                Utils.getLocalDateFromString(loan_notif_date.text.toString())
+            else {
+                dateNotif = Utils.getLocalDateFromString(loan_due_date.text.toString())
+                if (notif_three_days.isChecked) dateNotif.minusDays(3)
+                if (notif_one_week.isChecked) dateNotif.minusDays(7)
+            }
+        } else {
+            dateNotif = LocalDate.now()
+        }
+        return dateNotif
+    }
+
+    /**
+     * This method start the notification via the alertReceiver class and alarmManager
+     */
+    fun startAlarm(calendar: Calendar, loanId: String, loanProduct: String) {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(this, AlertReceiver::class.java)
+        intent.putExtra(Constant.LOAN_ID, loanId)
+        intent.putExtra(Constant.PRODUCT, loanProduct)
+        val pendingIntent = PendingIntent.getBroadcast(this, loanId.hashCode(), intent, 0)
+        alarmManager.setExact(
+            AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            pendingIntent
+        )
     }
 }
