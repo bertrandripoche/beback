@@ -36,6 +36,9 @@ class LoanPagerActivity: BaseActivity() {
         mMode = getLoanMode(savedInstanceState)
 
         mBtnAdd.setOnClickListener{createLoanAlertDialog()}
+
+        mBtnFilter.setOnClickListener{startFilterActivity()}
+
     }
 
     /**
@@ -261,6 +264,14 @@ class LoanPagerActivity: BaseActivity() {
      */
     fun startProfileActivity() {
         val intent = Intent(this, ProfileActivity::class.java)
+        startActivity(intent)
+    }
+
+    /**
+     * This method starts the Filter activity
+     */
+    fun startFilterActivity() {
+        val intent = Intent(this, FilterActivity::class.java)
         startActivity(intent)
     }
 }

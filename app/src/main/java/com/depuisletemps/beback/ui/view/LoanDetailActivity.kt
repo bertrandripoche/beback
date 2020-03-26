@@ -504,7 +504,7 @@ class LoanDetailActivity: BaseActivity() {
             setPickDate(getString(R.string.due_date, df.format(dayOfMonth), df.format(monthOfYear+1), year), btn)
             setEditBtnState()
         }, year, month, day)
-        dpd.datePicker.minDate = System.currentTimeMillis()
+        //dpd.datePicker.minDate = System.currentTimeMillis()
         dpd.show()
     }
 
@@ -653,12 +653,24 @@ class LoanDetailActivity: BaseActivity() {
         val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(mLoan!!.id)
         val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(mLoan!!.requestor_id).collection(Constant.LOANERS_COLLECTION).document(mLoan!!.recipient_id)
 
+        val currentNotif: String? = when {
+            notif_d_day.isChecked -> Constant.NOTIF_D_DAY
+            notif_three_days.isChecked -> Constant.NOTIF_THREE_DAYS
+            notif_one_week.isChecked -> Constant.NOTIF_ONE_WEEK
+            loan_notif_date.text.toString() != "" -> loan_notif_date.text.toString()
+            else -> null
+        }
+
         mDb.runBatch { batch ->
             if (categories[spinner_loan_categories.selectedItemPosition] != mProductCategory) batch.update(loanRef, "product_category", categories[spinner_loan_categories.selectedItemPosition])
             if (!loan_product.text.toString().equals("")) batch.update(loanRef, Constant.PRODUCT, loan_product.text.toString())
             if (!loan_recipient.text.toString().equals("")) {
                 val loanerRefNew = mDb.collection(Constant.USERS_COLLECTION).document(mLoan!!.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan_recipient.text.toString())
                 val loanerData = hashMapOf(Constant.NAME to loan_recipient.text.toString())
+
+                if (!loan_due_date.text.toString().equals(mDue) || (currentNotif != mNotif || loan_due_date.text.toString() != mDue)) {
+                    batch.update(loanRef, Constant.NOTIF, currentNotif)
+                }
 
                 batch.update(loanRef, Constant.RECIPIENT_ID, loan_recipient.text.toString())
                 when (mLoan!!.type) {
@@ -683,6 +695,10 @@ class LoanDetailActivity: BaseActivity() {
                 getString(R.string.saved),
                 R.drawable.bubble_3
             )
+            if (!loan_due_date.text.toString().equals(mDue) || (currentNotif != mNotif || loan_due_date.text.toString() != mDue)) {
+                stopAlarm(mLoan!!.id, mLoan!!.product, mLoan!!.type, mLoan!!.recipient_id)
+                createNotification(mLoanId, mLoan!!.product, mLoan!!.type, mLoan!!.recipient_id)
+            }
             startLoanPagerActivity(getString(R.string.standard))
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
@@ -865,23 +881,6 @@ class LoanDetailActivity: BaseActivity() {
     }
 
     /**
-     * This method stop the notification and clear the shared preferences
-     */
-    fun stopAlarm(loanId: String, loanProduct: String, loanType: String, loanRecipient: String) {
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        val intent = Intent(this, AlertReceiver::class.java)
-        intent.putExtra(Constant.LOAN_ID, loanId)
-        intent.putExtra(Constant.PRODUCT, loanProduct)
-        intent.putExtra(Constant.TYPE, loanType)
-        intent.putExtra(Constant.RECIPIENT_ID, loanRecipient)
-        val pendingIntent = PendingIntent.getBroadcast(this, loanId.hashCode(), intent,
-            PendingIntent.FLAG_CANCEL_CURRENT
-        )
-        alarmManager.cancel(pendingIntent)
-    }
-
-    /**
      * This method returns the opposite field, eg : Borrowing -> Ended_borrowing
      * @param type is the type of loan of the Loan object
      * @return a String which is the "opposite" status of the loan type
@@ -907,7 +906,7 @@ class LoanDetailActivity: BaseActivity() {
         }
     }
 
-    private fun createNotification(loanId: String, loanProduct: String){
+    private fun createNotification(loanId: String, loanProduct: String, loanType: String, loanRecipient: String){
         val dateNotif: LocalDate = getNotifDate()
 
         val day: String = DateFormat.format("dd", dateNotif.toDate()).toString()
@@ -918,12 +917,12 @@ class LoanDetailActivity: BaseActivity() {
         calendar.set(Calendar.YEAR, Integer.parseInt(year))
         calendar.set(Calendar.MONTH, monthForCalendar)
         calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day))
-        calendar.set(Calendar.HOUR_OF_DAY,21)
-        calendar.set(Calendar.MINUTE,47)
+        calendar.set(Calendar.HOUR_OF_DAY,16)
+        calendar.set(Calendar.MINUTE,23)
         calendar.set(Calendar.SECOND,0)
         calendar.set(Calendar.AM_PM, Calendar.PM)
 
-        startAlarm(calendar, loanId, loanProduct)
+        startAlarm(calendar, loanId, loanProduct, loanType, loanRecipient)
     }
 
     private fun getNotifDate(): LocalDate {
@@ -945,16 +944,35 @@ class LoanDetailActivity: BaseActivity() {
     /**
      * This method start the notification via the alertReceiver class and alarmManager
      */
-    fun startAlarm(calendar: Calendar, loanId: String, loanProduct: String) {
+    fun startAlarm(calendar: Calendar, loanId: String, loanProduct: String, loanType: String, loanRecipient: String) {
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(this, AlertReceiver::class.java)
         intent.putExtra(Constant.LOAN_ID, loanId)
         intent.putExtra(Constant.PRODUCT, loanProduct)
+        intent.putExtra(Constant.TYPE, loanType)
+        intent.putExtra(Constant.RECIPIENT_ID, loanRecipient)
         val pendingIntent = PendingIntent.getBroadcast(this, loanId.hashCode(), intent, 0)
         alarmManager.setExact(
             AlarmManager.RTC_WAKEUP,
             calendar.timeInMillis,
             pendingIntent
         )
+    }
+
+    /**
+     * This method stop the notification and clear the shared preferences
+     */
+    fun stopAlarm(loanId: String, loanProduct: String, loanType: String, loanRecipient: String) {
+        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        val intent = Intent(this, AlertReceiver::class.java)
+        intent.putExtra(Constant.LOAN_ID, loanId)
+        intent.putExtra(Constant.PRODUCT, loanProduct)
+        intent.putExtra(Constant.TYPE, loanType)
+        intent.putExtra(Constant.RECIPIENT_ID, loanRecipient)
+        val pendingIntent = PendingIntent.getBroadcast(this, loanId.hashCode(), intent,
+            PendingIntent.FLAG_CANCEL_CURRENT
+        )
+        alarmManager.cancel(pendingIntent)
     }
 }

@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/activity_filter_container"
+        android:background="@color/primaryColor"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <include layout="@layout/toolbar"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+    <TextView
+            android:id="@+id/filter_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/middle"
+            android:background="@color/secondaryColor"
+            android:textSize="@dimen/title_size"
+            android:textAllCaps="true"
+            android:textAlignment="center"
+            android:text="@string/filter"
+            android:gravity="center_vertical"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+    <ImageView
+            android:id="@+id/filter_pic"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:scaleType="centerCrop"
+            android:padding="@dimen/middle"
+            android:src="@drawable/ic_filter"
+            android:background="@color/secondaryColor"
+            app:layout_constraintTop_toTopOf="@+id/filter_title"
+            app:layout_constraintBottom_toBottomOf="@+id/filter_title"
+            app:layout_constraintLeft_toLeftOf="parent"
+            />
+
+    <TextView
+            android:id="@+id/filter_product_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/extra"
+            android:textSize="@dimen/text_size_max"
+            android:textAllCaps="true"
+            android:textAlignment="center"
+            android:gravity="center_vertical"
+            android:text="@string/what"
+            app:layout_constraintTop_toBottomOf="@+id/filter_title"
+            app:layout_constraintBottom_toTopOf="@+id/filter_recipient"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="@+id/guideline_vertical_left"
+            />
+
+    <AutoCompleteTextView
+            android:id="@+id/filter_product"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/extra"
+            android:layout_margin="@dimen/basic"
+            android:hint="@string/product_hint"
+            android:background="@color/primaryLightColor"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@+id/filter_title"
+            app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_left"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+
+    <TextView
+            android:id="@+id/filter_recipient_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/extra"
+            android:textSize="@dimen/text_size_max"
+            android:textAllCaps="true"
+            android:textAlignment="center"
+            android:gravity="center_vertical"
+            android:text="@string/whom"
+            app:layout_constraintTop_toBottomOf="@+id/filter_product"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="@+id/guideline_vertical_left"
+            />
+
+    <AutoCompleteTextView
+            android:id="@+id/filter_recipient"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/extra"
+            android:layout_margin="@dimen/basic"
+            android:hint="@string/recipient_hint"
+            android:background="@color/primaryLightColor"
+            android:textAlignment="center"
+            app:layout_constraintTop_toBottomOf="@+id/filter_product"
+            app:layout_constraintLeft_toRightOf="@+id/guideline_vertical_left"
+            app:layout_constraintRight_toRightOf="parent"
+            />
+
+
+    <ToggleButton
+            android:id="@+id/toggle_borrowing"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="@dimen/middle"
+            android:padding="@dimen/middle"
+            android:drawableTop="@drawable/ic_borrowing_black"
+            android:background="@drawable/round_grey_color_button"
+            android:layout_marginEnd="@dimen/basic"
+            android:textOn="@string/borrowing"
+            android:textOff="@string/borrowing"
+            android:textSize="@dimen/text_size_max"
+            app:layout_constraintTop_toBottomOf="@+id/filter_recipient"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/toggle_lending"
+            />
+
+    <ToggleButton
+            android:id="@+id/toggle_lending"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_margin="@dimen/middle"
+            android:padding="@dimen/middle"
+            android:drawableTop="@drawable/ic_borrowing_black"
+            android:background="@drawable/round_grey_color_button"
+            android:layout_marginEnd="@dimen/basic"
+            android:textOn="@string/lending"
+            android:textOff="@string/lending"
+            android:textSize="@dimen/text_size_max"
+            app:layout_constraintTop_toBottomOf="@+id/filter_recipient"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/toggle_borrowing"
+            />
+
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_vertical_right"
+            android:layout_width="1dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.95"/>
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_vertical_left"
+            android:layout_width="1dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.2"/>
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_horizontal_middle"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.85"/>
+    <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.95"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/mBtnSubmit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_submit"
+            app:fabSize="normal"
+            app:maxImageSize="40dp"
+            app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal"
+            app:layout_constraintRight_toLeftOf="@+id/guideline_vertical_right"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

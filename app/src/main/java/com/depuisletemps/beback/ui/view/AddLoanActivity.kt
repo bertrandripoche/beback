@@ -50,7 +50,6 @@ import kotlinx.android.synthetic.main.activity_add_loan.notif_one_week
 import kotlinx.android.synthetic.main.activity_add_loan.notif_three_days
 import kotlinx.android.synthetic.main.activity_add_loan.spinner_loan_categories
 import kotlinx.android.synthetic.main.activity_add_loan.toggle_btns
-import kotlinx.android.synthetic.main.activity_loan_detail.*
 import kotlinx.android.synthetic.main.toolbar.*
 import org.joda.time.LocalDate
 import java.lang.Integer.parseInt
@@ -93,6 +92,9 @@ class AddLoanActivity: BaseActivity() {
         redColor = ContextCompat.getColor(this, R.color.red)
     }
 
+    /**
+     * This method sets all the listeners for the buttons
+     */
     private fun configureButtons() {
         mBtnSubmit.setOnClickListener(View.OnClickListener {
             if (isFormValid())
@@ -487,10 +489,10 @@ class AddLoanActivity: BaseActivity() {
         calendar.set(Calendar.YEAR, parseInt(year))
         calendar.set(Calendar.MONTH, monthForCalendar)
         calendar.set(Calendar.DAY_OF_MONTH, parseInt(day))
-        calendar.set(Calendar.HOUR_OF_DAY,8)
-        calendar.set(Calendar.MINUTE,3)
+        calendar.set(Calendar.HOUR_OF_DAY,16)
+        calendar.set(Calendar.MINUTE,23)
         calendar.set(Calendar.SECOND,0)
-        calendar.set(Calendar.AM_PM, Calendar.AM)
+        calendar.set(Calendar.AM_PM, Calendar.PM)
 
         startAlarm(calendar, loanId, loanProduct, loanType, loanRecipient)
     }
@@ -529,6 +531,9 @@ class AddLoanActivity: BaseActivity() {
         )
     }
 
+    /**
+     * Set color to float button
+     */
     private fun setButtonTint(button: FloatingActionButton, tint: ColorStateList) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             button.backgroundTintList = tint
