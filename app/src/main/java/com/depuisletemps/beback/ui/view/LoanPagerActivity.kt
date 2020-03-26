@@ -1,5 +1,6 @@
 package com.depuisletemps.beback.ui.view
 
+import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
@@ -17,13 +18,15 @@ import com.depuisletemps.beback.utils.Constant
 import kotlinx.android.synthetic.main.activity_loan_pager.*
 import java.lang.reflect.Method
 
-
 class LoanPagerActivity: BaseActivity() {
 
     lateinit var mToolbar: Toolbar
     lateinit var mArchiveButton: MenuItem
     lateinit var mPendingButton: MenuItem
     lateinit var mProfileButton: MenuItem
+    var mFilterProduct:String? = null
+    var mFilterRecipient:String? = null
+    var mFilterType:String? = null
     var mIsLoanAlertDialogDisplayed:Boolean = false
     var mMode: String = Constant.STANDARD
 
@@ -36,9 +39,7 @@ class LoanPagerActivity: BaseActivity() {
         mMode = getLoanMode(savedInstanceState)
 
         mBtnAdd.setOnClickListener{createLoanAlertDialog()}
-
         mBtnFilter.setOnClickListener{startFilterActivity()}
-
     }
 
     /**
@@ -63,21 +64,44 @@ class LoanPagerActivity: BaseActivity() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         if (mIsLoanAlertDialogDisplayed) outState?.putBoolean(Constant.LOAN_ALERTDIALOG_DISPLAYED, true)
+        outState?.putString(Constant.FILTER_PRODUCT, mFilterProduct)
+        outState?.putString(Constant.FILTER_RECIPIENT, mFilterRecipient)
+        outState?.putString(Constant.FILTER_TYPE, mFilterType)
         outState.putString(Constant.MODE, mMode)
     }
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
         if (savedInstanceState != null) {
-            if (savedInstanceState.getBoolean(Constant.LOAN_ALERTDIALOG_DISPLAYED))  createLoanAlertDialog()
+            if (savedInstanceState.getBoolean(Constant.LOAN_ALERTDIALOG_DISPLAYED)) createLoanAlertDialog()
+            mFilterType = savedInstanceState.getString(Constant.FILTER_TYPE)
+            mFilterRecipient = savedInstanceState.getString(Constant.FILTER_RECIPIENT)
+            mFilterProduct = savedInstanceState.getString(Constant.FILTER_PRODUCT)
         }
-
     }
 
     /**
      * This method sets the ViewPager
      */
     private fun configurePager() {
+        if (this.intent.extras != null)
+            if (this.intent.extras.getString(Constant.FILTERS) == Constant.YES) {
+                if (this.intent.extras.getString(Constant.FILTER_TYPE) != null) mFilterType = this.intent.extras.getString(Constant.FILTER_TYPE)
+                if (this.intent.extras.getString(Constant.FILTER_PRODUCT) != null) mFilterProduct = this.intent.extras.getString(Constant.FILTER_PRODUCT)
+                if (this.intent.extras.getString(Constant.FILTER_RECIPIENT) != null) mFilterRecipient = this.intent.extras.getString(Constant.FILTER_RECIPIENT)
+
+                btn_erase_filter.visibility = View.VISIBLE
+
+                btn_erase_filter.setOnClickListener {
+                    intent.removeExtra(Constant.FILTERS)
+                    btn_erase_filter.visibility = View.INVISIBLE
+                    mFilterProduct = null
+                    mFilterRecipient = null
+                    mFilterType = null
+                    configurePager()
+                }
+            }
+
         if (viewPager != null) {
             val adapter = ViewPagerAdapter(this.supportFragmentManager)
             viewPager.adapter = adapter

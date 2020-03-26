@@ -72,4 +72,17 @@
             android:src="@drawable/ic_filter"
             />
 
+    <Button
+            android:id="@+id/btn_erase_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:background="@drawable/round_primary_color_button"
+            android:drawableStart="@drawable/ic_list"
+            android:visibility="gone"
+            android:padding="@dimen/basic"
+            android:layout_marginBottom="80dp"
+            android:text="Erase filters"
+            android:textColor="@color/black"/>
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

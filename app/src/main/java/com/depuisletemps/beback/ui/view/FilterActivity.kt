@@ -1,12 +1,14 @@
 package com.depuisletemps.beback.ui.view
 
-import android.Manifest
+import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
-import android.provider.ContactsContract
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
+import android.view.View.OnTouchListener
 import android.widget.ArrayAdapter
 import android.widget.CompoundButton
 import android.widget.Toast
@@ -17,12 +19,11 @@ import com.depuisletemps.beback.R
 import com.depuisletemps.beback.utils.Constant
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseUser
-import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
-import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.activity_add_loan.mBtnSubmit
 import kotlinx.android.synthetic.main.activity_filter.*
 import kotlinx.android.synthetic.main.toolbar.*
 import java.util.*
+
 
 class FilterActivity: BaseActivity() {
 
@@ -45,6 +46,7 @@ class FilterActivity: BaseActivity() {
         defineColors()
         configureToolbar()
         configureButtons()
+        configureTextWatchers()
         configureAutoCompleteFields()
     }
 
@@ -115,6 +117,7 @@ class FilterActivity: BaseActivity() {
     private fun configureButtons() {
         mBtnSubmit.setOnClickListener(View.OnClickListener {
             if (isFormValid())
+                startLoanPagerActivity()
             else {
                 Toast.makeText(applicationContext, R.string.invalid_form, Toast.LENGTH_LONG)
                     .show()
@@ -125,6 +128,7 @@ class FilterActivity: BaseActivity() {
             if (isChecked) {
                 toggle_borrowing.setBackgroundResource(R.drawable.round_secondary_color_button)
                 unsetToggle(toggle_lending)
+                unsetToggle(toggle_delivery)
             } else {
                 toggle_borrowing.setBackgroundResource(R.drawable.round_grey_color_button)
             }
@@ -135,13 +139,56 @@ class FilterActivity: BaseActivity() {
             if (isChecked) {
                 toggle_lending.setBackgroundResource(R.drawable.round_secondary_color_button)
                 unsetToggle(toggle_borrowing)
+                unsetToggle(toggle_delivery)
             } else {
                 toggle_lending.setBackgroundResource(R.drawable.round_grey_color_button)
             }
             if (isFormValid()) enableFloatButton() else disableFloatButton()
         })
 
+        toggle_delivery.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                toggle_delivery.setBackgroundResource(R.drawable.round_secondary_color_button)
+                unsetToggle(toggle_borrowing)
+                unsetToggle(toggle_lending)
+            } else {
+                toggle_delivery.setBackgroundResource(R.drawable.round_grey_color_button)
+            }
+            if (isFormValid()) enableFloatButton() else disableFloatButton()
+        })
+
+        filter_product.setOnTouchListener(OnTouchListener { v, event ->
+            filter_product.showDropDown()
+            false
+        })
+
+        filter_recipient.setOnTouchListener(OnTouchListener { v, event ->
+            filter_recipient.showDropDown()
+            false
+        })
+
         disableFloatButton()
+    }
+
+    /**
+     * Method to configure the textWatchers on the fields which requires it
+     */
+    fun configureTextWatchers() {
+        filter_recipient.addTextChangedListener(textWatcher)
+        filter_product.addTextChangedListener(textWatcher)
+    }
+
+    /**
+     * Method to describe the actions to complete on text writing
+     */
+    val textWatcher: TextWatcher = object : TextWatcher {
+        override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+
+        override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+
+        override fun afterTextChanged(s: Editable) { // Enable-disable Floating Action Button
+            if (isFormValid()) enableFloatButton() else disableFloatButton()
+        }
     }
 
     /**
@@ -160,6 +207,7 @@ class FilterActivity: BaseActivity() {
                 || !filter_recipient.text.toString().equals("")
                 || toggle_lending.isChecked
                 || toggle_borrowing.isChecked
+                || toggle_delivery.isChecked
     }
 
     /**
@@ -185,5 +233,33 @@ class FilterActivity: BaseActivity() {
         } else {
             ViewCompat.setBackgroundTintList(button, tint)
         }
+    }
+
+    /**
+     * This method starts the Loan activity
+     */
+    fun startLoanPagerActivity() {
+        val intent = Intent(this, LoanPagerActivity::class.java)
+
+        val filterProduct: String? = when {
+            filter_product.text.toString() != "" -> filter_product.text.toString()
+                else -> null
+        }
+        val filterRecipient: String? = when {
+            filter_recipient.text.toString() != "" -> filter_recipient.text.toString()
+            else -> null
+        }
+        val filterType: String? = when {
+            toggle_lending.isChecked -> Constant.FILTER_BORROWING
+            toggle_borrowing.isChecked -> Constant.FILTER_LENDING
+            toggle_delivery.isChecked -> Constant.FILTER_DELIVERY
+            else -> null
+        }
+
+        intent.putExtra(Constant.FILTER_RECIPIENT, filterRecipient)
+        intent.putExtra(Constant.FILTER_PRODUCT, filterProduct)
+        intent.putExtra(Constant.FILTER_TYPE, filterType)
+        intent.putExtra(Constant.FILTERS, Constant.YES)
+        startActivity(intent)
     }
 }

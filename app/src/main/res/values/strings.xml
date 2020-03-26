@@ -102,6 +102,9 @@
     <string name="filter">Filters</string>
     <string name="borrowing">BORROWING</string>
     <string name="lending">LENDING</string>
+    <string name="whom_filter">Whom</string>
+    <string name="what_filter">What</string>
+    <string name="delivery">DELIVERY</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">

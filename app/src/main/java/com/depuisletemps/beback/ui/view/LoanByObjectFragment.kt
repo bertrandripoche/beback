@@ -282,14 +282,29 @@ class LoanByObjectFragment: Fragment() {
         mUser = (activity as LoanPagerActivity).getCurrentUser()
         val requesterId: String = mUser?.uid ?: ""
 
-        val query: Query
+        var query: Query
         mLoansRef = mDb.collection(Constant.LOANS_COLLECTION)
         if (mMode == getString(R.string.standard)) {
             query = mLoansRef.whereEqualTo(Constant.REQUESTOR_ID, requesterId)
-                .whereEqualTo(Constant.RETURNED_DATE, null).orderBy(Constant.DUE_DATE, Query.Direction.ASCENDING)
+
+            if ((activity as LoanPagerActivity).mFilterProduct != null)
+                query = query.whereEqualTo(Constant.PRODUCT, (activity as LoanPagerActivity).mFilterProduct)
+            if ((activity as LoanPagerActivity).mFilterRecipient != null)
+                query = query.whereEqualTo(Constant.RECIPIENT_ID, (activity as LoanPagerActivity).mFilterRecipient)
+            if ((activity as LoanPagerActivity).mFilterType != null)
+                query = query.whereEqualTo(Constant.TYPE, (activity as LoanPagerActivity).mFilterType)
+
+            query= query.whereEqualTo(Constant.RETURNED_DATE, null).orderBy(Constant.DUE_DATE, Query.Direction.ASCENDING)
         } else {
             query = mLoansRef.whereEqualTo(Constant.REQUESTOR_ID, requesterId)
-                .whereGreaterThan(Constant.RETURNED_DATE, getTimeStampFromString(Constant.FAR_PAST_DATE)!! ).orderBy(Constant.RETURNED_DATE, Query.Direction.ASCENDING)
+
+            if ((activity as LoanPagerActivity).mFilterProduct != null)
+                query = query.whereEqualTo(Constant.PRODUCT, (activity as LoanPagerActivity).mFilterProduct)
+            if ((activity as LoanPagerActivity).mFilterRecipient != null)
+                query = query.whereEqualTo(Constant.RECIPIENT_ID, (activity as LoanPagerActivity).mFilterRecipient)
+            if ((activity as LoanPagerActivity).mFilterType != null)
+                query = query.whereEqualTo(Constant.TYPE, (activity as LoanPagerActivity).mFilterType)
+            query= query.whereGreaterThan(Constant.RETURNED_DATE, getTimeStampFromString(Constant.FAR_PAST_DATE)!! ).orderBy(Constant.RETURNED_DATE, Query.Direction.ASCENDING)
         }
 
         val options = FirestoreRecyclerOptions.Builder<Loan>().setQuery(query, Loan::class.java).build()

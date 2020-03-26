@@ -59,12 +59,18 @@ class LoanByPersonFragment: Fragment() {
         mUser = (activity as LoanPagerActivity).getCurrentUser()
         val requesterId: String = mUser?.uid ?: ""
 
-        val query: Query
+        var query: Query
         mLoanersRef = mDb.collection(Constant.USERS_COLLECTION).document(requesterId).collection(Constant.LOANERS_COLLECTION)
         if (mMode == getString(R.string.standard)) {
-            query = mLoanersRef.whereGreaterThanOrEqualTo(LoanStatus.PENDING.type, 1).orderBy(LoanStatus.PENDING.type, Query.Direction.ASCENDING)
+            query = mLoanersRef
+            if ((activity as LoanPagerActivity).mFilterRecipient != null)
+                query = query.whereEqualTo(Constant.NAME, (activity as LoanPagerActivity).mFilterRecipient)
+            query = query.whereGreaterThanOrEqualTo(LoanStatus.PENDING.type, 1).orderBy(LoanStatus.PENDING.type, Query.Direction.ASCENDING)
         } else {
-            query = mLoanersRef.whereGreaterThanOrEqualTo(LoanStatus.ENDED.type, 1).orderBy(LoanStatus.ENDED.type, Query.Direction.ASCENDING)
+            query = mLoanersRef
+            if ((activity as LoanPagerActivity).mFilterRecipient != null)
+                query = query.whereEqualTo(Constant.NAME, (activity as LoanPagerActivity).mFilterRecipient)
+            query = query.whereGreaterThanOrEqualTo(LoanStatus.ENDED.type, 1).orderBy(LoanStatus.ENDED.type, Query.Direction.ASCENDING)
         }
 
         query.get()

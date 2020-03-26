@@ -2,6 +2,7 @@ package com.depuisletemps.beback.utils
 
 class Constant {
     companion object {
+        const val YES = "yes"
         const val FB = "facebook"
         const val GOOGLE = "google"
 
@@ -42,6 +43,14 @@ class Constant {
         const val LENDING = "lending"
         const val BORROWING = "borrowing"
         const val DELIVERY = "delivery"
+
+        const val FILTERS = "filters"
+        const val FILTER_PRODUCT = "filterProduct"
+        const val FILTER_RECIPIENT = "filterRecipient"
+        const val FILTER_TYPE = "filterType"
+        const val FILTER_BORROWING = "filterBorrowing"
+        const val FILTER_LENDING = "filterLending"
+        const val FILTER_DELIVERY = "filterDelivery"
 
         const val MFIRST = "mFirst"
         const val MLAST = "mLast"
