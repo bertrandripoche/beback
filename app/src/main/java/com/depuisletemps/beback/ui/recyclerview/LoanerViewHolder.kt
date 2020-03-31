@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loaner
 import com.depuisletemps.beback.ui.view.LoanDetailActivity
+import com.depuisletemps.beback.ui.view.LoanPagerActivity
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
 import com.google.android.flexbox.FlexboxLayout
@@ -32,7 +33,7 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
     /**
      * This method populates the date into the recyclerView ViewHolder
      */
-    fun updateWithLoaner(loaner: Loaner, position: Int, context: Context, mode:String, requestorId: String) {
+    fun updateWithLoaner(loaner: Loaner, position: Int, context: Context, mode:String, requestorId: String, filterProduct: String?, filterType: String?) {
         val primaryLightColor = ContextCompat.getColor(context, R.color.primaryLightColor)
         val primaryColor = ContextCompat.getColor(context, R.color.primaryColor)
         val ligthGrey =  ContextCompat.getColor(context, R.color.light_grey)
@@ -63,17 +64,37 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         if (mode == context.getString(R.string.standard)) {
             if (position % 2 == 0) item.setBackgroundColor(primaryLightColor)
             else item.setBackgroundColor(primaryColor)
+
             query = mLoansRef.whereEqualTo(Constant.REQUESTOR_ID, requestorId)
+            if (filterProduct != null)
+                query = query.whereEqualTo(Constant.PRODUCT, filterProduct)
+            if (filterType != null)
+                query = query.whereEqualTo(Constant.TYPE, filterType)
+            query = query
                 .whereEqualTo(Constant.RECIPIENT_ID, name.text.toString())
                 .whereEqualTo(Constant.RETURNED_DATE, null)
                 .orderBy(Constant.DUE_DATE, Query.Direction.ASCENDING)
+
         } else {
             if (position % 2 == 0) item.setBackgroundColor(ligthGrey)
             else item.setBackgroundColor(darkGrey)
+
             query = mLoansRef.whereEqualTo(Constant.REQUESTOR_ID, requestorId)
-                .whereEqualTo(Constant.RECIPIENT_ID, name.text.toString())
+                .whereEqualTo("type", "borrowing")
                 .whereGreaterThan(Constant.RETURNED_DATE, Utils.getTimeStampFromString(Constant.FAR_PAST_DATE)!! )
                 .orderBy(Constant.RETURNED_DATE, Query.Direction.ASCENDING)
+//            if (filterProduct != null)
+//                query = query.whereEqualTo(Constant.PRODUCT, filterProduct)
+//            if (filterType != null)
+//                query = query.whereEqualTo(Constant.TYPE, filterType)
+
+
+
+//            query = mLoansRef
+//                .whereEqualTo("requestor_id", "FLCVGKJ69OS2Awi9WcQmEM7bl6Q2")
+//                .whereGreaterThan(Constant.RETURNED_DATE, Utils.getTimeStampFromString(Constant.FAR_PAST_DATE)!!)
+//                .orderBy(Constant.RETURNED_DATE, Query.Direction.ASCENDING)
+
         }
 
         query.get()

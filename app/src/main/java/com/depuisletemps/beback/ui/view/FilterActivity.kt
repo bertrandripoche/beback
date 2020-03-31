@@ -250,9 +250,9 @@ class FilterActivity: BaseActivity() {
             else -> null
         }
         val filterType: String? = when {
-            toggle_lending.isChecked -> Constant.FILTER_BORROWING
-            toggle_borrowing.isChecked -> Constant.FILTER_LENDING
-            toggle_delivery.isChecked -> Constant.FILTER_DELIVERY
+            toggle_lending.isChecked -> Constant.LENDING
+            toggle_borrowing.isChecked -> Constant.BORROWING
+            toggle_delivery.isChecked -> Constant.DELIVERY
             else -> null
         }
 

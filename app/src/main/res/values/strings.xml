@@ -105,6 +105,12 @@
     <string name="whom_filter">Whom</string>
     <string name="what_filter">What</string>
     <string name="delivery">DELIVERY</string>
+    <string name="app_version">v1.0</string>
+    <string name="app_version_date">March, the 31st, 2020</string>
+    <string name="credits">Credits</string>
+    <string name="credits_author">Author : Bertrand Ripoche\nMail : pafacil@gmail.com\n(Please specify "BeBack app feedback" as subject)</string>
+    <string name="credits_illustration">Icons obtained from\nhttps://www.flaticon.com/authors/freepik\nhttps://www.flaticon.com/authors/vectors-market\nThanks !</string>
+    <string name="thanks">Thanks for using the app !</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">

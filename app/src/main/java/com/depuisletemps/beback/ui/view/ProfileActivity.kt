@@ -44,11 +44,12 @@ class ProfileActivity: BaseActivity() {
 
         configureToolbar()
         getSavedInstanceData(savedInstanceState)
-
         getUserInfos()
-
         configureTextWatchers()
+        configureButtons()
+    }
 
+    fun configureButtons() {
         mBtnEdit.setOnClickListener{
             if (isFormValid())
                 editFirestoreUser(mId)
@@ -58,21 +59,6 @@ class ProfileActivity: BaseActivity() {
             }
         }
 
-        mBtnLogout.setOnClickListener {
-            displayCustomToast(getString(R.string.sign_out_message, firstname.text.toString()), R.drawable.bubble_1)
-            Snackbar.make(activity_profile, R.string.logout, Snackbar.LENGTH_LONG)
-                .setAction(getString(R.string.undo)) {
-                }.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
-                    override fun onShown(transientBottomBar: Snackbar?) {
-                    }
-
-                    override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                        if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
-                            signOutUserFromFirebase(this@ProfileActivity)
-                        }
-                    }
-                }).show()
-        }
     }
 
     fun getSavedInstanceData(savedInstanceState: Bundle?) {

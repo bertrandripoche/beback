@@ -311,7 +311,7 @@ class AddLoanActivity: BaseActivity() {
 
         val dpd = DatePickerDialog(this,DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
                 setPickDate(getString(R.string.due_date, df.format(dayOfMonth),df.format(monthOfYear + 1),year), btn)}, year, month,day)
-        //dpd.datePicker.minDate = System.currentTimeMillis()
+        dpd.datePicker.minDate = System.currentTimeMillis()
         dpd.show()
     }
 

@@ -214,19 +214,8 @@
             android:src="@drawable/ic_edit"
             app:fabSize="normal"
             app:maxImageSize="40dp"
-            app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal_middle"
-            app:layout_constraintRight_toLeftOf="@+id/guideline_vertical_right"/>
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/mBtnLogout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:focusable="true"
-            android:src="@drawable/ic_logout"
-            app:fabSize="normal"
-            app:maxImageSize="40dp"
             app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal"
             app:layout_constraintRight_toLeftOf="@+id/guideline_vertical_right"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

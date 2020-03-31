@@ -84,7 +84,7 @@ class LoanByPersonFragment: Fragment() {
             }
 
         val options = FirestoreRecyclerOptions.Builder<Loaner>().setQuery(query, Loaner::class.java).build()
-        mAdapter = LoanerAdapter(options, ctx, mMode, requesterId)
+        mAdapter = LoanerAdapter(options, ctx, mMode, requesterId, (activity as LoanPagerActivity).mFilterProduct, (activity as LoanPagerActivity).mFilterType)
 
         val orientation = resources.getInteger(R.integer.gallery_orientation)
 

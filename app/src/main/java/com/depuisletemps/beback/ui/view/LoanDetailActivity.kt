@@ -504,7 +504,7 @@ class LoanDetailActivity: BaseActivity() {
             setPickDate(getString(R.string.due_date, df.format(dayOfMonth), df.format(monthOfYear+1), year), btn)
             setEditBtnState()
         }, year, month, day)
-        //dpd.datePicker.minDate = System.currentTimeMillis()
+        dpd.datePicker.minDate = System.currentTimeMillis()
         dpd.show()
     }
 
