@@ -14,11 +14,11 @@
     <string name="error_unknown">Oops, looks like an unknown error.\nTry again.</string>
     <string name="error_undefined">Damned&amp;#8230, we hit an undefined error !</string>
 
-    <string name="google">google</string>
-    <string name="facebook">facebook</string>
+    <string name="google" translatable="false">google</string>
+    <string name="facebook" translatable="false">facebook</string>
     <string name="profile">Profile</string>
     <string name="archive">Archive</string>
-    <string name="gradient_angle">270</string>
+    <string name="gradient_angle" translatable="false">270</string>
     <string name="loan_choice">Loan choice</string>
     <string name="i_lend">I lend…</string>
     <string name="i_borrow">I borrow…</string>
@@ -40,7 +40,6 @@
     <string name="notif_date_hint">Notif date \&#x27A1;</string>
     <string name="pick">PICK</string>
     <string name="mandatory_information">* = required, wouldn\'t make sense\nwithout it, isn\'t it ?</string>
-    <string name="mandatory_information_land">* = required, wouldn\'t make sense\nwithout it, isn\'t it ?</string>
     <string name="invalid_form">Damned it !\nI forgot the required fields !</string>
     <string name="lent_to">Lent to</string>
     <string name="borrowed_from">Borrowed from</string>
@@ -59,8 +58,8 @@
     <string name="received_message">%1$s received yeaahhh !</string>
     <string name="not_received_message">My bad !\n%1$s not received !</string>
     <string name="received">Received !</string>
-    <string name="loanId">loanId</string>
-    <string name="on">On</string>
+    <string name="loanId" translatable="false">loanId</string>
+    <string name="on" translatable="false">On</string>
     <string name="i_borrowed">I borrowed</string>
     <string name="i_lended">I lent</string>
     <string name="since">Since</string>
@@ -83,14 +82,14 @@
     <string name="pseudo">Alias</string>
     <string name="mail">Mail</string>
     <string name="logout">Logout</string>
-    <string name="invalid_edit_profile_form">Well... nothing changed\nor a mandatory field\n is desperately empty</string>
+    <string name="invalid_edit_profile_form">Well… nothing changed\nor a mandatory field\n is desperately empty</string>
     <string name="sign_out_message">Bye bye %1$s</string>
     <string name="transaction_failure">Transaction failure</string>
     <string name="unknown_error">Damned, we hit an unknown error !</string>
     <string name="error_getting_docs">Couldn\'t get these damned docs !</string>
     <string name="d_day">D-day</string>
     <string name="d_minus_three">D-3</string>
-    <string name="d_minus_one_week">D-7</string>This is a reminder about ${loan.product}.
+    <string name="d_minus_one_week">D-7</string>
     <string name="notif_message">This is a reminder about %1$s.\nTap here to open the detail of your loan</string>
     <string name="about">About</string>
     <string name="notif_lending">Hey, you lent me, remember ?!</string>
@@ -130,6 +129,22 @@
         <item>Tools</item>
     </string-array>
 
+    <string name="miscellaneous">Miscellaneous</string>
+    <string name="appliance">Appliance</string>
+    <string name="books">Books</string>
+    <string name="clothes">Clothes</string>
+    <string name="electronic">Electronic</string>
+    <string name="games">Games</string>
+    <string name="intruments">Instruments</string>
+    <string name="jewelry">Jewelry</string>
+    <string name="kitchen">Kitchen</string>
+    <string name="money">Money</string>
+    <string name="music">Music</string>
+    <string name="sports">Sport</string>
+    <string name="tickets">Ticket</string>
+    <string name="tools">Tools</string>
+
+
     <array name="product_category_icon">
         <item>@drawable/ic_miscellaneous</item>
         <item>@drawable/ic_appliance</item>
@@ -146,5 +161,7 @@
         <item>@drawable/ic_ticket</item>
         <item>@drawable/ic_tools</item>
     </array>
+
+
 
 </resources>

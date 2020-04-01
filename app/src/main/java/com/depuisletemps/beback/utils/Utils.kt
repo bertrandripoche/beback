@@ -1,7 +1,16 @@
 package com.depuisletemps.beback.utils
 
+import android.content.Context
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
 import com.google.firebase.Timestamp
+import kotlinx.android.synthetic.main.custom_toast.*
 import org.joda.time.Days
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
@@ -13,6 +22,7 @@ import java.util.*
 
 class Utils {
     val categories = arrayOf("Miscellaneous","Appliance","Books","Clothes","Electronic","Games","Instruments","Jewelry","Kitchen","Money","Music","Sport","Ticket","Tools")
+    val categories_int = arrayOf(R.string.miscellaneous,R.string.appliance,R.string.books,R.string.clothes,R.string.electronic,R.string.games,R.string.intruments,R.string.jewelry,R.string.kitchen,R.string.money,R.string.music,R.string.sports,R.string.tickets,R.string.tools)
     val icons = arrayOf(R.drawable.ic_miscellaneous, R.drawable.ic_appliance,R.drawable.ic_books,R.drawable.ic_clothes,R.drawable.ic_electronic,R.drawable.ic_games,R.drawable.ic_instrument,R.drawable.ic_jewelry,R.drawable.ic_kitchen,R.drawable.ic_money,R.drawable.ic_music,R.drawable.ic_sport,R.drawable.ic_ticket,R.drawable.ic_tools)
 
     /**

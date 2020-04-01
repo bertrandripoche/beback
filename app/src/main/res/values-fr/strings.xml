@@ -1,0 +1,142 @@
+<resources>
+
+    <string name="app_name">Be Back</string>
+
+<!--    LOGIN-->
+    <string name="login_description">Mais à qui que je l\'ai prêté ?\nÀ qui que j\'ai pris ce truc ?</string>
+    <string name="sign_in_facebook">Connexion avec Facebook</string>
+    <string name="sign_in_google">Connexion avec Google</string>
+    <string name="sign_in_mail">Connexion avec ton mail</string>
+
+<!--    ERROR-->
+    <string name="error_authentication_canceled">Pas nous ! \n T\'as annulé le process.</string>
+    <string name="error_no_internet">On dirait que tu n\'es connecté\nqu\'au monde réel</string>
+    <string name="error_unknown">Oops, on dirait une erreur inconnue.\nEssaye encore.</string>
+    <string name="error_undefined">Houston&amp;#8230, nous avons un problème \n(indéfini) !</string>
+
+    <string name="profile">Profil</string>
+    <string name="archive">Archive</string>
+    <string name="loan_choice">Ton choix</string>
+    <string name="i_lend">Je prête…</string>
+    <string name="i_borrow">J\'emprunte…</string>
+    <string name="lend_title">Généreux prêteur</string>
+    <string name="borrow_title">Humble emprunteur</string>
+    <string name="cancel">Oublie-ça</string>
+    <string name="product_hint">…tu sais, ce truc…</string>
+    <string name="recipient_hint">…tu sais, cette personne…</string>
+    <string name="delivery_hint">…tu sais, cette boîte…</string>
+    <string name="who">QUI *</string>
+    <string name="whom">QUI *</string>
+    <string name="what">QUOI *</string>
+    <string name="type">TYPE</string>
+    <string name="when">QUAND</string>
+    <string name="due">DÛ</string>
+    <string name="due_date_hint">Date due\&#x27A1;</string>
+    <string name="due_date">%1$s/%2$s/%3$d </string>
+    <string name="notif">Notif</string>
+    <string name="notif_date_hint">Date de notif \&#x27A1;</string>
+    <string name="pick">CHOIX</string>
+    <string name="mandatory_information">* = requis, pas vraiment de sens sans ?</string>
+    <string name="invalid_form">Damned !\nJ\'ai oublié les champs requis !</string>
+    <string name="lent_to">Prêté à</string>
+    <string name="borrowed_from">Emprunté à</string>
+    <string name="delivery_title">En attente de la livraison</string>
+    <string name="i_wait">En attente de…</string>
+    <string name="transported_by">Transporté par</string>
+    <string name="standard">Standard</string>
+    <string name="mode">Mode</string>
+    <string name="delete">Efface</string>
+    <string name="returned">Retourné !</string>
+    <string name="undo">Annulé</string>
+    <string name="deleted_message">%1$s ?\nOublie-ça !</string>
+    <string name="undeleted_message">Ooops !\n%1$s repêché !</string>
+    <string name="archived_message">%1$s retourné yeaahhh !</string>
+    <string name="unarchived_message">Ah non !\n%1$s pas retourné !</string>
+    <string name="received_message">%1$s reçu yeaahhh !</string>
+    <string name="not_received_message">Oops !\n%1$s pas reçu !</string>
+    <string name="received">Reçu !</string>
+    <string name="i_borrowed">J\'ai emprunté</string>
+    <string name="i_lended">J\'ai prêté</string>
+    <string name="since">Depuis</string>
+    <string name="back">Back</string>
+    <string name="angry">Caramba ! Encore en retard !</string>
+    <string name="fine">Bon, ça aurait pu être pire !</string>
+    <string name="happy">Comme sur des roulettes !</string>
+    <string name="whom_no_star">Qui</string>
+    <string name="who_no_star">Qui</string>
+    <string name="what_no_star">Quoi</string>
+    <string name="invalid_edit_form">Hummm…\nRien n\'a changé</string>
+    <string name="saved">C\'est dans la boîte, boss !</string>
+    <string name="category_icon">Icone catégorie</string>
+    <string name="my_profile">Mon profil</string>
+    <string name="my_firstname">…je s\'appelle…</string>
+    <string name="firstname">Prénom *</string>
+    <string name="my_lastname">…comment je m\'appelle déjà…</string>
+    <string name="lastname">Nom *</string>
+    <string name="my_pseudo">…mais appelle-moi plutôt…</string>
+    <string name="pseudo">Pseudo</string>
+    <string name="mail">Mail</string>
+    <string name="logout">Déconnexion</string>
+    <string name="invalid_edit_profile_form">Well… rien n\'a changé\nou les champs obligatoires sont\ndésespérément vides</string>
+    <string name="sign_out_message">Bye bye %1$s</string>
+    <string name="transaction_failure">Échec de transaction</string>
+    <string name="unknown_error">Damned, on a rencontré une erreur inconnue !</string>
+    <string name="error_getting_docs">Pas pu obtenir les docs !</string>
+    <string name="d_day">Jour J</string>
+    <string name="d_minus_three">J-3</string>
+    <string name="d_minus_one_week">J-7</string>
+    <string name="notif_message">C\'est un pense-bête à propos de %1$s.\nTape ici pour obtenir le détail du prêt.</string>
+    <string name="about">À propos</string>
+    <string name="notif_lending">Hey, tu m\'as prêté, tu te rappelles ?!</string>
+    <string name="notif_borrowing">Hey, tu m\'as emprunté, tu te rappelles ?!</string>
+    <string name="notif_delivery">Hey, j\'aurais dû arriver déjà ?!</string>
+    <string name="notif_message_lending">Moi, %1$s, est retenu otage\npar %2$s depuis trop longtemps !</string>
+    <string name="notif_message_borrowing">Je suis juste un(e) %1$s !\nMais si tu me rends pas à mon maître,\n%2$s te retrouvera et… !</string>
+    <string name="notif_message_delivery">Moi, %1$s, devrais être arrivé(e) dans ma nouvelle maison.\nPeut-être temps d\'envoyer un mail à %2$s, non ?</string>
+    <string name="filter">Filtres</string>
+    <string name="borrowing">EMPRUNT</string>
+    <string name="lending">PRÊT</string>
+    <string name="whom_filter">Qui</string>
+    <string name="what_filter">Quoi</string>
+    <string name="delivery">Livraison</string>
+    <string name="app_version">v1.0</string>
+    <string name="app_version_date">31 Mars 2020</string>
+    <string name="credits">Crédits</string>
+    <string name="credits_author">Auteur : Bertrand Ripoche\nMail : pafacil@gmail.com\n(Merci de préciser "BeBack app feedback" comme sujet)</string>
+    <string name="credits_illustration">Icones obtenues depuis\nhttps://www.flaticon.com/authors/freepik\nhttps://www.flaticon.com/authors/vectors-market\nThanks !</string>
+    <string name="thanks">Merci d\'utiliser cette app !</string>
+
+    <!--    PRODUCT CATEGORY-->
+    <string-array name="product_category">
+        <item>Divers</item>
+        <item>Appliance</item>
+        <item>Books</item>
+        <item>Clothes</item>
+        <item>Electronic</item>
+        <item>Games</item>
+        <item>Instruments</item>
+        <item>Jewelry</item>
+        <item>Kitchen</item>
+        <item>Money</item>
+        <item>Music</item>
+        <item>Sport</item>
+        <item>Ticket</item>
+        <item>Tools</item>
+    </string-array>
+
+    <string name="miscellaneous">Divers</string>
+    <string name="appliance">Électro</string>
+    <string name="books">Livres</string>
+    <string name="clothes">Habits</string>
+    <string name="electronic">Électronique</string>
+    <string name="games">Jeux</string>
+    <string name="intruments">Instruments</string>
+    <string name="jewelry">Bijoux</string>
+    <string name="kitchen">Cuisine</string>
+    <string name="money">Argent</string>
+    <string name="music">Musique</string>
+    <string name="sports">Sport</string>
+    <string name="tickets">Tickets</string>
+    <string name="tools">Outils</string>
+
+</resources>

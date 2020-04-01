@@ -1,5 +1,6 @@
 package com.depuisletemps.beback.ui.view
 
+import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_CANCEL_CURRENT
@@ -182,8 +183,8 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(+1))
             batch.update(loanerRef, awardsByType(loan.type), FieldValue.increment(points))
         }.addOnCompleteListener {
-            if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1)
-            else displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1)
+            if (loan.type.equals(LoanType.DELIVERY.type)) (activity as LoanPagerActivity).displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1, context!!)
+            else (activity as LoanPagerActivity).displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1, context!!)
             stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id)
             mAdapter.notifyDataSetChanged()
         }.addOnFailureListener { e ->
@@ -214,8 +215,8 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(-1))
             batch.update(loanerRef, awardsByType(loan.type), FieldValue.increment(-points))
         }.addOnCompleteListener {
-            if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2)
-            else displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2)
+            if (loan.type.equals(LoanType.DELIVERY.type))             (activity as LoanPagerActivity).displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2, context!!)
+            else (activity as LoanPagerActivity).displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2, context!!)
             mAdapter.notifyDataSetChanged()
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
@@ -236,7 +237,7 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, loan.type, FieldValue.increment(-1))
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
         }.addOnCompleteListener {
-            displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_4)
+            (activity as LoanPagerActivity).displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_4, context!!)
             stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id)
             mAdapter.notifyDataSetChanged()
         }.addOnFailureListener { e ->
@@ -265,7 +266,7 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, loan.type, FieldValue.increment(+1))
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
         }.addOnCompleteListener {
-            displayCustomToast(getString(R.string.undeleted_message, loan.product), R.drawable.bubble_3)
+            (activity as LoanPagerActivity).displayCustomToast(getString(R.string.undeleted_message, loan.product), R.drawable.bubble_3, context!!)
             mAdapter.notifyDataSetChanged()
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
@@ -400,23 +401,6 @@ class LoanByObjectFragment: Fragment() {
     override fun onStop() {
         super.onStop()
         mAdapter.stopListening()
-    }
-
-    /**
-     * This method displays a message in a nice way
-     */
-    fun displayCustomToast(message: String, bubble: Int) {
-        val inflater = layoutInflater
-        val layout: View = inflater.inflate(R.layout.custom_toast, custom_toast_container)
-        val text: TextView = layout.findViewById(R.id.text)
-        text.background = ContextCompat.getDrawable(context!!, bubble)
-        text.text = message
-        with (Toast(context)) {
-            setGravity(Gravity.CENTER_VERTICAL, 0, 0)
-            duration = Toast.LENGTH_SHORT
-            view = layout
-            show()
-        }
     }
 
     /**

@@ -214,10 +214,7 @@ class ProfileActivity: BaseActivity() {
         mDb.runBatch { batch ->
             batch.set(userRef, mUser, SetOptions.merge())
         }.addOnCompleteListener {
-            displayCustomToast(
-                getString(R.string.saved),
-                R.drawable.bubble_3
-            )
+            displayCustomToast(getString(R.string.saved), R.drawable.bubble_3,this)
             startLoanPagerActivity(getString(R.string.standard))
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
@@ -230,23 +227,6 @@ class ProfileActivity: BaseActivity() {
             button.backgroundTintList = tint
         } else {
             ViewCompat.setBackgroundTintList(button, tint)
-        }
-    }
-
-    /**
-     * This method displays a message in a nice way
-     */
-    fun displayCustomToast(message: String, bubble: Int) {
-        val inflater = layoutInflater
-        val layout: View = inflater.inflate(R.layout.custom_toast, custom_toast_container)
-        val text: TextView = layout.findViewById(R.id.text)
-        text.background = ContextCompat.getDrawable(this, bubble)
-        text.text = message
-        with (Toast(this)) {
-            setGravity(Gravity.CENTER_VERTICAL, 0, 0)
-            duration = Toast.LENGTH_SHORT
-            view = layout
-            show()
         }
     }
 

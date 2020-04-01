@@ -1,25 +1,19 @@
 package com.depuisletemps.beback.ui.view
 
-import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
-import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.ui.customview.ViewPagerAdapter
 import com.depuisletemps.beback.utils.Constant
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.activity_loan_pager.*
-import kotlinx.android.synthetic.main.activity_profile.*
-import kotlinx.android.synthetic.main.custom_toast.*
 import java.lang.reflect.Method
 
 class LoanPagerActivity: BaseActivity() {
@@ -195,7 +189,7 @@ class LoanPagerActivity: BaseActivity() {
             true
         }
         R.id.menu_logout->{
-            displayCustomToast(getString(R.string.sign_out_message, getCurrentUser()!!.displayName.toString()), R.drawable.bubble_1)
+            displayCustomToast(getString(R.string.sign_out_message, getCurrentUser()!!.displayName.toString()), R.drawable.bubble_1, this)
             Snackbar.make(activity_loan_pager, R.string.logout, Snackbar.LENGTH_LONG)
                 .setAction(getString(R.string.undo)) {
                 }.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
@@ -294,23 +288,6 @@ class LoanPagerActivity: BaseActivity() {
         btn_cancel.setOnClickListener {
             mIsLoanAlertDialogDisplayed = false
             alertDialog.cancel()
-        }
-    }
-
-    /**
-     * This method displays a message in a nice way
-     */
-    fun displayCustomToast(message: String, bubble: Int) {
-        val inflater = layoutInflater
-        val layout: View = inflater.inflate(R.layout.custom_toast, custom_toast_container)
-        val text: TextView = layout.findViewById(R.id.text)
-        text.background = ContextCompat.getDrawable(this, bubble)
-        text.text = message
-        with (Toast(this)) {
-            setGravity(Gravity.CENTER_VERTICAL, 0, 0)
-            duration = Toast.LENGTH_SHORT
-            view = layout
-            show()
         }
     }
 
