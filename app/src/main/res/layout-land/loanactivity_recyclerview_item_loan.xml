@@ -9,18 +9,19 @@
         <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/item_product_category"
                 android:layout_width="60dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:scaleType="centerCrop"
                 android:src="@drawable/ic_borrowing"
                 app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"/>
 
         <TextView
                 android:id="@+id/item_product"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
                 android:gravity="center_vertical"
-                android:textSize="@dimen/title_size_small"
+                android:textSize="@dimen/text_size_max"
                 android:paddingEnd="@dimen/middle"
                 android:textStyle="bold"
                 android:textColor="@color/black"
@@ -35,18 +36,19 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:scaleType="centerCrop"
-                android:visibility="visible"
                 android:src="@drawable/ic_due_date"
-                app:layout_constraintRight_toLeftOf="@+id/item_due_date"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintRight_toLeftOf="@+id/item_due_date"
                 app:layout_constraintTop_toTopOf="parent"
-                />
+                app:layout_constraintVertical_bias="0.0" />
+
         <TextView
                 android:id="@+id/item_due_date"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:gravity="center_vertical"
-                android:textSize="@dimen/text_size_max"
+                android:textSize="@dimen/text_size"
                 android:textStyle="bold"
                 android:layout_marginEnd="@dimen/default_margin"
                 android:visibility="visible"
@@ -70,7 +72,7 @@
                 android:id="@+id/item_recipient"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/text_size_max"
+                android:textSize="@dimen/text_size"
                 android:paddingEnd="@dimen/basic"
                 android:gravity="center_vertical"
                 android:textStyle="italic"
