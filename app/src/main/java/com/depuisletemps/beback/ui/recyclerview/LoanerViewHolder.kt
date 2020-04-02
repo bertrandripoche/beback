@@ -114,7 +114,7 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                         linearLayout.addView(imageView, linearLayoutlayoutParams)
                         linearLayout.addView(textView, linearLayoutlayoutParams)
                         imageView.setBackgroundResource(R.drawable.semi_round_white_color_button)
-                        imageView.setImageResource(utils.getIconFromCategory(document.data.getValue(Constant.PRODUCT_CATEGORY).toString()))
+                        imageView.setImageDrawable(Utils.getIconFromCategory(document.data.getValue(Constant.PRODUCT_CATEGORY).toString(), context))
                         val paramsImage: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
                             LinearLayout.LayoutParams.WRAP_CONTENT,
                             LinearLayout.LayoutParams.WRAP_CONTENT

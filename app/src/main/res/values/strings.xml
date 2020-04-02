@@ -113,37 +113,38 @@
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">
-        <item>Miscellaneous</item>
-        <item>Appliance</item>
-        <item>Books</item>
-        <item>Clothes</item>
-        <item>Electronic</item>
-        <item>Games</item>
-        <item>Instruments</item>
-        <item>Jewelry</item>
-        <item>Kitchen</item>
-        <item>Money</item>
-        <item>Music</item>
-        <item>Sport</item>
-        <item>Ticket</item>
-        <item>Tools</item>
+        <item>miscelleanous</item>
+        <item>appliance</item>
+        <item>book</item>
+        <item>clothes</item>
+        <item>electronic</item>
+        <item>food</item>
+        <item>game</item>
+        <item>instrument</item>
+        <item>jewelry</item>
+        <item>kitchen</item>
+        <item>money</item>
+        <item>music</item>
+        <item>sport</item>
+        <item>ticket</item>
+        <item>tool</item>
     </string-array>
 
-    <string name="miscellaneous">Miscellaneous</string>
+    <string name="miscelleanous">Miscelleanous</string>
     <string name="appliance">Appliance</string>
-    <string name="books">Books</string>
+    <string name="book">Book</string>
     <string name="clothes">Clothes</string>
     <string name="electronic">Electronic</string>
-    <string name="games">Games</string>
-    <string name="intruments">Instruments</string>
+    <string name="food">Food</string>
+    <string name="game">Game</string>
+    <string name="instrument">Instrument</string>
     <string name="jewelry">Jewelry</string>
     <string name="kitchen">Kitchen</string>
     <string name="money">Money</string>
     <string name="music">Music</string>
-    <string name="sports">Sport</string>
-    <string name="tickets">Ticket</string>
-    <string name="tools">Tools</string>
-
+    <string name="sport">Sport</string>
+    <string name="ticket">Ticket</string>
+    <string name="tool">Tools</string>
 
     <array name="product_category_icon">
         <item>@drawable/ic_miscellaneous</item>
@@ -151,6 +152,7 @@
         <item>@drawable/ic_books</item>
         <item>@drawable/ic_clothes</item>
         <item>@drawable/ic_electronic</item>
+        <item>@drawable/ic_food</item>
         <item>@drawable/ic_games</item>
         <item>@drawable/ic_instrument</item>
         <item>@drawable/ic_jewelry</item>

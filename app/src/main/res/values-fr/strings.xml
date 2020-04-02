@@ -36,7 +36,7 @@
     <string name="notif">Notif</string>
     <string name="notif_date_hint">Date de notif \&#x27A1;</string>
     <string name="pick">CHOIX</string>
-    <string name="mandatory_information">* = requis, pas vraiment de sens sans ?</string>
+    <string name="mandatory_information">* = requis, pas vraiment de sens sans, n\'est-ce pas ?</string>
     <string name="invalid_form">Damned !\nJ\'ai oublié les champs requis !</string>
     <string name="lent_to">Prêté à</string>
     <string name="borrowed_from">Emprunté à</string>
@@ -108,35 +108,55 @@
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">
-        <item>Divers</item>
-        <item>Appliance</item>
-        <item>Books</item>
-        <item>Clothes</item>
-        <item>Electronic</item>
-        <item>Games</item>
-        <item>Instruments</item>
-        <item>Jewelry</item>
-        <item>Kitchen</item>
-        <item>Money</item>
-        <item>Music</item>
-        <item>Sport</item>
-        <item>Ticket</item>
-        <item>Tools</item>
+        <item>miscelleanous</item>
+        <item>money</item>
+        <item>jewelry</item>
+        <item>kitchen</item>
+        <item>appliance</item>
+        <item>electronic</item>
+        <item>clothes</item>
+        <item>instrument</item>
+        <item>game</item>
+        <item>book</item>
+        <item>music</item>
+        <item>food</item>
+        <item>tool</item>
+        <item>sport</item>
+        <item>ticket</item>
     </string-array>
 
-    <string name="miscellaneous">Divers</string>
-    <string name="appliance">Électro</string>
-    <string name="books">Livres</string>
-    <string name="clothes">Habits</string>
-    <string name="electronic">Électronique</string>
-    <string name="games">Jeux</string>
-    <string name="intruments">Instruments</string>
+    <string name="miscelleanous">Divers</string>
+    <string name="money">Argent</string>
     <string name="jewelry">Bijoux</string>
     <string name="kitchen">Cuisine</string>
-    <string name="money">Argent</string>
+    <string name="appliance">Électroménager</string>
+    <string name="electronic">Électronique</string>
+    <string name="clothes">Vêtements</string>
+    <string name="instrument">Instruments</string>
+    <string name="game">Jeu</string>
+    <string name="book">Livre</string>
     <string name="music">Musique</string>
-    <string name="sports">Sport</string>
-    <string name="tickets">Tickets</string>
-    <string name="tools">Outils</string>
+    <string name="food">Nourriture</string>
+    <string name="tool">Outil</string>
+    <string name="sport">Sport</string>
+    <string name="ticket">Ticket</string>
+
+    <array name="product_category_icon">
+        <item>@drawable/ic_miscellaneous</item>
+        <item>@drawable/ic_money</item>
+        <item>@drawable/ic_jewelry</item>
+        <item>@drawable/ic_kitchen</item>
+        <item>@drawable/ic_appliance</item>
+        <item>@drawable/ic_electronic</item>
+        <item>@drawable/ic_clothes</item>
+        <item>@drawable/ic_instrument</item>
+        <item>@drawable/ic_games</item>
+        <item>@drawable/ic_books</item>
+        <item>@drawable/ic_music</item>
+        <item>@drawable/ic_food</item>
+        <item>@drawable/ic_tools</item>
+        <item>@drawable/ic_sport</item>
+        <item>@drawable/ic_ticket</item>
+    </array>
 
 </resources>

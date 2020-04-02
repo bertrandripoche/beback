@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.utils.Constant
+import com.depuisletemps.beback.utils.Utils
 
 class CategoryAdapter(var context: Context, var icons: TypedArray, var categories: Array<String>, val size:String) :  BaseAdapter() {
     internal var inflater: LayoutInflater
@@ -39,7 +40,7 @@ class CategoryAdapter(var context: Context, var icons: TypedArray, var categorie
         val icon = v.findViewById<View>(R.id.image_category) as ImageView?
         val names = v.findViewById<View>(R.id.text_category) as TextView?
         icon!!.setImageDrawable(icons.getDrawable(i))
-        names!!.text = categories[i]
+        names!!.text = Utils.transformCategoryNumberIntoTranslatedWord(categories[i], context)
         return v
     }
 

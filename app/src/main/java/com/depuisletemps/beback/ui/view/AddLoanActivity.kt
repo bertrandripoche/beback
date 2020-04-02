@@ -271,13 +271,12 @@ class AddLoanActivity: BaseActivity() {
      * This method configuree the spinner
      */
     private fun configureSpinner() {
-        val categories: Array<String> =
-            this.resources.getStringArray(R.array.product_category)
-        val categories_icons = resources.obtainTypedArray(R.array.product_category_icon)
+        val categories: Array<String> = this.resources.getStringArray(R.array.product_category)
+        val categoriesIcons = this.resources.obtainTypedArray(R.array.product_category_icon)
 
         val spinner = findViewById<View>(R.id.spinner_loan_categories) as Spinner
 
-        val categoryAdapter = CategoryAdapter(applicationContext, categories_icons, categories, "")
+        val categoryAdapter = CategoryAdapter(applicationContext, categoriesIcons, categories, "")
         spinner.adapter = categoryAdapter
     }
 

@@ -35,6 +35,8 @@ class Constant {
 
         const val SMALL = "small"
         const val MODE = "mode"
+        const val PACKAGE = "com.depuisletemps.beback"
+        const val STRING = "string"
 
         const val PRODUCT = "product"
         const val PRODUCT_CATEGORY = "product_category"

@@ -29,7 +29,6 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
     val loanType = itemview.item_loan_type
     val dueDate = itemview.item_due_date
     val dueDatePic = itemview.item_due_date_pic
-    val utils:Utils = Utils()
 
     /**
      * This method populates the date into the recyclerView ViewHolder
@@ -52,7 +51,7 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
             else item.setBackgroundColor(darkGrey)
         }
 
-        category.setImageResource(utils.getIconFromCategory(loan.product_category))
+        category.setImageDrawable(Utils.getIconFromCategory(loan.product_category, context))
         product.text = loan.product
         recipient.text = loan.recipient_id
         if (loan.type.equals(LoanType.LENDING.type)) {

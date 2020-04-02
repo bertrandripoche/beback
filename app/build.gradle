@@ -51,7 +51,7 @@ dependencies {
     implementation 'com.firebaseui:firebase-ui-firestore:5.0.0'
 
     //SWITCH
-    compile 'com.llollox:androidtoggleswitch:2.0.1'
+    implementation 'com.llollox:androidtoggleswitch:2.0.1'
 
     //FACEBOOK LOGIN
     implementation 'com.facebook.android:facebook-login:5.15.3'
