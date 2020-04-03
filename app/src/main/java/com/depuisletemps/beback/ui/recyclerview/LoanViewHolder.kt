@@ -98,9 +98,9 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         }
 
         if (loan.notif != null) notif.visibility = View.VISIBLE
-        else notif.visibility = View.GONE
+        else notif.visibility = View.INVISIBLE
 
-        item.setTag(loan.id)
+        item.tag = loan.id
     }
 }
 

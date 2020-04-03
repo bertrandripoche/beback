@@ -34,10 +34,10 @@
     <string name="type">TYPE</string>
     <string name="when">WHEN</string>
     <string name="due">DUE</string>
-    <string name="due_date_hint">Due date \&#x27A1;</string>
+    <string name="due_date_hint">Due date</string>
     <string name="due_date">%1$s/%2$s/%3$d </string>
     <string name="notif">Notif</string>
-    <string name="notif_date_hint">Notif date \&#x27A1;</string>
+    <string name="notif_date_hint">Notif date</string>
     <string name="pick">PICK</string>
     <string name="mandatory_information">* = required, wouldn\'t make sense\nwithout it, isn\'t it ?</string>
     <string name="invalid_form">Damned it !\nI forgot the required fields !</string>

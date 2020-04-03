@@ -31,10 +31,10 @@
     <string name="type">TYPE</string>
     <string name="when">QUAND</string>
     <string name="due">DÛ</string>
-    <string name="due_date_hint">Date due\&#x27A1;</string>
+    <string name="due_date_hint">Date due</string>
     <string name="due_date">%1$s/%2$s/%3$d </string>
     <string name="notif">Notif</string>
-    <string name="notif_date_hint">Date de notif \&#x27A1;</string>
+    <string name="notif_date_hint">Date de notif</string>
     <string name="pick">CHOIX</string>
     <string name="mandatory_information">* = requis, pas vraiment de sens sans, n\'est-ce pas ?</string>
     <string name="invalid_form">Damned !\nJ\'ai oublié les champs requis !</string>
