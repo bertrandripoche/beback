@@ -80,17 +80,15 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
             else item.setBackgroundColor(darkGrey)
 
             query = mLoansRef.whereEqualTo(Constant.REQUESTOR_ID, requestorId)
-                .whereEqualTo(Constant.RECIPIENT_ID, name.text.toString())
-                .whereEqualTo(Constant.PRODUCT, filterProduct)
+
+            if (filterProduct != null)
+                query = query.whereEqualTo(Constant.PRODUCT, filterProduct)
+            if (filterType != null)
+                query = query.whereEqualTo(Constant.TYPE, filterType)
+
+             query = query.whereEqualTo(Constant.RECIPIENT_ID, name.text.toString())
                 .whereGreaterThan(Constant.RETURNED_DATE, Utils.getTimeStampFromString(Constant.FAR_PAST_DATE)!! )
                 .orderBy(Constant.RETURNED_DATE, Query.Direction.ASCENDING)
-//            if (filterProduct != null)
-//                query = query.whereEqualTo(Constant.PRODUCT, filterProduct)
-//            if (filterType != null)
-//                query = query.whereEqualTo(Constant.TYPE, filterType)
-
-
-
 
         }
 

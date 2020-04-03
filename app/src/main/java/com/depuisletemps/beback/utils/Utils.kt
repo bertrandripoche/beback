@@ -36,7 +36,9 @@ class Utils {
             val categories: Array<String> = context.resources.getStringArray(R.array.product_category)
             val categoriesIcons = context.resources.obtainTypedArray(R.array.product_category_icon)
             val index:Int = categories.indexOf(category)
-            return categoriesIcons.getDrawable(index)
+            val drawable = categoriesIcons.getDrawable(index)
+            categoriesIcons.recycle()
+            return drawable
         }
 
         /**

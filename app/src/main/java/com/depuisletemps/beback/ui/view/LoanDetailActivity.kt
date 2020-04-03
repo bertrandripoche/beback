@@ -236,6 +236,7 @@ class LoanDetailActivity: BaseActivity() {
                 }
             }
         }
+
     }
 
     /**
