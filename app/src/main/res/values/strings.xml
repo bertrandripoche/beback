@@ -119,6 +119,7 @@
         <item>clothes</item>
         <item>electronic</item>
         <item>food</item>
+        <item>furniture</item>
         <item>game</item>
         <item>instrument</item>
         <item>jewelry</item>
@@ -136,6 +137,7 @@
     <string name="clothes">Clothes</string>
     <string name="electronic">Electronic</string>
     <string name="food">Food</string>
+    <string name="furniture">Furniture</string>
     <string name="game">Game</string>
     <string name="instrument">Instrument</string>
     <string name="jewelry">Jewelry</string>
@@ -153,6 +155,7 @@
         <item>@drawable/ic_clothes</item>
         <item>@drawable/ic_electronic</item>
         <item>@drawable/ic_food</item>
+        <item>@drawable/ic_furniture</item>
         <item>@drawable/ic_games</item>
         <item>@drawable/ic_instrument</item>
         <item>@drawable/ic_jewelry</item>

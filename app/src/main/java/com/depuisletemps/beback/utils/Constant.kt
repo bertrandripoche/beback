@@ -29,7 +29,7 @@ class Constant {
         const val NOTIF_DATE = "notif_date"
         const val NOTIF_D_DAY = "notif_d_day"
         const val NOTIF_THREE_DAYS = "notif_three_days"
-        const val NOTIF_ONE_WEEK = "notif_onw_week"
+        const val NOTIF_ONE_WEEK = "notif_one_week"
         const val FAR_AWAY_DATE = "01/01/3000"
         const val FAR_PAST_DATE = "01/01/1970"
 

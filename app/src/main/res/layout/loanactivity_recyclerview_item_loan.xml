@@ -27,7 +27,7 @@
             android:textColor="@color/black"
             android:paddingStart="@dimen/middle"
             app:layout_constraintLeft_toRightOf="@+id/item_product_category"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/item_notif"
             app:layout_constraintBottom_toTopOf="@+id/item_recipient"
             app:layout_constraintTop_toTopOf="parent"/>
 
@@ -75,6 +75,17 @@
             app:layout_constraintBottom_toBottomOf="@+id/item_due_date_pic"
             app:layout_constraintTop_toTopOf="@+id/item_due_date_pic"
             app:layout_constraintRight_toRightOf="parent"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/item_notif"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:scaleType="centerCrop"
+            android:visibility="visible"
+            android:src="@drawable/ic_notification"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
     <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_vertical"

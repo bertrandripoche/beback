@@ -12,12 +12,7 @@ import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.Companion.getDifferenceDays
 import com.depuisletemps.beback.utils.Utils.Companion.getLocalDateFromString
 import com.depuisletemps.beback.utils.Utils.Companion.getStringFromDate
-import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_due_date
-import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_due_date_pic
-import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_loan_type
-import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_product
-import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_product_category
-import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.item_recipient
+import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.*
 import org.joda.time.LocalDate
 
 
@@ -29,6 +24,7 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
     val loanType = itemview.item_loan_type
     val dueDate = itemview.item_due_date
     val dueDatePic = itemview.item_due_date_pic
+    val notif = itemview.item_notif
 
     /**
      * This method populates the date into the recyclerView ViewHolder
@@ -54,15 +50,19 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         category.setImageDrawable(Utils.getIconFromCategory(loan.product_category, context))
         product.text = loan.product
         recipient.text = loan.recipient_id
-        if (loan.type.equals(LoanType.LENDING.type)) {
-            loanType.setImageResource(R.drawable.ic_loan)
-            recipient.setTextColor(green)
-        } else if (loan.type.equals(LoanType.BORROWING.type)) {
-            loanType.setImageResource(R.drawable.ic_borrowing)
-            recipient.setTextColor(red)
-        }  else {
-            loanType.setImageResource(R.drawable.ic_delivery)
-            recipient.setTextColor(secondaryDarkColor)
+        when {
+            loan.type.equals(LoanType.LENDING.type) -> {
+                loanType.setImageResource(R.drawable.ic_loan)
+                recipient.setTextColor(green)
+            }
+            loan.type.equals(LoanType.BORROWING.type) -> {
+                loanType.setImageResource(R.drawable.ic_borrowing)
+                recipient.setTextColor(red)
+            }
+            else -> {
+                loanType.setImageResource(R.drawable.ic_delivery)
+                recipient.setTextColor(secondaryDarkColor)
+            }
         }
         if (mode.equals(Constant.STANDARD)) {
             if (loan.due_date != null) {
@@ -96,6 +96,9 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
             dueDatePic.setImageResource(R.drawable.ic_checked)
             if (loan.returned_date != null) dueDate.text = getStringFromDate(loan.returned_date?.toDate())
         }
+
+        if (loan.notif != null) notif.visibility = View.VISIBLE
+        else notif.visibility = View.GONE
 
         item.setTag(loan.id)
     }

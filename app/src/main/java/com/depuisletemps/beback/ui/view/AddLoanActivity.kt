@@ -478,38 +478,36 @@ class AddLoanActivity: BaseActivity() {
     }
 
     private fun createNotification(loanId: String, loanProduct: String, loanType: String, loanRecipient: String){
-        val dateNotif: LocalDate = getNotifDate()
+        val dateNotif: LocalDate? = getNotifDate()
 
-        val day: String = DateFormat.format("dd", dateNotif.toDate()).toString()
-        val month: String  = DateFormat.format("MM", dateNotif.toDate()).toString()
-        val year: String  = DateFormat.format("yyyy", dateNotif.toDate()).toString()
-        val monthForCalendar = parseInt(month) - 1
-        val calendar: Calendar = Calendar.getInstance()
-        calendar.set(Calendar.YEAR, parseInt(year))
-        calendar.set(Calendar.MONTH, monthForCalendar)
-        calendar.set(Calendar.DAY_OF_MONTH, parseInt(day))
-        calendar.set(Calendar.HOUR_OF_DAY,16)
-        calendar.set(Calendar.MINUTE,23)
-        calendar.set(Calendar.SECOND,0)
-        calendar.set(Calendar.AM_PM, Calendar.PM)
+        if (dateNotif != null) {
+            val day: String = DateFormat.format("dd", dateNotif.toDate()).toString()
+            val month: String = DateFormat.format("MM", dateNotif.toDate()).toString()
+            val year: String = DateFormat.format("yyyy", dateNotif.toDate()).toString()
+            val monthForCalendar = parseInt(month) - 1
+            val calendar: Calendar = Calendar.getInstance()
+            calendar.set(Calendar.YEAR, parseInt(year))
+            calendar.set(Calendar.MONTH, monthForCalendar)
+            calendar.set(Calendar.DAY_OF_MONTH, parseInt(day))
+            calendar.set(Calendar.HOUR_OF_DAY, 13)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.SECOND, 0)
+            calendar.set(Calendar.AM_PM, Calendar.PM)
 
-        startAlarm(calendar, loanId, loanProduct, loanType, loanRecipient)
+            startAlarm(calendar, loanId, loanProduct, loanType, loanRecipient)
+        }
     }
 
     private fun getNotifDate(): LocalDate {
-        val dateNotif: LocalDate
-        if (loan_notif_date.text.toString() != "") {
-            if (loan_notif_date.text.toString() != "") dateNotif =
-                Utils.getLocalDateFromString(loan_notif_date.text.toString())
-            else {
-                dateNotif = Utils.getLocalDateFromString(loan_due_date.text.toString())
-                if (notif_three_days.isChecked) dateNotif.minusDays(3)
-                if (notif_one_week.isChecked) dateNotif.minusDays(7)
+        return if (loan_notif_date.text.toString() != "") Utils.getLocalDateFromString(loan_notif_date.text.toString())
+        else {
+            val returnDate: LocalDate = Utils.getLocalDateFromString(loan_due_date.text.toString())
+            when {
+                notif_three_days.isChecked -> returnDate.minusDays(3)
+                notif_one_week.isChecked -> returnDate.minusDays(7)
+                else -> returnDate
             }
-        } else {
-            dateNotif = LocalDate.now()
         }
-        return dateNotif
     }
 
     /**

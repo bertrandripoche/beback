@@ -118,6 +118,7 @@
         <item>instrument</item>
         <item>game</item>
         <item>book</item>
+        <item>furniture</item>
         <item>music</item>
         <item>food</item>
         <item>tool</item>
@@ -135,6 +136,7 @@
     <string name="instrument">Instruments</string>
     <string name="game">Jeu</string>
     <string name="book">Livre</string>
+    <string name="furniture">Meuble</string>
     <string name="music">Musique</string>
     <string name="food">Nourriture</string>
     <string name="tool">Outil</string>
@@ -152,6 +154,7 @@
         <item>@drawable/ic_instrument</item>
         <item>@drawable/ic_games</item>
         <item>@drawable/ic_books</item>
+        <item>@drawable/ic_furniture</item>
         <item>@drawable/ic_music</item>
         <item>@drawable/ic_food</item>
         <item>@drawable/ic_tools</item>
