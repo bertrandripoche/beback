@@ -19,6 +19,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -284,7 +285,7 @@ class LoanByObjectFragment: Fragment() {
 
         var query: Query
         mLoansRef = mDb.collection(Constant.LOANS_COLLECTION)
-        if (mMode == getString(R.string.standard)) {
+        if (mMode == Constant.STANDARD) {
             query = mLoansRef.whereEqualTo(Constant.REQUESTOR_ID, requesterId)
 
             if ((activity as LoanPagerActivity).mFilterProduct != null)
@@ -315,6 +316,7 @@ class LoanByObjectFragment: Fragment() {
         if (fragment_loan_by_object_recycler_view != null) {
             fragment_loan_by_object_recycler_view.setHasFixedSize(true)
             fragment_loan_by_object_recycler_view.layoutManager = LinearLayoutManager(context, orientation, false)
+            fragment_loan_by_object_recycler_view.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
             fragment_loan_by_object_recycler_view.adapter = mAdapter
         }
 
@@ -324,10 +326,10 @@ class LoanByObjectFragment: Fragment() {
      * This method sets the color of the background of the recyclerView items
      */
     private fun setBackgroundForRecyclerView() {
-        if (mMode == getString(R.string.standard)) {
+        if (mMode == Constant.STANDARD) {
             fragment_loan_by_object_recycler_view.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryColor))
         } else {
-            fragment_loan_by_object_recycler_view.setBackgroundColor(ContextCompat.getColor(context!!, R.color.grey))
+            fragment_loan_by_object_recycler_view.setBackgroundColor(ContextCompat.getColor(context!!, R.color.light_grey))
         }
     }
 

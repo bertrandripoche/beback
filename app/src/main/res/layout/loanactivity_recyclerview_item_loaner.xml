@@ -3,7 +3,6 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/item_loaner_recycler_layout"
-        android:background="@color/primaryLightColor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

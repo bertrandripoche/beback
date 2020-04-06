@@ -215,7 +215,7 @@ class ProfileActivity: BaseActivity() {
             batch.set(userRef, mUser, SetOptions.merge())
         }.addOnCompleteListener {
             displayCustomToast(getString(R.string.saved), R.drawable.bubble_3,this)
-            startLoanPagerActivity(getString(R.string.standard))
+            startLoanPagerActivity(Constant.STANDARD)
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
         }

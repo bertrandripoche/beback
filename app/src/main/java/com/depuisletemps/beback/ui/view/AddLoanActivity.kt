@@ -470,7 +470,7 @@ class AddLoanActivity: BaseActivity() {
             Toast.makeText(this, getString(R.string.saved), Toast.LENGTH_SHORT).show()
             if (notif_d_day.isChecked || notif_three_days.isChecked || notif_one_week.isChecked || loan_notif_date.text.toString() != "")
                 createNotification(loanRef.id, product, mType, recipientId)
-            startLoanPagerActivity(getString(R.string.standard))
+            startLoanPagerActivity(Constant.STANDARD)
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
         }

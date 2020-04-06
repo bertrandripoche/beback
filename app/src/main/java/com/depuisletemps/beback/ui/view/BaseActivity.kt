@@ -10,6 +10,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
+import com.depuisletemps.beback.utils.Constant
 import com.firebase.ui.auth.AuthUI
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
@@ -84,7 +85,7 @@ open class BaseActivity: AppCompatActivity() {
      */
     protected fun startLoanPagerActivity(mode: String) {
         val intent = Intent(this, LoanPagerActivity::class.java)
-        intent.putExtra(getString(R.string.mode), mode)
+        intent.putExtra(Constant.MODE, mode)
         startActivity(intent)
     }
 

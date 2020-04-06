@@ -9,13 +9,13 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loaner
 import com.depuisletemps.beback.ui.view.LoanDetailActivity
-import com.depuisletemps.beback.ui.view.LoanPagerActivity
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
 import com.google.android.flexbox.FlexboxLayout
@@ -26,7 +26,6 @@ import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loaner.view
 
 
 class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
-    val item = itemview
     val name: TextView = itemview.item_loaner_name
     val rateIcon: ImageView = itemview.item_loaner_rate
     val flexboxLayout: FlexboxLayout = itemview.findViewById(R.id.item_flexbox)
@@ -40,6 +39,7 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         val darkGrey =  ContextCompat.getColor(context, R.color.grey)
         val mDb: FirebaseFirestore = FirebaseFirestore.getInstance()
         val mLoansRef: CollectionReference = mDb.collection(Constant.LOANS_COLLECTION)
+        var loanCount = 0
 
         name.text = loaner.name
 
@@ -60,9 +60,9 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         }
 
         lateinit var query: Query
-        if (mode == context.getString(R.string.standard)) {
-            if (position % 2 == 0) item.setBackgroundColor(primaryLightColor)
-            else item.setBackgroundColor(primaryColor)
+        if (mode == Constant.STANDARD) {
+//            if (position % 2 == 0) itemView.setBackgroundColor(primaryLightColor)
+//            else itemView.setBackgroundColor(primaryColor)
 
             query = mLoansRef.whereEqualTo(Constant.REQUESTOR_ID, requestorId)
             if (filterProduct != null)
@@ -74,8 +74,8 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                 .whereEqualTo(Constant.RETURNED_DATE, null)
 
         } else {
-            if (position % 2 == 0) item.setBackgroundColor(ligthGrey)
-            else item.setBackgroundColor(darkGrey)
+//            if (position % 2 == 0) itemView.setBackgroundColor(ligthGrey)
+//            else itemView.setBackgroundColor(darkGrey)
 
             query = mLoansRef.whereEqualTo(Constant.REQUESTOR_ID, requestorId)
             if (filterProduct != null)
@@ -91,8 +91,8 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                 flexboxLayout.removeAllViews()
                 for (document in documents) {
                     if (document != null) {
-                        if (mode != Constant.STANDARD && document.data.getValue(Constant.RETURNED_DATE) == null) {}
-                        else {
+                        if (mode == Constant.ARCHIVE && document.data.getValue(Constant.RETURNED_DATE) == null) {
+                        }  else {
                             val linearLayout = LinearLayout(context)
                             linearLayout.orientation = LinearLayout.HORIZONTAL
                             val linearLayoutlayoutParams = LinearLayout.LayoutParams(
@@ -138,12 +138,19 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                                 intent.putExtra(Constant.LOAN_ID, document.data.getValue(Constant.ID).toString())
                                 startActivity(context,intent,null)
                             }
+                            loanCount += 1
                         }
                     }
                 }
+
+                if (loanCount == 0) {
+                    itemView.visibility = View.GONE
+                    var params = itemView.layoutParams
+                    params.height = 0
+                    itemView.layoutParams = params
+                }
             }
             .addOnFailureListener {
-                println(R.string.error_getting_docs)
             }
 
     }

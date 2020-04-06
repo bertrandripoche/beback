@@ -43,7 +43,7 @@ class LoginActivity : BaseActivity() {
      * This method check if someone is already logged (and in such case, start the loan activity)
      */
     private fun checkLoginAndDisplayAppropriateScreen() {
-        if (isCurrentUserLogged()) startLoanPagerActivity(getString(R.string.standard))
+        if (isCurrentUserLogged()) startLoanPagerActivity(Constant.STANDARD)
     }
 
     /**
@@ -76,7 +76,7 @@ class LoginActivity : BaseActivity() {
 
             if (resultCode == Activity.RESULT_OK) {
                 checkAndCreateFirestoreUser()
-                startLoanPagerActivity(getString(R.string.standard))
+                startLoanPagerActivity(Constant.STANDARD)
             } else {
                 if (response == null) {
                     showSnackBar( login_activity_linear_layout, getString(R.string.error_authentication_canceled)

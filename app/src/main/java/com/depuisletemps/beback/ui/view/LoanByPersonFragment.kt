@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.LoanStatus
@@ -18,6 +19,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import kotlinx.android.synthetic.main.fragment_loan_by_object.*
 import kotlinx.android.synthetic.main.fragment_loan_by_person.*
 
 class LoanByPersonFragment: Fragment() {
@@ -61,7 +63,7 @@ class LoanByPersonFragment: Fragment() {
 
         var query: Query
         mLoanersRef = mDb.collection(Constant.USERS_COLLECTION).document(requesterId).collection(Constant.LOANERS_COLLECTION)
-        if (mMode == getString(R.string.standard)) {
+        if (mMode == Constant.STANDARD) {
             query = mLoanersRef
             if ((activity as LoanPagerActivity).mFilterRecipient != null)
                 query = query.whereEqualTo(Constant.NAME, (activity as LoanPagerActivity).mFilterRecipient)
@@ -81,6 +83,7 @@ class LoanByPersonFragment: Fragment() {
         if (fragment_loan_by_person_recycler_view != null) {
             fragment_loan_by_person_recycler_view.setHasFixedSize(true)
             fragment_loan_by_person_recycler_view.layoutManager = LinearLayoutManager(context, orientation, false)
+            fragment_loan_by_person_recycler_view.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
             fragment_loan_by_person_recycler_view.adapter = mAdapter
         }
     }
@@ -89,7 +92,7 @@ class LoanByPersonFragment: Fragment() {
      * This method sets the color of the background of the recyclerView items
      */
     private fun setBackgroundForRecyclerView() {
-        if (mMode == getString(R.string.standard)) {
+        if (mMode == Constant.STANDARD) {
             fragment_loan_by_person_recycler_view.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryColor))
         } else {
             fragment_loan_by_person_recycler_view.setBackgroundColor(ContextCompat.getColor(context!!, R.color.grey))

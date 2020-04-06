@@ -54,9 +54,9 @@ class LoanPagerActivity: BaseActivity() {
     private fun getLoanMode(savedInstanceState: Bundle?): String {
         if (savedInstanceState != null) return savedInstanceState.getString(Constant.MODE)!!
 
-        if (intent.extras?.getString(getString(R.string.mode)) != null) return intent.extras.getString(getString(R.string.mode))
+        if (intent.extras?.getString(Constant.MODE) != null) return intent.extras.getString(Constant.MODE)!!
 
-        return getString(R.string.standard)
+        return Constant.STANDARD
     }
 
     /**
@@ -165,7 +165,7 @@ class LoanPagerActivity: BaseActivity() {
         mArchiveButton = menu.getItem(0)
         mPendingButton = menu.getItem(1)
 
-        if (mMode == getString(R.string.standard)) {
+        if (mMode == Constant.STANDARD) {
             mPendingButton.setVisible(false)
             mArchiveButton.setVisible(true)
         }
@@ -224,7 +224,7 @@ class LoanPagerActivity: BaseActivity() {
      */
     fun switchArchiveStandardMode() {
         when (mMode) {
-            getString(R.string.standard) -> enableArchiveMode()
+            Constant.STANDARD -> enableArchiveMode()
             getString(R.string.archive) -> disableArchiveMode()
         }
 
@@ -250,7 +250,7 @@ class LoanPagerActivity: BaseActivity() {
      * Disable archive mode
      */
     fun disableArchiveMode() {
-        mMode = getString(R.string.standard)
+        mMode = Constant.STANDARD
         mPendingButton.setVisible(false)
         mArchiveButton.setVisible(true)
     }

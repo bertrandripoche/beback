@@ -746,7 +746,7 @@ class LoanDetailActivity: BaseActivity() {
                 stopAlarm(mLoan!!.id, mLoan!!.product, mLoan!!.type, mLoan!!.recipient_id)
                 createNotification(mLoanId, mLoan!!.product, mLoan!!.type, mLoan!!.recipient_id)
             }
-            startLoanPagerActivity(getString(R.string.standard))
+            startLoanPagerActivity(Constant.STANDARD)
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
         }
@@ -867,7 +867,7 @@ class LoanDetailActivity: BaseActivity() {
 
                 override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
                     if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
-                        startLoanPagerActivity(getString(R.string.standard))
+                        startLoanPagerActivity(Constant.STANDARD)
                     }
                 }
             }).show()
