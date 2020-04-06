@@ -30,6 +30,9 @@ class FilterActivity: BaseActivity() {
     private val TAG = "FilterActivity"
     private val mUser: FirebaseUser? = getCurrentUser()
 
+    private var mMode = Constant.STANDARD
+    private var mSide = 0
+
     private var yellowColor: Int = 0
     private var lightGreyColor: Int = 0
     private var greyColor: Int = 0
@@ -43,11 +46,17 @@ class FilterActivity: BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_filter)
 
+        setOriginScreen()
         defineColors()
         configureToolbar()
         configureButtons()
         configureTextWatchers()
         configureAutoCompleteFields()
+    }
+
+    private fun setOriginScreen() {
+        mMode = intent.extras.getString(Constant.MODE)!!
+        mSide = intent.extras!!.getInt(Constant.SIDE)
     }
 
     private fun configureAutoCompleteFields() {
@@ -260,6 +269,8 @@ class FilterActivity: BaseActivity() {
         intent.putExtra(Constant.FILTER_PRODUCT, filterProduct)
         intent.putExtra(Constant.FILTER_TYPE, filterType)
         intent.putExtra(Constant.FILTERS, Constant.YES)
+        intent.putExtra(Constant.MODE, mMode)
+        intent.putExtra(Constant.SIDE, mSide)
         startActivity(intent)
     }
 }

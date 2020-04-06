@@ -38,9 +38,8 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         val primaryColor = ContextCompat.getColor(context, R.color.primaryColor)
         val ligthGrey =  ContextCompat.getColor(context, R.color.light_grey)
         val darkGrey =  ContextCompat.getColor(context, R.color.grey)
-        var mDb: FirebaseFirestore = FirebaseFirestore.getInstance()
+        val mDb: FirebaseFirestore = FirebaseFirestore.getInstance()
         val mLoansRef: CollectionReference = mDb.collection(Constant.LOANS_COLLECTION)
-        var utils = Utils()
 
         name.text = loaner.name
 
@@ -73,23 +72,18 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
             query = query
                 .whereEqualTo(Constant.RECIPIENT_ID, name.text.toString())
                 .whereEqualTo(Constant.RETURNED_DATE, null)
-                .orderBy(Constant.DUE_DATE, Query.Direction.ASCENDING)
 
         } else {
             if (position % 2 == 0) item.setBackgroundColor(ligthGrey)
             else item.setBackgroundColor(darkGrey)
 
             query = mLoansRef.whereEqualTo(Constant.REQUESTOR_ID, requestorId)
-
             if (filterProduct != null)
                 query = query.whereEqualTo(Constant.PRODUCT, filterProduct)
             if (filterType != null)
                 query = query.whereEqualTo(Constant.TYPE, filterType)
 
              query = query.whereEqualTo(Constant.RECIPIENT_ID, name.text.toString())
-                .whereGreaterThan(Constant.RETURNED_DATE, Utils.getTimeStampFromString(Constant.FAR_PAST_DATE)!! )
-                .orderBy(Constant.RETURNED_DATE, Query.Direction.ASCENDING)
-
         }
 
         query.get()
@@ -97,56 +91,59 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                 flexboxLayout.removeAllViews()
                 for (document in documents) {
                     if (document != null) {
-                        val linearLayout = LinearLayout(context)
-                        linearLayout.orientation = LinearLayout.HORIZONTAL
-                        val linearLayoutlayoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                        )
-                        linearLayoutlayoutParams.setMargins(25, 15, 25, 15)
-                        linearLayout.layoutParams = linearLayoutlayoutParams
+                        if (mode != Constant.STANDARD && document.data.getValue(Constant.RETURNED_DATE) == null) {}
+                        else {
+                            val linearLayout = LinearLayout(context)
+                            linearLayout.orientation = LinearLayout.HORIZONTAL
+                            val linearLayoutlayoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            )
+                            linearLayoutlayoutParams.setMargins(25, 15, 25, 15)
+                            linearLayout.layoutParams = linearLayoutlayoutParams
 
-                        val imageView = AppCompatImageView(context)
-                        val textView = TextView(context)
+                            val imageView = AppCompatImageView(context)
+                            val textView = TextView(context)
 
-                        linearLayout.addView(imageView, linearLayoutlayoutParams)
-                        linearLayout.addView(textView, linearLayoutlayoutParams)
-                        imageView.setBackgroundResource(R.drawable.semi_round_white_color_button)
-                        imageView.setImageDrawable(Utils.getIconFromCategory(document.data.getValue(Constant.PRODUCT_CATEGORY).toString(), context))
-                        val paramsImage: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.WRAP_CONTENT
-                        )
-                        imageView.layoutParams = paramsImage
+                            linearLayout.addView(imageView, linearLayoutlayoutParams)
+                            linearLayout.addView(textView, linearLayoutlayoutParams)
+                            imageView.setBackgroundResource(R.drawable.semi_round_white_color_button)
+                            imageView.setImageDrawable(Utils.getIconFromCategory(document.data.getValue(Constant.PRODUCT_CATEGORY).toString(), context))
+                            val paramsImage: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                            )
+                            imageView.layoutParams = paramsImage
 
-                        textView.text = document.data.getValue(Constant.PRODUCT).toString()
-                        when (document.data.getValue(Constant.TYPE).toString()) {
-                            Constant.LENDING -> textView.setBackgroundResource(R.drawable.semi_round_green_button)
-                            Constant.BORROWING -> textView.setBackgroundResource(R.drawable.semi_round_red_button)
-                            Constant.DELIVERY -> textView.setBackgroundResource(R.drawable.semi_round_yellow_color_button)
-                        }
-                        textView.setTypeface(null, Typeface.BOLD)
-                        val params: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.MATCH_PARENT
-                        )
-                        textView.layoutParams = params
-                        textView.gravity = Gravity.CENTER_VERTICAL
-                        textView.setPadding(25, 0, 25, 0)
+                            textView.text = document.data.getValue(Constant.PRODUCT).toString()
+                            when (document.data.getValue(Constant.TYPE).toString()) {
+                                Constant.LENDING -> textView.setBackgroundResource(R.drawable.semi_round_green_button)
+                                Constant.BORROWING -> textView.setBackgroundResource(R.drawable.semi_round_red_button)
+                                Constant.DELIVERY -> textView.setBackgroundResource(R.drawable.semi_round_yellow_color_button)
+                            }
+                            textView.setTypeface(null, Typeface.BOLD)
+                            val params: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.MATCH_PARENT
+                            )
+                            textView.layoutParams = params
+                            textView.gravity = Gravity.CENTER_VERTICAL
+                            textView.setPadding(25, 0, 25, 0)
 
-                        flexboxLayout.addView(linearLayout)
+                            flexboxLayout.addView(linearLayout)
 
-                        linearLayout.isClickable = true
-                        linearLayout.setOnClickListener{
-                            val intent = Intent(context, LoanDetailActivity::class.java)
-                            intent.putExtra(Constant.LOAN_ID, document.data.getValue(Constant.ID).toString())
-                            startActivity(context,intent,null)
+                            linearLayout.isClickable = true
+                            linearLayout.setOnClickListener{
+                                val intent = Intent(context, LoanDetailActivity::class.java)
+                                intent.putExtra(Constant.LOAN_ID, document.data.getValue(Constant.ID).toString())
+                                startActivity(context,intent,null)
+                            }
                         }
                     }
                 }
             }
-            .addOnFailureListener { exception ->
-                println("You lose")
+            .addOnFailureListener {
+                println(R.string.error_getting_docs)
             }
 
     }

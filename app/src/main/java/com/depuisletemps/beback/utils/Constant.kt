@@ -17,6 +17,8 @@ class Constant {
         const val ARCHIVE = "Archive"
         const val STANDARD = "Standard"
 
+        const val SIDE = "Side"
+
         const val ID = "id"
         const val NAME = "name"
         const val LOAN_ID = "loanId"

@@ -30,7 +30,7 @@ import com.depuisletemps.beback.ui.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.AlertReceiver
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
-import com.depuisletemps.beback.utils.Utils.Companion.getStringFromDate
+import com.depuisletemps.beback.utils.Utils.getStringFromDate
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
@@ -39,7 +39,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
-import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.activity_loan_detail.*
 import kotlinx.android.synthetic.main.activity_loan_detail.loan_due_date
 import kotlinx.android.synthetic.main.activity_loan_detail.loan_due_date_title
@@ -442,16 +441,19 @@ class LoanDetailActivity: BaseActivity() {
      */
     private fun getLoan() {
         val i = intent
-        mLoanId = i.extras?.getString("loanId") ?: ""
+        mLoanId = i.extras?.getString(Constant.LOAN_ID) ?: ""
         val docRef = mDb.collection(Constant.LOANS_COLLECTION).document(mLoanId)
         docRef.get()
             .addOnSuccessListener { documentSnapshot ->
                 mLoan = documentSnapshot.toObject(Loan::class.java)
-                mProductCategory = mLoan!!.product_category
-                mWhat = mLoan!!.product
-                mWho = mLoan!!.recipient_id
-                mDue = getStringFromDate(mLoan!!.due_date?.toDate())
-                mNotif = mLoan!!.notif
+
+                mLoan?.let {
+                    mProductCategory = mLoan!!.product_category
+                    mWhat = mLoan!!.product
+                    mWho = mLoan!!.recipient_id
+                    mDue = getStringFromDate(mLoan!!.due_date?.toDate())
+                    mNotif = mLoan!!.notif
+                }
 
                 configureScreen(mLoan)
             }

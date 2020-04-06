@@ -21,7 +21,6 @@ class LoanPagerActivity: BaseActivity() {
     lateinit var mToolbar: Toolbar
     lateinit var mArchiveButton: MenuItem
     lateinit var mPendingButton: MenuItem
-    lateinit var mProfileButton: MenuItem
     var mFilterProduct:String? = null
     var mFilterRecipient:String? = null
     var mFilterType:String? = null
@@ -33,11 +32,19 @@ class LoanPagerActivity: BaseActivity() {
         setContentView(R.layout.activity_loan_pager)
 
         configureToolbar()
-        configurePager()
         mMode = getLoanMode(savedInstanceState)
+        configurePager()
+        checkScreenSideForFilter()
 
         mBtnAdd.setOnClickListener{createLoanAlertDialog()}
         mBtnFilter.setOnClickListener{startFilterActivity()}
+    }
+
+    private fun checkScreenSideForFilter() {
+        if (intent.extras?.getInt(Constant.SIDE) != 0) {
+            viewPager.currentItem = 1
+            intent.extras?.putInt(Constant.SIDE, 0)
+        }
     }
 
     /**
@@ -47,8 +54,7 @@ class LoanPagerActivity: BaseActivity() {
     private fun getLoanMode(savedInstanceState: Bundle?): String {
         if (savedInstanceState != null) return savedInstanceState.getString(Constant.MODE)!!
 
-        val extras: Bundle? = this.intent.extras
-        if (extras?.getString(getString(R.string.mode)) != null) return extras.getString(getString(R.string.mode))
+        if (intent.extras?.getString(getString(R.string.mode)) != null) return intent.extras.getString(getString(R.string.mode))
 
         return getString(R.string.standard)
     }
@@ -96,7 +102,9 @@ class LoanPagerActivity: BaseActivity() {
                     mFilterProduct = null
                     mFilterRecipient = null
                     mFilterType = null
+                    val newPage = viewPager.currentItem
                     configurePager()
+                    viewPager.currentItem = newPage
                 }
             }
 
@@ -115,6 +123,7 @@ class LoanPagerActivity: BaseActivity() {
             view.findViewById<View>(R.id.icon).setBackgroundResource(imageResId.get(i))
             if (tab != null) tab.customView = view
         }
+
     }
 
     /**
@@ -321,6 +330,8 @@ class LoanPagerActivity: BaseActivity() {
      */
     fun startFilterActivity() {
         val intent = Intent(this, FilterActivity::class.java)
+        intent.putExtra(Constant.MODE, mMode)
+        intent.putExtra(Constant.SIDE, viewPager.currentItem)
         startActivity(intent)
     }
 }

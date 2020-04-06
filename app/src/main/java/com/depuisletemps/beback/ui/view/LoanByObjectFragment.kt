@@ -32,15 +32,14 @@ import com.depuisletemps.beback.ui.recyclerview.LoanAdapter
 import com.depuisletemps.beback.utils.AlertReceiver
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
-import com.depuisletemps.beback.utils.Utils.Companion.getStringFromDate
-import com.depuisletemps.beback.utils.Utils.Companion.getTimeStampFromString
+import com.depuisletemps.beback.utils.Utils.getStringFromDate
+import com.depuisletemps.beback.utils.Utils.getTimeStampFromString
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
-import kotlinx.android.synthetic.main.custom_toast.*
 import kotlinx.android.synthetic.main.fragment_loan_by_object.*
 
 class LoanByObjectFragment: Fragment() {

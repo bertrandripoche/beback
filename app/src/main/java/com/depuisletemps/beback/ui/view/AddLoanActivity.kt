@@ -28,7 +28,7 @@ import com.depuisletemps.beback.utils.AlertReceiver
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.StringUtils
 import com.depuisletemps.beback.utils.Utils
-import com.depuisletemps.beback.utils.Utils.Companion.getTimeStampFromString
+import com.depuisletemps.beback.utils.Utils.getTimeStampFromString
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser

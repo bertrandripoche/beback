@@ -9,9 +9,9 @@ import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
-import com.depuisletemps.beback.utils.Utils.Companion.getDifferenceDays
-import com.depuisletemps.beback.utils.Utils.Companion.getLocalDateFromString
-import com.depuisletemps.beback.utils.Utils.Companion.getStringFromDate
+import com.depuisletemps.beback.utils.Utils.getDifferenceDays
+import com.depuisletemps.beback.utils.Utils.getLocalDateFromString
+import com.depuisletemps.beback.utils.Utils.getStringFromDate
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.*
 import org.joda.time.LocalDate
 
