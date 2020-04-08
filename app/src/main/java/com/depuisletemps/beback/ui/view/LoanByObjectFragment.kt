@@ -1,35 +1,29 @@
 package com.depuisletemps.beback.ui.view
 
-import android.app.Activity
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.app.PendingIntent.FLAG_CANCEL_CURRENT
-import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loan
-import com.depuisletemps.beback.model.LoanAward
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.recyclerview.ItemClickSupport
 import com.depuisletemps.beback.ui.recyclerview.LoanAdapter
+import com.depuisletemps.beback.utils.AlarmManagement
 import com.depuisletemps.beback.utils.AlertReceiver
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
@@ -43,20 +37,13 @@ import com.google.firebase.firestore.*
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
 import kotlinx.android.synthetic.main.fragment_loan_by_object.*
 
-class LoanByObjectFragment: Fragment() {
+class LoanByObjectFragment: BaseFragment() {
 
     private val TAG = "LoanByObjectFragment"
     lateinit var mLoansRef: CollectionReference
     lateinit private var mAdapter: LoanAdapter
     var mUser: FirebaseUser? = null
     lateinit var mDb: FirebaseFirestore
-    lateinit var mMode: String
-
-    companion object {
-        fun newInstance(): LoanByObjectFragment {
-            return LoanByObjectFragment()
-        }
-    }
 
     override fun onCreateView(inflater: LayoutInflater,
                             container: ViewGroup?,
@@ -69,7 +56,7 @@ class LoanByObjectFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         configureRecyclerView()
         configureOnClickRecyclerView()
-        setBackgroundForRecyclerView()
+        setBackgroundForRecyclerView(fragment_loan_by_object_recycler_view)
 
         if (mMode == Constant.STANDARD) {
 
@@ -172,7 +159,7 @@ class LoanByObjectFragment: Fragment() {
             val dueDateLocalDate = Utils.getLocalDateFromString(getStringFromDate(loan.due_date?.toDate()))
             val returnedLocalDate = Utils.getLocalDateFromString(getStringFromDate(returnedDate.toDate()))
             val daysDiff: Int = Utils.getDifferenceDays(dueDateLocalDate,returnedLocalDate)
-            points = getPoints(daysDiff).toLong()
+            points = Utils.getPoints(daysDiff).toLong()
         }
 
         mDb.runBatch { batch ->
@@ -180,8 +167,8 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(+1))
             batch.update(loanerRef, loan.type, FieldValue.increment(-1))
-            batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(+1))
-            batch.update(loanerRef, awardsByType(loan.type), FieldValue.increment(points))
+            batch.update(loanerRef, Utils.reverseTypeField(loan.type), FieldValue.increment(+1))
+            batch.update(loanerRef, Utils.awardsByType(loan.type), FieldValue.increment(points))
         }.addOnCompleteListener {
             if (loan.type.equals(LoanType.DELIVERY.type)) (activity as LoanPagerActivity).displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1, context!!)
             else (activity as LoanPagerActivity).displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1, context!!)
@@ -212,8 +199,8 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(-1))
             batch.update(loanerRef, loan.type, FieldValue.increment(+1))
-            batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(-1))
-            batch.update(loanerRef, awardsByType(loan.type), FieldValue.increment(-points))
+            batch.update(loanerRef, Utils.reverseTypeField(loan.type), FieldValue.increment(-1))
+            batch.update(loanerRef, Utils.awardsByType(loan.type), FieldValue.increment(-points))
         }.addOnCompleteListener {
             if (loan.type.equals(LoanType.DELIVERY.type))             (activity as LoanPagerActivity).displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2, context!!)
             else (activity as LoanPagerActivity).displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2, context!!)
@@ -238,16 +225,16 @@ class LoanByObjectFragment: Fragment() {
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
         }.addOnCompleteListener {
             (activity as LoanPagerActivity).displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_4, context!!)
-            stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id)
+            AlarmManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id, activity as LoanPagerActivity, context!!)
             mAdapter.notifyDataSetChanged()
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
         }
 
         Snackbar.make(fragment_loan_by_object_layout, loan.product,Snackbar.LENGTH_LONG)
-            .setAction(getString(R.string.undo), View.OnClickListener{
+            .setAction(getString(R.string.undo)) {
                 undeleteTheLoan(loan)
-            }).show()
+            }.show()
     }
 
     /**
@@ -272,7 +259,6 @@ class LoanByObjectFragment: Fragment() {
             Log.w(TAG, getString(R.string.transaction_failure), e)
         }
     }
-
 
     /**
      * This method configure the recycler view for loan entries
@@ -323,17 +309,6 @@ class LoanByObjectFragment: Fragment() {
     }
 
     /**
-     * This method sets the color of the background of the recyclerView items
-     */
-    private fun setBackgroundForRecyclerView() {
-        if (mMode == Constant.STANDARD) {
-            fragment_loan_by_object_recycler_view.setBackgroundColor(ContextCompat.getColor(context!!, R.color.primaryColor))
-        } else {
-            fragment_loan_by_object_recycler_view.setBackgroundColor(ContextCompat.getColor(context!!, R.color.light_grey))
-        }
-    }
-
-    /**
      * This method manages the click on an item from the recyclerView
      */
     fun configureOnClickRecyclerView() {
@@ -347,45 +322,6 @@ class LoanByObjectFragment: Fragment() {
                     startLoanDetailActivity(v.tag.toString())
                 }
             })
-    }
-
-    /**
-     * This method returns the opposite field, eg : Borrowing -> Ended_borrowing
-     * @param type is the type of loan of the Loan object
-     * @return a String which is the "opposite" status of the loan type
-     */
-    private fun reverseTypeField(type: String): String {
-        return when (type) {
-            LoanType.LENDING.type -> LoanType.ENDED_LENDING.type
-            LoanType.BORROWING.type -> LoanType.ENDED_BORROWING.type
-            else -> LoanType.ENDED_DELIVERY.type
-        }
-    }
-
-    /**
-     * This method returns the opposite field, eg : Borrowing -> Ended_borrowing
-     * @param type is the type of loan of the Loan object
-     * @return a String which is the "opposite" status of the loan type
-     */
-    private fun awardsByType(type: String): String {
-        return when (type) {
-            LoanType.BORROWING.type -> LoanAward.MINE.type
-            else -> LoanAward.THEIR.type
-        }
-    }
-
-    /**
-     * This method returns the number of points given to user (for borrowing) or recipient (for lending and delivery)
-     * @param daysDiff is the difference of days between returned date and due date
-     * @return a Int which is the number of points to attribute
-     */
-    private fun getPoints(daysDiff: Int): Int {
-        return when {
-            daysDiff > 30 -> 4
-            daysDiff > 7 -> 3
-            daysDiff >= 0 -> 2
-            else -> 1
-        }
     }
 
     /**

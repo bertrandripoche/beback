@@ -9,7 +9,6 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -26,6 +25,10 @@ import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loaner.view
 
 
 class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
+    companion object {
+        var count = true
+    }
+
     val name: TextView = itemview.item_loaner_name
     val rateIcon: ImageView = itemview.item_loaner_rate
     val flexboxLayout: FlexboxLayout = itemview.findViewById(R.id.item_flexbox)
@@ -33,37 +36,24 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
      * This method populates the date into the recyclerView ViewHolder
      */
     fun updateWithLoaner(loaner: Loaner, position: Int, context: Context, mode:String, requestorId: String, filterProduct: String?, filterType: String?) {
-        val primaryLightColor = ContextCompat.getColor(context, R.color.primaryLightColor)
-        val primaryColor = ContextCompat.getColor(context, R.color.primaryColor)
-        val ligthGrey =  ContextCompat.getColor(context, R.color.light_grey)
-        val darkGrey =  ContextCompat.getColor(context, R.color.grey)
         val mDb: FirebaseFirestore = FirebaseFirestore.getInstance()
         val mLoansRef: CollectionReference = mDb.collection(Constant.LOANS_COLLECTION)
         var loanCount = 0
 
-        name.text = loaner.name
-
+        val primaryLightColor = ContextCompat.getColor(context, R.color.primaryLightColor)
+        val primaryColor = ContextCompat.getColor(context, R.color.primaryColor)
+        val ligthGrey =  ContextCompat.getColor(context, R.color.light_grey)
+        val grey =  ContextCompat.getColor(context, R.color.grey)
         val endedBorrowing:Int = loaner.ended_borrowing ?: 0
         val endedLending:Int = loaner.ended_lending ?: 0
         val endedDelivery:Int = loaner.ended_delivery ?: 0
         val theirPoints:Int = loaner.their_points ?: 0
         var rate: Double = -1.0
-        if ((endedBorrowing + endedLending + endedDelivery) != 0)
-            rate = (theirPoints / (endedBorrowing + endedLending + endedDelivery)).toDouble()
-        when {
-            rate > 3.5 -> rateIcon.setImageResource(R.drawable.ic_rate_0)
-            rate > 3.0 -> rateIcon.setImageResource(R.drawable.ic_rate_1)
-            rate > 2.5 -> rateIcon.setImageResource(R.drawable.ic_rate_2)
-            rate > 2.0 -> rateIcon.setImageResource(R.drawable.ic_rate_3)
-            rate > 1.5 -> rateIcon.setImageResource(R.drawable.ic_rate_4)
-            else -> rateIcon.setImageResource(R.drawable.ic_rate_5)
-        }
+
+        name.text = loaner.name
 
         lateinit var query: Query
         if (mode == Constant.STANDARD) {
-//            if (position % 2 == 0) itemView.setBackgroundColor(primaryLightColor)
-//            else itemView.setBackgroundColor(primaryColor)
-
             query = mLoansRef.whereEqualTo(Constant.REQUESTOR_ID, requestorId)
             if (filterProduct != null)
                 query = query.whereEqualTo(Constant.PRODUCT, filterProduct)
@@ -74,9 +64,6 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                 .whereEqualTo(Constant.RETURNED_DATE, null)
 
         } else {
-//            if (position % 2 == 0) itemView.setBackgroundColor(ligthGrey)
-//            else itemView.setBackgroundColor(darkGrey)
-
             query = mLoansRef.whereEqualTo(Constant.REQUESTOR_ID, requestorId)
             if (filterProduct != null)
                 query = query.whereEqualTo(Constant.PRODUCT, filterProduct)
@@ -144,14 +131,45 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                 }
 
                 if (loanCount == 0) {
+
                     itemView.visibility = View.GONE
                     var params = itemView.layoutParams
                     params.height = 0
                     itemView.layoutParams = params
+                } else {
+//                    count = !count
+//
+//                    if(count) {
+//                        if (mode == Constant.STANDARD) itemView.setBackgroundColor(primaryColor)
+//                        else itemView.setBackgroundColor(grey)
+//                    } else {
+//                        if (mode == Constant.STANDARD) itemView.setBackgroundColor(primaryLightColor)
+//                        else itemView.setBackgroundColor(ligthGrey)
+//                    }
+
+                    if(position %2 == 0) {
+                        if (mode == Constant.STANDARD) itemView.setBackgroundColor(primaryColor)
+                        else itemView.setBackgroundColor(grey)
+                    } else {
+                        if (mode == Constant.STANDARD) itemView.setBackgroundColor(primaryLightColor)
+                        else itemView.setBackgroundColor(ligthGrey)
+                    }
+
+                    if ((endedBorrowing + endedLending + endedDelivery) != 0)
+                        rate = (theirPoints / (endedBorrowing + endedLending + endedDelivery)).toDouble()
+                    when {
+                        rate > 3.5 -> rateIcon.setImageResource(R.drawable.ic_rate_0)
+                        rate > 3.0 -> rateIcon.setImageResource(R.drawable.ic_rate_1)
+                        rate > 2.5 -> rateIcon.setImageResource(R.drawable.ic_rate_2)
+                        rate > 2.0 -> rateIcon.setImageResource(R.drawable.ic_rate_3)
+                        rate > 1.5 -> rateIcon.setImageResource(R.drawable.ic_rate_4)
+                        else -> rateIcon.setImageResource(R.drawable.ic_rate_5)
+                    }
                 }
             }
             .addOnFailureListener {
             }
 
     }
+
 }

@@ -1,5 +1,8 @@
 package com.depuisletemps.beback.utils
 
+import androidx.core.content.ContextCompat
+import com.depuisletemps.beback.R
+
 class Constant {
     companion object {
         const val YES = "yes"

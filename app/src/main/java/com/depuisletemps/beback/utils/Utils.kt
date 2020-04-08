@@ -3,6 +3,8 @@ package com.depuisletemps.beback.utils
 import android.content.Context
 import android.graphics.drawable.Drawable
 import com.depuisletemps.beback.R
+import com.depuisletemps.beback.model.LoanAward
+import com.depuisletemps.beback.model.LoanType
 import com.google.firebase.Timestamp
 import org.joda.time.Days
 import org.joda.time.LocalDate
@@ -92,50 +94,41 @@ object Utils {
     }
 
     /**
-     * Allows to get data to correctly populate the spinner whatever the language
-     * @param context provides a context to the method
-     * @return an array of String for categories spinner which matches the smartphone language
+     * This method returns the opposite field, eg : Borrowing -> Ended_borrowing
+     * @param type is the type of loan of the Loan object
+     * @return a String which is the "opposite" status of the loan type
      */
-    fun createDataForCategoriesSpinners(context: Context): Array<String?>? {
-        val origin = context.resources.getStringArray(R.array.product_category)
-        val finalData = arrayOfNulls<String>(14)
-        for (i in origin.indices) {
-            val resId = context.resources.getIdentifier(origin[i], "string", "com.depuisletemps.beback")
-            finalData[i] = context.getString(resId)
+    fun reverseTypeField(type: String): String {
+        return when (type) {
+            LoanType.LENDING.type -> LoanType.ENDED_LENDING.type
+            LoanType.BORROWING.type -> LoanType.ENDED_BORROWING.type
+            else -> LoanType.ENDED_DELIVERY.type
         }
-        return finalData
     }
 
     /**
-     * Allows to get data to correctly populate the spinner whatever the language
-     * @param context provides a context to the method
-     * @return an array of String for categories spinner which matches the smartphone language
+     * This method returns the opposite field, eg : Borrowing -> Ended_borrowing
+     * @param type is the type of loan of the Loan object
+     * @return a String which is the "opposite" status of the loan type
      */
-    fun createIconsDataForCategoriesSpinners(context: Context): Array<String?>? {
-        val origin = context.resources.getStringArray(R.array.product_category_icon)
-        val finalData = arrayOfNulls<String>(14)
-
-        for (i in origin.indices) {
-            val resId = context.resources.getIdentifier(origin[i], "string", "com.depuisletemps.beback")
-            finalData[i] = context.getString(resId)
+    fun awardsByType(type: String): String {
+        return when (type) {
+            LoanType.BORROWING.type -> LoanAward.MINE.type
+            else -> LoanAward.THEIR.type
         }
-        return finalData
     }
 
     /**
-     * Method which allows to get the category string from the saved spinner position whatever the language
-     * @param context provides a context to the method
-     * @param position is the saved position (of the item in the spinner)
-     * @return the category String which matches the smartphone language
+     * This method returns the number of points given to user (for borrowing) or recipient (for lending and delivery)
+     * @param daysDiff is the difference of days between returned date and due date
+     * @return a Int which is the number of points to attribute
      */
-    fun getStringFromCategorySpinners(
-        context: Context,
-        position: Int
-    ): String? {
-        val origin =
-            context.resources.getStringArray(R.array.product_category)
-        val resId = context.resources.getIdentifier(origin[position],"string","com.depuisletemps.beback")
-        return context.getString(resId)
+    fun getPoints(daysDiff: Int): Int {
+        return when {
+            daysDiff > 30 -> 4
+            daysDiff > 7 -> 3
+            daysDiff >= 0 -> 2
+            else -> 1
+        }
     }
-
 }

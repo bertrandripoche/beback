@@ -33,19 +33,7 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         val black = ContextCompat.getColor(context, R.color.black)
         val red = ContextCompat.getColor(context, R.color.red)
         val green = ContextCompat.getColor(context, R.color.green)
-        val primaryLightColor = ContextCompat.getColor(context, R.color.primaryLightColor)
-        val primaryColor = ContextCompat.getColor(context, R.color.primaryColor)
-        val ligthGrey = ContextCompat.getColor(context, R.color.light_grey)
-        val darkGrey = ContextCompat.getColor(context, R.color.grey)
         val secondaryDarkColor = ContextCompat.getColor(context, R.color.secondaryDarkColor)
-
-        if (mode == Constant.STANDARD) {
-//            if (position % 2 == 0) item.setBackgroundColor(primaryLightColor)
-//            else item.setBackgroundColor(primaryColor)
-        } else {
-//            if (position % 2 == 0) item.setBackgroundColor(ligthGrey)
-            item.setBackgroundColor(ligthGrey)
-        }
 
         category.setImageDrawable(Utils.getIconFromCategory(loan.product_category, context))
         product.text = loan.product

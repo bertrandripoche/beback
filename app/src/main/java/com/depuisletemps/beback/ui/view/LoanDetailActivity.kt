@@ -769,14 +769,14 @@ class LoanDetailActivity: BaseActivity() {
             val dueDateLocalDate = Utils.getLocalDateFromString(loan_due_date.text.toString())
             val returnedLocalDate = Utils.getLocalDateFromString(getStringFromDate(loan.returned_date!!.toDate()))
             val daysDiff: Int = Utils.getDifferenceDays(dueDateLocalDate, returnedLocalDate)
-            points = getPoints(daysDiff).toLong()
+            points = Utils.getPoints(daysDiff).toLong()
         }
 
         mDb.runBatch { batch ->
             batch.delete(loanRef)
-            batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(-1))
+            batch.update(loanerRef, Utils.reverseTypeField(loan.type), FieldValue.increment(-1))
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(-1))
-            batch.update(loanerRef, awardsByType(loan.type), FieldValue.increment(-points))
+            batch.update(loanerRef, Utils.awardsByType(loan.type), FieldValue.increment(-points))
         }.addOnCompleteListener {
             displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_3, this)
             stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id)
@@ -813,9 +813,9 @@ class LoanDetailActivity: BaseActivity() {
         mDb.runBatch { batch ->
             batch.set(loanRef, loan)
             batch.set(loanerRef, loanerData, SetOptions.merge())
-            batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(+1))
+            batch.update(loanerRef, Utils.reverseTypeField(loan.type), FieldValue.increment(+1))
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(+1))
-            batch.update(loanerRef, awardsByType(loan.type), FieldValue.increment(points))
+            batch.update(loanerRef, Utils.awardsByType(loan.type), FieldValue.increment(points))
         }.addOnCompleteListener {
             displayCustomToast(
                 getString(R.string.undeleted_message, loan.product),
@@ -841,7 +841,7 @@ class LoanDetailActivity: BaseActivity() {
             val dueDateLocalDate = Utils.getLocalDateFromString(loan_due_date.text.toString())
             val returnedLocalDate = Utils.getLocalDateFromString(getStringFromDate(loan.returned_date!!.toDate()))
             val daysDiff: Int = Utils.getDifferenceDays(dueDateLocalDate, returnedLocalDate)
-            points = getPoints(daysDiff).toLong()
+            points = Utils.getPoints(daysDiff).toLong()
         }
 
         mDb.runBatch { batch ->
@@ -849,8 +849,8 @@ class LoanDetailActivity: BaseActivity() {
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(-1))
             batch.update(loanerRef, loan.type, FieldValue.increment(+1))
-            batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(-1))
-            batch.update(loanerRef, awardsByType(loan.type), FieldValue.increment(-points))
+            batch.update(loanerRef, Utils.reverseTypeField(loan.type), FieldValue.increment(-1))
+            batch.update(loanerRef, Utils.awardsByType(loan.type), FieldValue.increment(-points))
         }.addOnCompleteListener {
             if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2, this)
             else displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2, this)
@@ -888,52 +888,13 @@ class LoanDetailActivity: BaseActivity() {
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(+1))
             batch.update(loanerRef, loan.type, FieldValue.increment(-1))
-            batch.update(loanerRef, reverseTypeField(loan.type), FieldValue.increment(+1))
-            batch.update(loanerRef, awardsByType(loan.type), FieldValue.increment(+points))
+            batch.update(loanerRef, Utils.reverseTypeField(loan.type), FieldValue.increment(+1))
+            batch.update(loanerRef, Utils.awardsByType(loan.type), FieldValue.increment(+points))
         }.addOnCompleteListener {
             if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1, this)
             else displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1, this)
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
-        }
-    }
-
-    /**
-     * This method send the opposite field, eg : Borrowing -> Ended_borrowing
-     * @param type is the type of loan of the Loan object
-     * @return a String which is the "opposite" status of the loan type
-     */
-    private fun reverseTypeField(type: String): String {
-        return when (type) {
-            LoanType.LENDING.type -> LoanType.ENDED_LENDING.type
-            LoanType.BORROWING.type -> LoanType.ENDED_BORROWING.type
-            else -> LoanType.ENDED_DELIVERY.type
-        }
-    }
-
-    /**
-     * This method returns the opposite field, eg : Borrowing -> Ended_borrowing
-     * @param type is the type of loan of the Loan object
-     * @return a String which is the "opposite" status of the loan type
-     */
-    private fun awardsByType(type: String): String {
-        return when (type) {
-            LoanType.BORROWING.type -> LoanAward.MINE.type
-            else -> LoanAward.THEIR.type
-        }
-    }
-
-    /**
-     * This method returns the number of points given to user (for borrowing) or recipient (for lending and delivery)
-     * @param daysDiff is the difference of days between returned date and due date
-     * @return a Int which is the number of points to attribute
-     */
-    private fun getPoints(daysDiff: Int): Int {
-        return when {
-            daysDiff > 30 -> 4
-            daysDiff > 7 -> 3
-            daysDiff >= 0 -> 2
-            else -> 1
         }
     }
 
@@ -999,9 +960,7 @@ class LoanDetailActivity: BaseActivity() {
         intent.putExtra(Constant.PRODUCT, loanProduct)
         intent.putExtra(Constant.TYPE, loanType)
         intent.putExtra(Constant.RECIPIENT_ID, loanRecipient)
-        val pendingIntent = PendingIntent.getBroadcast(this, loanId.hashCode(), intent,
-            PendingIntent.FLAG_CANCEL_CURRENT
-        )
+        val pendingIntent = PendingIntent.getBroadcast(this, loanId.hashCode(), intent, PendingIntent.FLAG_CANCEL_CURRENT)
         alarmManager.cancel(pendingIntent)
     }
 }
