@@ -1,11 +1,7 @@
 package com.depuisletemps.beback.ui.view
 
 import android.Manifest
-import android.app.AlarmManager
 import android.app.DatePickerDialog
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.content.res.TypedArray
 import android.graphics.Color
@@ -14,7 +10,6 @@ import android.os.Bundle
 import android.provider.ContactsContract
 import android.text.Editable
 import android.text.TextWatcher
-import android.text.format.DateFormat
 import android.util.Log
 import android.view.View
 import android.widget.*
@@ -23,11 +18,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loan
-import com.depuisletemps.beback.model.LoanAward
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.customview.CategoryAdapter
-import com.depuisletemps.beback.utils.AlertReceiver
+import com.depuisletemps.beback.utils.NotificationManagement
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.getStringFromDate
@@ -59,7 +53,6 @@ import kotlinx.android.synthetic.main.activity_loan_detail.spinner_loan_categori
 import kotlinx.android.synthetic.main.activity_loan_detail.toggle_btns
 import kotlinx.android.synthetic.main.toolbar.*
 import org.joda.time.LocalDate
-import java.lang.Integer.parseInt
 import java.text.DecimalFormat
 import java.util.*
 
@@ -146,7 +139,7 @@ class LoanDetailActivity: BaseActivity() {
         yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
         orangeColor = ContextCompat.getColor(this, R.color.secondaryDarkColor)
         lightGreyColor = ContextCompat.getColor(this, R.color.light_grey)
-        greyColor = ContextCompat.getColor(this, R.color.grey)
+        greyColor = ContextCompat.getColor(this, R.color.dark_grey)
         blueColor = ContextCompat.getColor(this, R.color.primaryLightColor)
         blueDeeperColor = ContextCompat.getColor(this, R.color.primaryColor)
         darkGreyColor = ContextCompat.getColor(this, R.color.dark_grey)
@@ -490,9 +483,9 @@ class LoanDetailActivity: BaseActivity() {
         }
 
         val currentNotif: String? = when {
-            notif_d_day.isChecked -> Constant.NOTIF_D_DAY
-            notif_three_days.isChecked -> Constant.NOTIF_THREE_DAYS
-            notif_one_week.isChecked -> Constant.NOTIF_ONE_WEEK
+            notif_d_day.isChecked -> Utils.getStringFromLocalDate(getNotifDate())
+            notif_three_days.isChecked -> Utils.getStringFromLocalDate(getNotifDate())
+            notif_one_week.isChecked -> Utils.getStringFromLocalDate(getNotifDate())
             loan_notif_date.text.toString() != "" -> loan_notif_date.text.toString()
             else -> null
         }
@@ -700,9 +693,9 @@ class LoanDetailActivity: BaseActivity() {
         val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(mLoan!!.requestor_id).collection(Constant.LOANERS_COLLECTION).document(mLoan!!.recipient_id)
 
         val currentNotif: String? = when {
-            notif_d_day.isChecked -> Constant.NOTIF_D_DAY
-            notif_three_days.isChecked -> Constant.NOTIF_THREE_DAYS
-            notif_one_week.isChecked -> Constant.NOTIF_ONE_WEEK
+            notif_d_day.isChecked -> Utils.getStringFromLocalDate(getNotifDate())
+            notif_three_days.isChecked -> Utils.getStringFromLocalDate(getNotifDate())
+            notif_one_week.isChecked -> Utils.getStringFromLocalDate(getNotifDate())
             loan_notif_date.text.toString() != "" -> loan_notif_date.text.toString()
             else -> null
         }
@@ -743,8 +736,8 @@ class LoanDetailActivity: BaseActivity() {
                 this
             )
             if (!loan_due_date.text.toString().equals(mDue) || (currentNotif != mNotif || loan_due_date.text.toString() != mDue)) {
-                stopAlarm(mLoan!!.id, mLoan!!.product, mLoan!!.type, mLoan!!.recipient_id)
-                createNotification(mLoanId, mLoan!!.product, mLoan!!.type, mLoan!!.recipient_id)
+                NotificationManagement.stopAlarm(mLoan!!.id, mLoan!!.product, mLoan!!.type, mLoan!!.recipient_id, this, this)
+                NotificationManagement.createNotification(mLoan!!.id, mLoan!!.product, mLoan!!.type, mLoan!!.recipient_id, getNotifDate(), this, this)
             }
             startLoanPagerActivity(Constant.STANDARD)
         }.addOnFailureListener { e ->
@@ -779,7 +772,7 @@ class LoanDetailActivity: BaseActivity() {
             batch.update(loanerRef, Utils.awardsByType(loan.type), FieldValue.increment(-points))
         }.addOnCompleteListener {
             displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_3, this)
-            stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id)
+            NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id, this, this)
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
         }
@@ -898,27 +891,6 @@ class LoanDetailActivity: BaseActivity() {
         }
     }
 
-    private fun createNotification(loanId: String, loanProduct: String, loanType: String, loanRecipient: String){
-        val dateNotif: LocalDate = getNotifDate()
-
-        if (dateNotif != null) {
-            val day: String = DateFormat.format("dd", dateNotif.toDate()).toString()
-            val month: String = DateFormat.format("MM", dateNotif.toDate()).toString()
-            val year: String = DateFormat.format("yyyy", dateNotif.toDate()).toString()
-            val monthForCalendar = parseInt(month) - 1
-            val calendar: Calendar = Calendar.getInstance()
-            calendar.set(Calendar.YEAR, parseInt(year))
-            calendar.set(Calendar.MONTH, monthForCalendar)
-            calendar.set(Calendar.DAY_OF_MONTH, parseInt(day))
-            calendar.set(Calendar.HOUR_OF_DAY, 13)
-            calendar.set(Calendar.MINUTE, 0)
-            calendar.set(Calendar.SECOND, 0)
-            calendar.set(Calendar.AM_PM, Calendar.PM)
-
-            startAlarm(calendar, loanId, loanProduct, loanType, loanRecipient)
-        }
-    }
-
     private fun getNotifDate(): LocalDate {
         return if (loan_notif_date.text.toString() != "") Utils.getLocalDateFromString(loan_notif_date.text.toString())
         else {
@@ -929,38 +901,5 @@ class LoanDetailActivity: BaseActivity() {
                 else -> returnDate
             }
         }
-    }
-
-    /**
-     * This method start the notification via the alertReceiver class and alarmManager
-     */
-    fun startAlarm(calendar: Calendar, loanId: String, loanProduct: String, loanType: String, loanRecipient: String) {
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, AlertReceiver::class.java)
-        intent.putExtra(Constant.LOAN_ID, loanId)
-        intent.putExtra(Constant.PRODUCT, loanProduct)
-        intent.putExtra(Constant.TYPE, loanType)
-        intent.putExtra(Constant.RECIPIENT_ID, loanRecipient)
-        val pendingIntent = PendingIntent.getBroadcast(this, loanId.hashCode(), intent, 0)
-        alarmManager.setExact(
-            AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
-            pendingIntent
-        )
-    }
-
-    /**
-     * This method stop the notification and clear the shared preferences
-     */
-    fun stopAlarm(loanId: String, loanProduct: String, loanType: String, loanRecipient: String) {
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        val intent = Intent(this, AlertReceiver::class.java)
-        intent.putExtra(Constant.LOAN_ID, loanId)
-        intent.putExtra(Constant.PRODUCT, loanProduct)
-        intent.putExtra(Constant.TYPE, loanType)
-        intent.putExtra(Constant.RECIPIENT_ID, loanRecipient)
-        val pendingIntent = PendingIntent.getBroadcast(this, loanId.hashCode(), intent, PendingIntent.FLAG_CANCEL_CURRENT)
-        alarmManager.cancel(pendingIntent)
     }
 }

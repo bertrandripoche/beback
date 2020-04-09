@@ -3,13 +3,11 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:orientation="vertical"
-        android:background="@color/primaryColor"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/fragment_loan_by_person_recycler_view"
-            android:background="@color/primaryColor"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             >

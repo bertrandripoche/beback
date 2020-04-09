@@ -60,13 +60,22 @@ object Utils {
         return Days.daysBetween(today,dueDate).days
     }
 
+    fun isDatePassed(date: LocalDate): Boolean {
+        return Days.daysBetween(LocalDate.now(),date).days < 0
+    }
+
+
+    fun isStringDatePassed(date: String): Boolean {
+        return Days.daysBetween(LocalDate.now(),getLocalDateFromString(date)).days < 0
+    }
+
     fun getLocalDateFromString(date: String): LocalDate {
         val formatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy")
         return LocalDate.parse(date, formatter)
     }
 
     fun getStringFromLocalDate(localDate: LocalDate): String {
-        return localDate.toString("MM/dd/yyyy")
+        return localDate.toString("dd/MM/yyyy")
     }
 
     /**

@@ -1,9 +1,5 @@
 package com.depuisletemps.beback.ui.view
 
-import android.app.AlarmManager
-import android.app.PendingIntent
-import android.app.PendingIntent.FLAG_CANCEL_CURRENT
-import android.content.Context
 import android.content.Intent
 import android.graphics.Canvas
 import android.os.Bundle
@@ -13,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,8 +18,7 @@ import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.recyclerview.ItemClickSupport
 import com.depuisletemps.beback.ui.recyclerview.LoanAdapter
-import com.depuisletemps.beback.utils.AlarmManagement
-import com.depuisletemps.beback.utils.AlertReceiver
+import com.depuisletemps.beback.utils.NotificationManagement
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.getStringFromDate
@@ -172,7 +166,8 @@ class LoanByObjectFragment: BaseFragment() {
         }.addOnCompleteListener {
             if (loan.type.equals(LoanType.DELIVERY.type)) (activity as LoanPagerActivity).displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1, context!!)
             else (activity as LoanPagerActivity).displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1, context!!)
-            stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id)
+            NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id, activity as LoanPagerActivity, context!!)
+
             mAdapter.notifyDataSetChanged()
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
@@ -225,7 +220,7 @@ class LoanByObjectFragment: BaseFragment() {
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
         }.addOnCompleteListener {
             (activity as LoanPagerActivity).displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_4, context!!)
-            AlarmManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id, activity as LoanPagerActivity, context!!)
+            NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id, activity as LoanPagerActivity, context!!)
             mAdapter.notifyDataSetChanged()
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
@@ -302,10 +297,9 @@ class LoanByObjectFragment: BaseFragment() {
         if (fragment_loan_by_object_recycler_view != null) {
             fragment_loan_by_object_recycler_view.setHasFixedSize(true)
             fragment_loan_by_object_recycler_view.layoutManager = LinearLayoutManager(context, orientation, false)
-            fragment_loan_by_object_recycler_view.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
+            //fragment_loan_by_object_recycler_view.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
             fragment_loan_by_object_recycler_view.adapter = mAdapter
         }
-
     }
 
     /**
@@ -349,18 +343,4 @@ class LoanByObjectFragment: BaseFragment() {
         startActivity(intent)
     }
 
-    /**
-     * This method stop the notification and clear the shared preferences
-     */
-    fun stopAlarm(loanId: String, loanProduct: String, loanType: String, loanRecipient: String) {
-        val alarmManager = activity!!.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        val intent = Intent(context, AlertReceiver::class.java)
-        intent.putExtra(Constant.LOAN_ID, loanId)
-        intent.putExtra(Constant.PRODUCT, loanProduct)
-        intent.putExtra(Constant.TYPE, loanType)
-        intent.putExtra(Constant.RECIPIENT_ID, loanRecipient)
-        val pendingIntent = PendingIntent.getBroadcast(context, loanId.hashCode(), intent, FLAG_CANCEL_CURRENT)
-        alarmManager.cancel(pendingIntent)
-    }
 }

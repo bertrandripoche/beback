@@ -1,19 +1,13 @@
 package com.depuisletemps.beback.ui.view
 
 import android.Manifest
-import android.app.AlarmManager
 import android.app.DatePickerDialog
-import android.app.PendingIntent
-import android.content.Context
-import android.content.Intent
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
-import android.os.IBinder
 import android.provider.ContactsContract
 import android.text.Editable
 import android.text.TextWatcher
-import android.text.format.DateFormat
 import android.util.Log
 import android.view.View
 import android.widget.*
@@ -24,10 +18,7 @@ import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.ui.customview.CategoryAdapter
-import com.depuisletemps.beback.utils.AlertReceiver
-import com.depuisletemps.beback.utils.Constant
-import com.depuisletemps.beback.utils.StringUtils
-import com.depuisletemps.beback.utils.Utils
+import com.depuisletemps.beback.utils.*
 import com.depuisletemps.beback.utils.Utils.getTimeStampFromString
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Timestamp
@@ -52,7 +43,6 @@ import kotlinx.android.synthetic.main.activity_add_loan.spinner_loan_categories
 import kotlinx.android.synthetic.main.activity_add_loan.toggle_btns
 import kotlinx.android.synthetic.main.toolbar.*
 import org.joda.time.LocalDate
-import java.lang.Integer.parseInt
 import java.text.DecimalFormat
 import java.util.*
 
@@ -363,7 +353,7 @@ class AddLoanActivity: BaseActivity() {
     }
 
     /**
-     * This method empties the due date field
+     * This method empties the date field (due or notif)
      */
     fun cancelDate(view: View) {
         val btn: String = when (view.id) {
@@ -449,9 +439,9 @@ class AddLoanActivity: BaseActivity() {
         val returnedDate = null
 
         val notif: String? = when {
-            notif_d_day.isChecked -> Constant.NOTIF_D_DAY
-            notif_three_days.isChecked -> Constant.NOTIF_THREE_DAYS
-            notif_one_week.isChecked -> Constant.NOTIF_ONE_WEEK
+            notif_d_day.isChecked -> Utils.getStringFromLocalDate(getNotifDate())
+            notif_three_days.isChecked -> Utils.getStringFromLocalDate(getNotifDate())
+            notif_one_week.isChecked -> Utils.getStringFromLocalDate(getNotifDate())
             loan_notif_date.text.toString() != "" -> loan_notif_date.text.toString()
             else -> null
         }
@@ -469,33 +459,12 @@ class AddLoanActivity: BaseActivity() {
         }.addOnCompleteListener {
             Toast.makeText(this, getString(R.string.saved), Toast.LENGTH_SHORT).show()
             if (notif_d_day.isChecked || notif_three_days.isChecked || notif_one_week.isChecked || loan_notif_date.text.toString() != "")
-                createNotification(loanRef.id, product, mType, recipientId)
+                NotificationManagement.createNotification(loanRef.id, product, mType, recipientId, getNotifDate(), this, this)
             startLoanPagerActivity(Constant.STANDARD)
         }.addOnFailureListener { e ->
             Log.w(TAG, getString(R.string.transaction_failure), e)
         }
 
-    }
-
-    private fun createNotification(loanId: String, loanProduct: String, loanType: String, loanRecipient: String){
-        val dateNotif: LocalDate? = getNotifDate()
-
-        if (dateNotif != null) {
-            val day: String = DateFormat.format("dd", dateNotif.toDate()).toString()
-            val month: String = DateFormat.format("MM", dateNotif.toDate()).toString()
-            val year: String = DateFormat.format("yyyy", dateNotif.toDate()).toString()
-            val monthForCalendar = parseInt(month) - 1
-            val calendar: Calendar = Calendar.getInstance()
-            calendar.set(Calendar.YEAR, parseInt(year))
-            calendar.set(Calendar.MONTH, monthForCalendar)
-            calendar.set(Calendar.DAY_OF_MONTH, parseInt(day))
-            calendar.set(Calendar.HOUR_OF_DAY, 13)
-            calendar.set(Calendar.MINUTE, 0)
-            calendar.set(Calendar.SECOND, 0)
-            calendar.set(Calendar.AM_PM, Calendar.PM)
-
-            startAlarm(calendar, loanId, loanProduct, loanType, loanRecipient)
-        }
     }
 
     private fun getNotifDate(): LocalDate {
@@ -508,24 +477,6 @@ class AddLoanActivity: BaseActivity() {
                 else -> returnDate
             }
         }
-    }
-
-    /**
-     * This method start the notification via the alertReceiver class and alarmManager
-     */
-    fun startAlarm(calendar: Calendar, loanId: String, loanProduct: String, loanType: String, loanRecipient: String) {
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        val intent = Intent(this, AlertReceiver::class.java)
-        intent.putExtra(Constant.LOAN_ID, loanId)
-        intent.putExtra(Constant.PRODUCT, loanProduct)
-        intent.putExtra(Constant.TYPE, loanType)
-        intent.putExtra(Constant.RECIPIENT_ID, loanRecipient)
-        val pendingIntent = PendingIntent.getBroadcast(applicationContext, loanId.hashCode(), intent, 0)
-        alarmManager.setExact(
-            AlarmManager.RTC_WAKEUP,
-            calendar.timeInMillis,
-            pendingIntent
-        )
     }
 
     /**

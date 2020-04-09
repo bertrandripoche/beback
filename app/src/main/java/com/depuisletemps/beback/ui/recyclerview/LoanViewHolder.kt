@@ -85,7 +85,10 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
             if (loan.returned_date != null) dueDate.text = getStringFromDate(loan.returned_date?.toDate())
         }
 
-        if (loan.notif != null) notif.visibility = View.VISIBLE
+        if (loan.notif != null) {
+            notif.visibility = View.VISIBLE
+            if (Utils.isStringDatePassed(loan.notif.toString())) notif.setImageResource(R.drawable.ic_notification_grey)
+        }
         else notif.visibility = View.INVISIBLE
 
         item.tag = loan.id
