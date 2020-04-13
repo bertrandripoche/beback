@@ -52,7 +52,7 @@ object Utils {
         return context.resources.getString(context.resources.getIdentifier(categoryNumber, Constant.STRING, Constant.PACKAGE))
     }
 
-    fun getTodayDate(): String {
+    fun getTodayStringDate(): String {
         return LocalDate.now().toString()
     }
 
@@ -63,7 +63,6 @@ object Utils {
     fun isDatePassed(date: LocalDate): Boolean {
         return Days.daysBetween(LocalDate.now(),date).days < 0
     }
-
 
     fun isStringDatePassed(date: String): Boolean {
         return Days.daysBetween(LocalDate.now(),getLocalDateFromString(date)).days < 0

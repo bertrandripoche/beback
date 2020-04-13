@@ -17,16 +17,9 @@ class UserHelper {
         }
 
         // CREATE
-        fun createUser(
-            id: String,
-            mail: String,
-            firstname: String?,
-            lastname: String?,
-            pseudo: String?,
-            pic: String?
-        ): Task<Void> {
-            val userToCreate = User(id, mail, firstname, lastname, pseudo, pic)
-            return getUsersCollection().document(id).set(userToCreate, SetOptions.merge())
+        fun createUser(user: User): Task<Void> {
+//            val userToCreate = User(id, mail, firstname, lastname, pseudo, pic)
+            return getUsersCollection().document(user.id).set(user, SetOptions.merge())
         }
 
         // GET

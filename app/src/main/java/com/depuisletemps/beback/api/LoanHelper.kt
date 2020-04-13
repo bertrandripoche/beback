@@ -1,69 +1,31 @@
 package com.depuisletemps.beback.api
 
 import com.depuisletemps.beback.model.Loan
-import com.google.android.gms.tasks.Task
-import com.google.firebase.Timestamp
-import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.DocumentSnapshot
+import com.depuisletemps.beback.model.LoanStatus
+import com.depuisletemps.beback.utils.Constant
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import java.util.*
+import com.google.firebase.firestore.SetOptions
 
 class LoanHelper {
-    companion object {
-        private val COLLECTION_NAME: String = "loans"
+    val mDb: FirebaseFirestore = FirebaseFirestore.getInstance()
 
-        // COLLECTION REFERENCE
-        fun getLoansCollection(): CollectionReference {
-            return FirebaseFirestore.getInstance().collection(COLLECTION_NAME)
-        }
+    fun createLoan(loan: Loan, callback: (Boolean, String) -> Unit) {
+        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document()
+        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(
+            Constant.LOANERS_COLLECTION).document(loan.recipient_id)
+        val loanerData = hashMapOf(Constant.NAME to loan.recipient_id)
+        loan.id = loanRef.id
 
-        // CREATE
-        fun createLoan(
-            id: String,
-            requestor_id: String,
-            recipient_id: String,
-            type: String,
-            product: String,
-            product_category: String,
-            creation_date: Timestamp,
-            due_date: Timestamp?,
-            notif: String?,
-            returned_date: Timestamp?
-        ): Task<DocumentReference> {
-            val loanToCreate = Loan(id,requestor_id, recipient_id, type, product, product_category, creation_date, due_date, notif, returned_date)
-            return getLoansCollection().add(loanToCreate)
-        }
-
-        // GET
-        fun getLoan(id: String): Task<DocumentSnapshot> {
-            return getLoansCollection().document(id).get()
-        }
-
-        // UPDATE
-        fun updateRecipient(id: String, recipient_id: String): Task<Void> {
-            return getLoansCollection().document(id).update("recipient_id", recipient_id)
-        }
-
-        fun updateType(id: String, type: String): Task<Void> {
-            return getLoansCollection().document(id).update("type", type)
-        }
-
-        fun updateProduct(id: String, product: String): Task<Void> {
-            return getLoansCollection().document(id).update("product", product)
-        }
-
-        fun updateProductCategory(id: String, product_category: String): Task<Void> {
-            return getLoansCollection().document(id).update("product_category", product_category)
-        }
-
-        fun updateDueDate(id: String, due_date: Timestamp): Task<Void> {
-            return getLoansCollection().document(id).update("due_date", due_date)
-        }
-
-        // DELETE
-        fun deleteLoan(id: String): Task<Void> {
-            return getLoansCollection().document(id).delete()
+        mDb.runBatch { batch ->
+            batch.set(loanRef,loan)
+            batch.set(loanerRef,loanerData, SetOptions.merge())
+            batch.update(loanerRef, loan.type, FieldValue.increment(+1))
+            batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
+        }.addOnCompleteListener {
+           callback(true, loanRef.id)
+        }.addOnFailureListener {
+            callback(false, loanRef.id)
         }
     }
 }

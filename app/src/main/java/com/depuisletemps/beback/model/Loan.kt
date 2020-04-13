@@ -3,7 +3,7 @@ package com.depuisletemps.beback.model
 import com.google.firebase.Timestamp
 
 data class Loan (
-    val id:String,
+    var id:String,
     var requestor_id:String,
     var recipient_id:String,
     var type:String,

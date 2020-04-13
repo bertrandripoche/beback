@@ -142,6 +142,7 @@
     <string name="tool">Outil</string>
     <string name="sport">Sport</string>
     <string name="ticket">Ticket</string>
+    <string name="error_adding_loan">Oops, something went wrong</string>
 
     <array name="product_category_icon">
         <item>@drawable/ic_miscellaneous</item>

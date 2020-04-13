@@ -10,6 +10,7 @@ import android.util.Log
 import android.widget.LinearLayout
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.api.UserHelper
+import com.depuisletemps.beback.model.User
 import com.depuisletemps.beback.utils.Constant
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.AuthUI.IdpConfig
@@ -105,30 +106,32 @@ class LoginActivity : BaseActivity() {
      * This method create a user entry in the Firebase database "employees" collection, only if needed
      */
     private fun checkAndCreateFirestoreUser(){
-        val user: FirebaseUser? = getCurrentUser()
+        val firebaseUser: FirebaseUser? = getCurrentUser()
 
-        val id:String = user?.uid ?: ""
-        val mail:String = user?.email ?: ""
-        val pic:String = user?.photoUrl.toString()
-        val displayName:String = user?.displayName ?: ""
+        val id:String = firebaseUser?.uid ?: ""
+        val mail:String = firebaseUser?.email ?: ""
+        val pic:String = firebaseUser?.photoUrl.toString()
+        val displayName:String = firebaseUser?.displayName ?: ""
         val firstname:String = displayName.split(" ")[0]
-        val lastname:String = displayName.split(" ")[1]
+        val lastname:String = displayName.replace(firstname,"").trim()
 
-         checkUserInDb(id, mail, firstname, lastname, "", pic)
+         val user = User(id, mail, firstname, lastname, "", pic)
+         checkUserInDb(user)
      }
 
     /**
      * This method checks existence of user in Firestore db
      */
-    fun checkUserInDb(id: String, mail:String, firstname: String, lastname:String, pseudo:String, pic:String) {
-        val userRef = mDb.collection(Constant.USERS_COLLECTION).document(id)
+    fun checkUserInDb(user: User) {
+        val userRef = mDb.collection(Constant.USERS_COLLECTION).document(user.id)
         userRef.get()
             .addOnSuccessListener { document ->
                 if (document == null) {
-                    addUserInFirestore(id, mail, firstname, lastname, "", pic)
+                    addUserInFirestore(user)
                 }
             }
             .addOnFailureListener { exception ->
+                addUserInFirestore(user)
                 Log.d(TAG, getString(R.string.transaction_failure), exception)
             }
     }
@@ -136,8 +139,8 @@ class LoginActivity : BaseActivity() {
     /**
      * This method adds the user in Firestore
      */
-    fun addUserInFirestore(id: String, mail:String, firstname: String, lastname:String, pseudo:String, pic:String): Task<Void> {
-        return UserHelper.createUser(id, mail, firstname, lastname, pseudo, pic)
+    fun addUserInFirestore(user: User): Task<Void> {
+        return UserHelper.createUser(user)
     }
 
     /**

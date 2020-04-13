@@ -14,6 +14,7 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
+import com.depuisletemps.beback.api.LoanHelper
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
@@ -446,25 +447,19 @@ class AddLoanActivity: BaseActivity() {
             else -> null
         }
 
-        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document()
-        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(requestorId).collection(Constant.LOANERS_COLLECTION).document(recipientId)
-        val loanerData = hashMapOf(Constant.NAME to recipientId)
-        val loan = Loan(loanRef.id, requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), notif, returnedDate)
+        val loan = Loan("",requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), notif, returnedDate)
 
-        mDb.runBatch { batch ->
-            batch.set(loanRef,loan)
-            batch.set(loanerRef,loanerData, SetOptions.merge())
-            batch.update(loanerRef, loan.type, FieldValue.increment(+1))
-            batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
-        }.addOnCompleteListener {
-            Toast.makeText(this, getString(R.string.saved), Toast.LENGTH_SHORT).show()
-            if (notif_d_day.isChecked || notif_three_days.isChecked || notif_one_week.isChecked || loan_notif_date.text.toString() != "")
-                NotificationManagement.createNotification(loanRef.id, product, mType, recipientId, getNotifDate(), this, this)
-            startLoanPagerActivity(Constant.STANDARD)
-        }.addOnFailureListener { e ->
-            Log.w(TAG, getString(R.string.transaction_failure), e)
+        val loanHelper = LoanHelper()
+        loanHelper.createLoan(loan) {result, loanId ->
+            if (result) {
+                displayCustomToast(getString(R.string.saved), R.drawable.bubble_3, this)
+                if (notif != null)
+                    NotificationManagement.createNotification(loanId, product, mType, recipientId, getNotifDate(), this, this)
+                startLoanPagerActivity(Constant.STANDARD)
+            } else {
+                displayCustomToast(getString(R.string.error_adding_loan), R.drawable.bubble_3, this)
+            }
         }
-
     }
 
     private fun getNotifDate(): LocalDate {

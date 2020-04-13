@@ -98,11 +98,11 @@ class ProfileActivity: BaseActivity() {
         docRef.get()
             .addOnSuccessListener { documentSnapshot ->
                 mUser = documentSnapshot.toObject(User::class.java)!!
-                mFirst = documentSnapshot.toObject(User::class.java)?.firstname.toString()
-                mLast = documentSnapshot.toObject(User::class.java)?.lastname.toString()
-                mPseudo = documentSnapshot.toObject(User::class.java)?.pseudo.toString()
-                mMail = documentSnapshot.toObject(User::class.java)?.mail.toString()
-                mId = documentSnapshot.toObject(User::class.java)?.id.toString()
+                mFirst = mUser.firstname.toString()
+                mLast = mUser.lastname.toString()
+                mPseudo = mUser.pseudo.toString()
+                mMail = mUser.mail
+                mId = mUser.id
                 if (mFirstTime) configureScreen()
             }
     }

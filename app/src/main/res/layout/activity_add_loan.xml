@@ -333,7 +333,7 @@
             android:layout_width="wrap_content"
             android:layout_height="1dp"
             android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.95"/>
+            app:layout_constraintGuide_percent="0.95" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/mBtnSubmit"
@@ -343,8 +343,8 @@
             android:focusable="true"
             android:src="@drawable/ic_submit"
             app:fabSize="normal"
-            app:maxImageSize="40dp"
             app:layout_constraintBottom_toBottomOf="@+id/guideline_horizontal"
-            app:layout_constraintRight_toLeftOf="@+id/guideline_vertical_right"/>
+            app:layout_constraintRight_toLeftOf="@+id/guideline_vertical_right"
+            app:maxImageSize="40dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
