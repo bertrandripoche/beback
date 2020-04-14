@@ -112,15 +112,6 @@ class FilterActivity: BaseActivity() {
     }
 
     /**
-     * This method configures the toolbar
-     */
-    private fun configureToolbar() {
-        setSupportActionBar(toolbar)
-        val ab = supportActionBar
-        Objects.requireNonNull(ab)!!.setDisplayHomeAsUpEnabled(true)
-    }
-
-    /**
      * This method sets all the listeners for the buttons
      */
     private fun configureButtons() {

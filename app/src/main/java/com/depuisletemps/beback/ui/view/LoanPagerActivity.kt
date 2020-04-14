@@ -31,7 +31,7 @@ class LoanPagerActivity: BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loan_pager)
 
-        configureToolbar()
+        configureMainToolbar()
         mMode = getLoanMode(savedInstanceState)
         configurePager()
         checkScreenSideForFilter()
@@ -129,7 +129,7 @@ class LoanPagerActivity: BaseActivity() {
     /**
      * This method configures the toolbar
      */
-    private fun configureToolbar() {
+    private fun configureMainToolbar() {
         mToolbar = findViewById(R.id.toolbar)
         setSupportActionBar(mToolbar)
     }

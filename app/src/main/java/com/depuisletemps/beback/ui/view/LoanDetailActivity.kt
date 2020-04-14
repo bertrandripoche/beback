@@ -17,6 +17,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
+import com.depuisletemps.beback.api.LoanHelper
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
@@ -193,15 +194,6 @@ class LoanDetailActivity: BaseActivity() {
 
         mBtnDelete.setOnClickListener{deleteTheLoan(mLoan!!)}
         mBtnUnarchive.setOnClickListener{unarchiveTheLoan(mLoan!!)}
-    }
-
-    /**
-     * This method configures the toolbar
-     */
-    private fun configureToolbar() {
-        setSupportActionBar(toolbar)
-        val ab = supportActionBar
-        Objects.requireNonNull(ab)!!.setDisplayHomeAsUpEnabled(true)
     }
 
     /**
@@ -423,7 +415,6 @@ class LoanDetailActivity: BaseActivity() {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
         override fun afterTextChanged(s: Editable) {
-            // Enable-disable Floating Action Button
             setEditBtnState()
             setEditFieldsTextColor()
         }
@@ -754,27 +745,16 @@ class LoanDetailActivity: BaseActivity() {
     }
 
     private fun deleteTheLoan(loan: Loan) {
-        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(loan.id)
-        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
+        var points = Utils.retrievePointsFromLoan(loan)
 
-        var points: Long = 1
-        if (getStringFromDate(loan.due_date?.toDate()) != Constant.FAR_AWAY_DATE && loan.returned_date != null) {
-            val dueDateLocalDate = Utils.getLocalDateFromString(loan_due_date.text.toString())
-            val returnedLocalDate = Utils.getLocalDateFromString(getStringFromDate(loan.returned_date!!.toDate()))
-            val daysDiff: Int = Utils.getDifferenceDays(dueDateLocalDate, returnedLocalDate)
-            points = Utils.getPoints(daysDiff).toLong()
-        }
-
-        mDb.runBatch { batch ->
-            batch.delete(loanRef)
-            batch.update(loanerRef, Utils.reverseTypeField(loan.type), FieldValue.increment(-1))
-            batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(-1))
-            batch.update(loanerRef, Utils.awardsByType(loan.type), FieldValue.increment(-points))
-        }.addOnCompleteListener {
-            displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_3, this)
-            NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id, this, this)
-        }.addOnFailureListener { e ->
-            Log.w(TAG, getString(R.string.transaction_failure), e)
+        val loanHelper = LoanHelper()
+        loanHelper.deleteLoan(loan, points) {result, loanId ->
+            if (result) {
+                displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_3, this)
+                NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id, this, this)
+            } else {
+                displayCustomToast(getString(R.string.error_adding_loan), R.drawable.bubble_3, this)
+            }
         }
 
         Snackbar.make(activity_loan_detail, loan.product, Snackbar.LENGTH_LONG)
@@ -790,7 +770,6 @@ class LoanDetailActivity: BaseActivity() {
                     }
                 }
             }).show()
-
     }
 
     /**
@@ -798,25 +777,13 @@ class LoanDetailActivity: BaseActivity() {
      * @param loan is a Loan representing the loan object
      */
     private fun undeleteTheLoan(loan: Loan, points: Long) {
-        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(loan.id)
-        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION)
-            .document(loan.recipient_id)
-        val loanerData = hashMapOf(Constant.NAME to loan.recipient_id)
-
-        mDb.runBatch { batch ->
-            batch.set(loanRef, loan)
-            batch.set(loanerRef, loanerData, SetOptions.merge())
-            batch.update(loanerRef, Utils.reverseTypeField(loan.type), FieldValue.increment(+1))
-            batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(+1))
-            batch.update(loanerRef, Utils.awardsByType(loan.type), FieldValue.increment(points))
-        }.addOnCompleteListener {
-            displayCustomToast(
-                getString(R.string.undeleted_message, loan.product),
-                R.drawable.bubble_4,
-                this
-            )
-        }.addOnFailureListener { e ->
-            Log.w(TAG, getString(R.string.transaction_failure), e)
+        val loanHelper = LoanHelper()
+        loanHelper.undeleteLoan(loan, points) {result ->
+            if (result) {
+                displayCustomToast(getString(R.string.undeleted_message, loan.product), R.drawable.bubble_4,this)
+            } else {
+                displayCustomToast(getString(R.string.error_undeleting_loan), R.drawable.bubble_3, this)
+            }
         }
     }
 
@@ -826,34 +793,19 @@ class LoanDetailActivity: BaseActivity() {
      * @param loan is a Loan representing the loan object
      */
     private fun unarchiveTheLoan(loan: Loan) {
-        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(loan.id)
-        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
-
-        var points: Long = 1
-        if (getStringFromDate(loan.due_date?.toDate()) != Constant.FAR_AWAY_DATE && loan.returned_date != null) {
-            val dueDateLocalDate = Utils.getLocalDateFromString(loan_due_date.text.toString())
-            val returnedLocalDate = Utils.getLocalDateFromString(getStringFromDate(loan.returned_date!!.toDate()))
-            val daysDiff: Int = Utils.getDifferenceDays(dueDateLocalDate, returnedLocalDate)
-            points = Utils.getPoints(daysDiff).toLong()
-        }
-
-        mDb.runBatch { batch ->
-            batch.update(loanRef, Constant.RETURNED_DATE, null)
-            batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
-            batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(-1))
-            batch.update(loanerRef, loan.type, FieldValue.increment(+1))
-            batch.update(loanerRef, Utils.reverseTypeField(loan.type), FieldValue.increment(-1))
-            batch.update(loanerRef, Utils.awardsByType(loan.type), FieldValue.increment(-points))
-        }.addOnCompleteListener {
-            if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2, this)
-            else displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2, this)
-        }.addOnFailureListener { e ->
-            Log.w(TAG, getString(R.string.transaction_failure), e)
+        val loanHelper = LoanHelper()
+        loanHelper.unarchiveLoan(loan) {result ->
+            if (result) {
+                if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2, this)
+                else displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2, this)
+            } else {
+                displayCustomToast(getString(R.string.error_undeleting_loan), R.drawable.bubble_3, this)
+            }
         }
 
         Snackbar.make(activity_loan_detail, loan.product, Snackbar.LENGTH_LONG)
             .setAction(getString(R.string.undo)) {
-                rearchiveTheLoan(loan, points)
+                rearchiveTheLoan(loan)
             }.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
                 override fun onShown(transientBottomBar: Snackbar?) {
                 }
@@ -870,27 +822,22 @@ class LoanDetailActivity: BaseActivity() {
      * This method archives the selected item
      * @param loan is a Loan representing the loan object
      */
-    private fun rearchiveTheLoan(loan: Loan, points: Long) {
-        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(loan.id)
-        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
-
-        val returnedDate: Timestamp = Timestamp.now()
-
-        mDb.runBatch { batch ->
-            batch.update(loanRef, Constant.RETURNED_DATE, returnedDate)
-            batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
-            batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(+1))
-            batch.update(loanerRef, loan.type, FieldValue.increment(-1))
-            batch.update(loanerRef, Utils.reverseTypeField(loan.type), FieldValue.increment(+1))
-            batch.update(loanerRef, Utils.awardsByType(loan.type), FieldValue.increment(+points))
-        }.addOnCompleteListener {
-            if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1, this)
-            else displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1, this)
-        }.addOnFailureListener { e ->
-            Log.w(TAG, getString(R.string.transaction_failure), e)
+    private fun rearchiveTheLoan(loan: Loan) {
+        val loanHelper = LoanHelper()
+        loanHelper.archiveLoan(loan) {result ->
+            if (result) {
+                if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1, this)
+                else displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1, this)
+            } else {
+                displayCustomToast(getString(R.string.error_undeleting_loan), R.drawable.bubble_3, this)
+            }
         }
     }
 
+    /**
+     * This method allows to get the notif date from screen
+     * @return the LocalDate correponsding to the notif date
+     */
     private fun getNotifDate(): LocalDate {
         return if (loan_notif_date.text.toString() != "") Utils.getLocalDateFromString(loan_notif_date.text.toString())
         else {
@@ -902,4 +849,5 @@ class LoanDetailActivity: BaseActivity() {
             }
         }
     }
+
 }

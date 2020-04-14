@@ -61,6 +61,11 @@ class ProfileActivity: BaseActivity() {
 
     }
 
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
+    }
+
     fun getSavedInstanceData(savedInstanceState: Bundle?) {
         if (savedInstanceState != null){
             firstname.setText(savedInstanceState.getString(Constant.FIRST))
@@ -105,15 +110,6 @@ class ProfileActivity: BaseActivity() {
                 mId = mUser.id
                 if (mFirstTime) configureScreen()
             }
-    }
-
-    /**
-     * This method configures the toolbar
-     */
-    private fun configureToolbar() {
-        setSupportActionBar(toolbar)
-        val ab = supportActionBar
-        Objects.requireNonNull(ab)!!.setDisplayHomeAsUpEnabled(true)
     }
 
     /**
@@ -168,11 +164,11 @@ class ProfileActivity: BaseActivity() {
      */
     fun setEditFieldsTextColor() {
         val blackColor = ContextCompat.getColor(this, R.color.black)
-        val greyColor = ContextCompat.getColor(this, R.color.grey)
+        val darkGreyColor = ContextCompat.getColor(this, R.color.dark_grey)
 
-        if (firstname.text.toString() != mFirst) firstname.setTextColor(blackColor) else firstname.setTextColor(greyColor)
-        if (lastname.text.toString() != mLast) lastname.setTextColor(blackColor) else lastname.setTextColor(greyColor)
-        if (pseudo.text.toString() != mPseudo) pseudo.setTextColor(blackColor) else pseudo.setTextColor(greyColor)
+        if (firstname.text.toString() != mFirst) firstname.setTextColor(blackColor) else firstname.setTextColor(darkGreyColor)
+        if (lastname.text.toString() != mLast) lastname.setTextColor(blackColor) else lastname.setTextColor(darkGreyColor)
+        if (pseudo.text.toString() != mPseudo) pseudo.setTextColor(blackColor) else pseudo.setTextColor(darkGreyColor)
     }
 
     /**

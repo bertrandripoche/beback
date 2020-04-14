@@ -75,9 +75,18 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                         dueDate.setTextColor(black)
                         dueDatePic.setImageResource(R.drawable.ic_coffin)
                     }
-                    daysDiff < 3 -> dueDate.setTextColor(red)
-                    daysDiff < 7 -> dueDate.setTextColor(secondaryDarkColor)
-                    else -> dueDate.setTextColor(green)
+                    daysDiff < 3 -> {
+                        dueDate.setTextColor(red)
+                        dueDatePic.setImageResource(R.drawable.ic_due_date)
+                    }
+                    daysDiff < 7 -> {
+                        dueDate.setTextColor(secondaryDarkColor)
+                        dueDatePic.setImageResource(R.drawable.ic_due_date)
+                    }
+                    else -> {
+                        dueDate.setTextColor(green)
+                        dueDatePic.setImageResource(R.drawable.ic_due_date)
+                    }
                 }
             }
         } else {

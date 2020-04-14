@@ -3,6 +3,7 @@ package com.depuisletemps.beback.utils
 import android.content.Context
 import android.graphics.drawable.Drawable
 import com.depuisletemps.beback.R
+import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanAward
 import com.depuisletemps.beback.model.LoanType
 import com.google.firebase.Timestamp
@@ -52,16 +53,8 @@ object Utils {
         return context.resources.getString(context.resources.getIdentifier(categoryNumber, Constant.STRING, Constant.PACKAGE))
     }
 
-    fun getTodayStringDate(): String {
-        return LocalDate.now().toString()
-    }
-
     fun getDifferenceDays(today: LocalDate, dueDate: LocalDate): Int {
         return Days.daysBetween(today,dueDate).days
-    }
-
-    fun isDatePassed(date: LocalDate): Boolean {
-        return Days.daysBetween(LocalDate.now(),date).days < 0
     }
 
     fun isStringDatePassed(date: String): Boolean {
@@ -138,5 +131,21 @@ object Utils {
             daysDiff >= 0 -> 2
             else -> 1
         }
+    }
+
+    /**
+     * This method retrieves the number of points which had been allocated to corresponding loan
+     * @param loan being the loan which want to retrieve the points attributed for
+     * @return a Long which is the number of points distributed for this loan
+     */
+    fun retrievePointsFromLoan(loan: Loan): Long {
+        var points: Long = 1
+        if (getStringFromDate(loan.due_date?.toDate()) != Constant.FAR_AWAY_DATE && loan.returned_date != null) {
+            val dueDateLocalDate = getLocalDateFromString(getStringFromDate(loan.due_date?.toDate())) //getLocalDateFromString(loan.due_date.toString())
+            val returnedLocalDate = getLocalDateFromString(getStringFromDate(loan.returned_date?.toDate())) //getLocalDateFromString(loan.returned_date!!.toString())
+            val daysDiff: Int = getDifferenceDays(dueDateLocalDate, returnedLocalDate)
+            points = getPoints(daysDiff).toLong()
+        }
+        return points
     }
 }

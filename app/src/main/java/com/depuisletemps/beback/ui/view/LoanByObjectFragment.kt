@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
+import com.depuisletemps.beback.api.LoanHelper
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
@@ -74,10 +75,10 @@ class LoanByObjectFragment: BaseFragment() {
 
                     when (direction) {
                         // Right : Delete
-                        ItemTouchHelper.RIGHT -> deleteTheLoan(viewHolder.itemView.tag.toString(), loan)
+                        ItemTouchHelper.RIGHT -> deleteTheLoan(loan)
 
                         // Left : Archive
-                        ItemTouchHelper.LEFT -> archiveTheLoan(viewHolder.itemView.tag.toString(), loan)
+                        ItemTouchHelper.LEFT -> archiveTheLoan(loan)
 
                         else -> return
                     }
@@ -135,124 +136,6 @@ class LoanByObjectFragment: BaseFragment() {
             itemTouchHelper.attachToRecyclerView(fragment_loan_by_object_recycler_view)
         }
 
-    }
-
-    /**
-     * This method archives the selected item
-     * @param tag is a String representing the id of the loan
-     * @param loan is a Loan representing the loan object
-     */
-    private fun archiveTheLoan(tag: String, loan: Loan) {
-        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(tag)
-        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
-
-        val returnedDate: Timestamp = Timestamp.now()
-
-        var points: Long = 1
-        if (getStringFromDate(loan.due_date?.toDate()) != Constant.FAR_AWAY_DATE) {
-            val dueDateLocalDate = Utils.getLocalDateFromString(getStringFromDate(loan.due_date?.toDate()))
-            val returnedLocalDate = Utils.getLocalDateFromString(getStringFromDate(returnedDate.toDate()))
-            val daysDiff: Int = Utils.getDifferenceDays(dueDateLocalDate,returnedLocalDate)
-            points = Utils.getPoints(daysDiff).toLong()
-        }
-
-        mDb.runBatch { batch ->
-            batch.update(loanRef, Constant.RETURNED_DATE, returnedDate)
-            batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
-            batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(+1))
-            batch.update(loanerRef, loan.type, FieldValue.increment(-1))
-            batch.update(loanerRef, Utils.reverseTypeField(loan.type), FieldValue.increment(+1))
-            batch.update(loanerRef, Utils.awardsByType(loan.type), FieldValue.increment(points))
-        }.addOnCompleteListener {
-            if (loan.type.equals(LoanType.DELIVERY.type)) (activity as LoanPagerActivity).displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1, context!!)
-            else (activity as LoanPagerActivity).displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1, context!!)
-            NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id, activity as LoanPagerActivity, context!!)
-
-            mAdapter.notifyDataSetChanged()
-        }.addOnFailureListener { e ->
-            Log.w(TAG, getString(R.string.transaction_failure), e)
-        }
-
-        Snackbar.make(fragment_loan_by_object_layout, loan.product,Snackbar.LENGTH_LONG)
-            .setAction(getString(R.string.undo), View.OnClickListener{
-                unarchiveTheLoan(tag, loan, points)
-            }).show()
-    }
-
-    /**
-     * This method unarchives the selected item
-     * @param tag is a String representing the id of the loan
-     * @param loan is a Loan representing the loan object
-     */
-    private fun unarchiveTheLoan(tag: String, loan: Loan, points: Long) {
-        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(tag)
-        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
-
-        mDb.runBatch { batch ->
-            batch.update(loanRef, Constant.RETURNED_DATE, null)
-            batch.update(loanRef, Constant.NOTIF, null)
-            batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
-            batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(-1))
-            batch.update(loanerRef, loan.type, FieldValue.increment(+1))
-            batch.update(loanerRef, Utils.reverseTypeField(loan.type), FieldValue.increment(-1))
-            batch.update(loanerRef, Utils.awardsByType(loan.type), FieldValue.increment(-points))
-        }.addOnCompleteListener {
-            if (loan.type.equals(LoanType.DELIVERY.type))             (activity as LoanPagerActivity).displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2, context!!)
-            else (activity as LoanPagerActivity).displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2, context!!)
-            mAdapter.notifyDataSetChanged()
-        }.addOnFailureListener { e ->
-            Log.w(TAG, getString(R.string.transaction_failure), e)
-        }
-    }
-
-    /**
-     * This method deletes the selected item
-     * @param tag is a String representing the id of the loan
-     * @param loan is a Loan representing the loan object
-     */
-    private fun deleteTheLoan(tag: String, loan: Loan) {
-        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(tag)
-        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
-
-        mDb.runBatch { batch ->
-            batch.delete(loanRef)
-            batch.update(loanerRef, loan.type, FieldValue.increment(-1))
-            batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
-        }.addOnCompleteListener {
-            (activity as LoanPagerActivity).displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_4, context!!)
-            NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id, activity as LoanPagerActivity, context!!)
-            mAdapter.notifyDataSetChanged()
-        }.addOnFailureListener { e ->
-            Log.w(TAG, getString(R.string.transaction_failure), e)
-        }
-
-        Snackbar.make(fragment_loan_by_object_layout, loan.product,Snackbar.LENGTH_LONG)
-            .setAction(getString(R.string.undo)) {
-                undeleteTheLoan(loan)
-            }.show()
-    }
-
-    /**
-     * This method undeletes the previously detetedItem
-     * @param tag is a String representing the id of the loan
-     * @param loan is a Loan representing the loan object
-     */
-    private fun undeleteTheLoan(loan: Loan) {
-        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(loan.id)
-        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
-        val loanerData = hashMapOf(Constant.NAME to loan.recipient_id)
-
-        mDb.runBatch { batch ->
-            batch.set(loanRef,loan)
-            batch.set(loanerRef,loanerData, SetOptions.merge())
-            batch.update(loanerRef, loan.type, FieldValue.increment(+1))
-            batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(+1))
-        }.addOnCompleteListener {
-            (activity as LoanPagerActivity).displayCustomToast(getString(R.string.undeleted_message, loan.product), R.drawable.bubble_3, context!!)
-            mAdapter.notifyDataSetChanged()
-        }.addOnFailureListener { e ->
-            Log.w(TAG, getString(R.string.transaction_failure), e)
-        }
     }
 
     /**
@@ -332,6 +215,85 @@ class LoanByObjectFragment: BaseFragment() {
     override fun onStop() {
         super.onStop()
         mAdapter.stopListening()
+    }
+
+    /**
+     * This method archives the selected item
+     * @param tag is a String representing the id of the loan
+     * @param loan is a Loan representing the loan object
+     */
+    private fun archiveTheLoan(loan: Loan) {
+        val loanHelper = LoanHelper()
+        loanHelper.archiveLoan(loan) {result ->
+            if (result) {
+                if (loan.type.equals(LoanType.DELIVERY.type)) (activity as LoanPagerActivity).displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1, context!!)
+                else (activity as LoanPagerActivity).displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1, context!!)
+                NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id, activity as LoanPagerActivity, context!!)
+            } else {
+                (activity as LoanPagerActivity).displayCustomToast(getString(R.string.error_undeleting_loan), R.drawable.bubble_3, context!!)
+            }
+        }
+
+        Snackbar.make(fragment_loan_by_object_layout, loan.product,Snackbar.LENGTH_LONG)
+            .setAction(getString(R.string.undo)) {unarchiveTheLoan(loan)}.show()
+    }
+
+    /**
+     * This method unarchives the selected item
+     * @param tag is a String representing the id of the loan
+     * @param loan is a Loan representing the loan object
+     */
+    private fun unarchiveTheLoan(loan: Loan) {
+        val loanHelper = LoanHelper()
+        loanHelper.unarchiveLoan(loan) {result ->
+            if (result) {
+                if (loan.type.equals(LoanType.DELIVERY.type)) (activity as LoanPagerActivity).displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2, context!!)
+                else (activity as LoanPagerActivity).displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2, context!!)
+                mAdapter.notifyDataSetChanged()
+            } else {
+                (activity as LoanPagerActivity).displayCustomToast(getString(R.string.error_undeleting_loan), R.drawable.bubble_3, context!!)
+            }
+        }
+    }
+
+    /**
+     * This method deletes the selected item
+     * @param tag is a String representing the id of the loan
+     * @param loan is a Loan representing the loan object
+     */
+    private fun deleteTheLoan(loan: Loan) {
+        val loanHelper = LoanHelper()
+        loanHelper.deleteLoan(loan, -1) {result, loanId ->
+            if (result) {
+                (activity as LoanPagerActivity).displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_4, context!!)
+                NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id, activity as LoanPagerActivity, context!!)
+                mAdapter.notifyDataSetChanged()
+            } else {
+                Log.w(TAG, getString(R.string.transaction_failure))
+            }
+        }
+
+        Snackbar.make(fragment_loan_by_object_layout, loan.product,Snackbar.LENGTH_LONG)
+            .setAction(getString(R.string.undo)) {
+                undeleteTheLoan(loan)
+            }.show()
+    }
+
+    /**
+     * This method undeletes the previously detetedItem
+     * @param tag is a String representing the id of the loan
+     * @param loan is a Loan representing the loan object
+     */
+    private fun undeleteTheLoan(loan: Loan) {
+        val loanHelper = LoanHelper()
+        loanHelper.undeleteLoan(loan, -1) {result ->
+            if (result) {
+                (activity as LoanPagerActivity).displayCustomToast(getString(R.string.undeleted_message, loan.product), R.drawable.bubble_3, context!!)
+                mAdapter.notifyDataSetChanged()
+            } else {
+                (activity as LoanPagerActivity).displayCustomToast(getString(R.string.error_undeleting_loan), R.drawable.bubble_3, context!!)
+            }
+        }
     }
 
     /**

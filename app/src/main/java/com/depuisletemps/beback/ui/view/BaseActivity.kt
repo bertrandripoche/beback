@@ -18,6 +18,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.android.synthetic.main.custom_toast.*
+import kotlinx.android.synthetic.main.toolbar.*
+import java.util.*
 
 
 open class BaseActivity: AppCompatActivity() {
@@ -25,6 +27,15 @@ open class BaseActivity: AppCompatActivity() {
     private val SIGN_OUT_TASK = 10
 
     val mDb: FirebaseFirestore = FirebaseFirestore.getInstance()
+
+    /**
+     * This method configures the toolbar
+     */
+    fun configureToolbar() {
+        setSupportActionBar(toolbar)
+        val ab = supportActionBar
+        Objects.requireNonNull(ab)!!.setDisplayHomeAsUpEnabled(true)
+    }
 
     /**
      * This method returns the current logged user

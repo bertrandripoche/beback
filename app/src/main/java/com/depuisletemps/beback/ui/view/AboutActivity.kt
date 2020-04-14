@@ -14,12 +14,4 @@ class AboutActivity: BaseActivity() {
         configureToolbar()
     }
 
-    /**
-     * This method configures the toolbar
-     */
-    private fun configureToolbar() {
-        setSupportActionBar(toolbar)
-        val ab = supportActionBar
-        Objects.requireNonNull(ab)!!.setDisplayHomeAsUpEnabled(true)
-    }
 }
