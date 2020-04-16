@@ -34,13 +34,13 @@ class FilterActivity: BaseActivity() {
     private var mSide = 0
 
     private var yellowColor: Int = 0
-    private var lightGreyColor: Int = 0
-    private var greyColor: Int = 0
-    private var blueColor: Int = 0
     private var blueDeeperColor: Int = 0
     private var blackColor: Int = 0
     private var redColor: Int = 0
     private var greenColor: Int = 0
+    private var lightGreyColor = 0
+    private var greyColor = 0
+    private var blueColor = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +57,11 @@ class FilterActivity: BaseActivity() {
     private fun setOriginScreen() {
         mMode = intent.extras.getString(Constant.MODE)!!
         mSide = intent.extras!!.getInt(Constant.SIDE)
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     private fun configureAutoCompleteFields() {
@@ -101,10 +106,10 @@ class FilterActivity: BaseActivity() {
     }
 
     private fun defineColors() {
-        yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
         lightGreyColor = ContextCompat.getColor(this, R.color.light_grey)
-        greyColor = ContextCompat.getColor(this, R.color.grey)
+        greyColor = ContextCompat.getColor(this, R.color.dark_grey)
         blueColor = ContextCompat.getColor(this, R.color.primaryLightColor)
+        yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
         blueDeeperColor = ContextCompat.getColor(this, R.color.primaryColor)
         blackColor = ContextCompat.getColor(this, R.color.black)
         greenColor = ContextCompat.getColor(this, R.color.green)
@@ -119,7 +124,7 @@ class FilterActivity: BaseActivity() {
             if (isFormValid())
                 startLoanPagerActivity()
             else {
-                Toast.makeText(applicationContext, R.string.invalid_form, Toast.LENGTH_LONG)
+                Toast.makeText(applicationContext, R.string.invalid_filter, Toast.LENGTH_LONG)
                     .show()
             }
         })
@@ -192,15 +197,8 @@ class FilterActivity: BaseActivity() {
     }
 
     /**
-     * This method unsets the toggle button
-     */
-    fun unsetToggle(btn: ToggleButton) {
-        btn.isChecked = false
-        btn.setBackgroundResource(R.drawable.round_grey_color_button)
-    }
-
-    /**
-     * Method to configure the textWatchers on the fields which requires it
+     * Method to check if the form should be considered valid
+     * @return a Boolean which states if the form is valid
      */
     fun isFormValid(): Boolean {
         return !filter_product.text.toString().equals("")
@@ -222,17 +220,6 @@ class FilterActivity: BaseActivity() {
      */
     private fun disableFloatButton() {
         setButtonTint(mBtnSubmit, ColorStateList.valueOf(lightGreyColor) )
-    }
-
-    /**
-     * Set color to float button
-     */
-    private fun setButtonTint(button: FloatingActionButton, tint: ColorStateList) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            button.backgroundTintList = tint
-        } else {
-            ViewCompat.setBackgroundTintList(button, tint)
-        }
     }
 
     /**

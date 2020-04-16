@@ -172,7 +172,8 @@ class ProfileActivity: BaseActivity() {
     }
 
     /**
-     * Method to configure the textWatchers on the fields which requires it
+     * Method to check if the form should be considered valid
+     * @return a Boolean which states if the form is valid
      */
     private fun isFormValid(): Boolean {
 
@@ -216,14 +217,6 @@ class ProfileActivity: BaseActivity() {
             Log.w(TAG, getString(R.string.transaction_failure), e)
         }
 
-    }
-
-    private fun setButtonTint(button: FloatingActionButton, tint: ColorStateList) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            button.backgroundTintList = tint
-        } else {
-            ViewCompat.setBackgroundTintList(button, tint)
-        }
     }
 
 }

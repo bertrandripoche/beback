@@ -74,14 +74,14 @@ class LoanDetailActivity: BaseActivity() {
     val mUser: FirebaseUser? = getCurrentUser()
     var yellowColor: Int = 0
     var orangeColor: Int = 0
-    var lightGreyColor: Int = 0
-    var greyColor: Int = 0
-    var blueColor: Int = 0
     var blueDeeperColor: Int = 0
     var blackColor: Int = 0
     var redColor: Int = 0
     var greenColor: Int = 0
     var darkGreyColor: Int = 0
+    private var lightGreyColor = 0
+    private var greyColor = 0
+    private var blueColor = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -139,14 +139,15 @@ class LoanDetailActivity: BaseActivity() {
     private fun defineColors() {
         yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
         orangeColor = ContextCompat.getColor(this, R.color.secondaryDarkColor)
-        lightGreyColor = ContextCompat.getColor(this, R.color.light_grey)
-        greyColor = ContextCompat.getColor(this, R.color.dark_grey)
-        blueColor = ContextCompat.getColor(this, R.color.primaryLightColor)
         blueDeeperColor = ContextCompat.getColor(this, R.color.primaryColor)
         darkGreyColor = ContextCompat.getColor(this, R.color.dark_grey)
         blackColor = ContextCompat.getColor(this, R.color.black)
         greenColor = ContextCompat.getColor(this, R.color.green)
         redColor = ContextCompat.getColor(this, R.color.red)
+        lightGreyColor = ContextCompat.getColor(this, R.color.light_grey)
+        greyColor = ContextCompat.getColor(this, R.color.dark_grey)
+        blueColor = ContextCompat.getColor(this, R.color.primaryLightColor)
+
     }
 
     private fun configureButtons() {
@@ -338,7 +339,7 @@ class LoanDetailActivity: BaseActivity() {
         }
 
         if (mUser != null) {
-            var nameToPopulate = arrayListOf<String>()
+            val nameToPopulate = arrayListOf<String>()
 
             runWithPermissions(Manifest.permission.READ_CONTACTS) {
                 val phones = contentResolver.query(
@@ -557,31 +558,11 @@ class LoanDetailActivity: BaseActivity() {
     }
 
     /**
-     * This method unsets the toggle button
-     */
-    fun unsetToggle(btn: ToggleButton) {
-        btn.isChecked = false
-        btn.isClickable = true
-        btn.setBackgroundColor(lightGreyColor)
-        btn.setTextColor(blackColor)
-    }
-
-    /**
      * This method sets the toggle button
      */
     fun setToggle(btn: ToggleButton) {
         btn.isChecked = true
         btn.setBackgroundColor(yellowColor)
-    }
-
-    /**
-     * This method disables the toggle button
-     */
-    fun disableToggle(btn: ToggleButton) {
-        btn.isChecked = false
-        btn.isClickable = false
-        btn.setBackgroundColor(blueColor)
-        btn.setTextColor(greyColor)
     }
 
     /**
@@ -736,13 +717,22 @@ class LoanDetailActivity: BaseActivity() {
         }
     }
 
-    fun setButtonTint(button: FloatingActionButton, tint: ColorStateList) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            button.backgroundTintList = tint
-        } else {
-            ViewCompat.setBackgroundTintList(button, tint)
+    /**
+     * This method allows to get the notif date from screen
+     * @return the LocalDate correponsding to the notif date
+     */
+    private fun getNotifDate(): LocalDate {
+        return if (loan_notif_date.text.toString() != "") Utils.getLocalDateFromString(loan_notif_date.text.toString())
+        else {
+            val returnDate: LocalDate = Utils.getLocalDateFromString(loan_due_date.text.toString())
+            when {
+                notif_three_days.isChecked -> returnDate.minusDays(3)
+                notif_one_week.isChecked -> returnDate.minusDays(7)
+                else -> returnDate
+            }
         }
     }
+
 
     private fun deleteTheLoan(loan: Loan) {
         var points = Utils.retrievePointsFromLoan(loan)
@@ -830,22 +820,6 @@ class LoanDetailActivity: BaseActivity() {
                 else displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1, this)
             } else {
                 displayCustomToast(getString(R.string.error_undeleting_loan), R.drawable.bubble_3, this)
-            }
-        }
-    }
-
-    /**
-     * This method allows to get the notif date from screen
-     * @return the LocalDate correponsding to the notif date
-     */
-    private fun getNotifDate(): LocalDate {
-        return if (loan_notif_date.text.toString() != "") Utils.getLocalDateFromString(loan_notif_date.text.toString())
-        else {
-            val returnDate: LocalDate = Utils.getLocalDateFromString(loan_due_date.text.toString())
-            when {
-                notif_three_days.isChecked -> returnDate.minusDays(3)
-                notif_one_week.isChecked -> returnDate.minusDays(7)
-                else -> returnDate
             }
         }
     }

@@ -3,17 +3,22 @@ package com.depuisletemps.beback.ui.view
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.os.Build
 import android.view.Gravity
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.utils.Constant
 import com.firebase.ui.auth.AuthUI
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.android.gms.tasks.OnSuccessListener
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
@@ -124,4 +129,39 @@ open class BaseActivity: AppCompatActivity() {
             show()
         }
     }
+
+    fun setButtonTint(button: FloatingActionButton, tint: ColorStateList) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            button.backgroundTintList = tint
+        } else {
+            ViewCompat.setBackgroundTintList(button, tint)
+        }
+    }
+
+    /**
+     * This method disables the toggle button
+     */
+    fun disableToggle(btn: ToggleButton) {
+        val greyColor = ContextCompat.getColor(this, R.color.dark_grey)
+        val blueColor = ContextCompat.getColor(this, R.color.primaryLightColor)
+
+        btn.isChecked = false
+        btn.isClickable = false
+        btn.setBackgroundColor(blueColor)
+        btn.setTextColor(greyColor)
+    }
+
+    /**
+     * This method unsets the toggle button
+     */
+    fun unsetToggle(btn: ToggleButton) {
+        val lightGreyColor = ContextCompat.getColor(this, R.color.light_grey)
+        val blackColor = ContextCompat.getColor(this, R.color.black)
+
+        btn.isChecked = false
+        btn.isClickable = true
+        btn.setBackgroundColor(lightGreyColor)
+        btn.setTextColor(blackColor)
+    }
+
 }

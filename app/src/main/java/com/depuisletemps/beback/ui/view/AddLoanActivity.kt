@@ -52,13 +52,13 @@ class AddLoanActivity: BaseActivity() {
     lateinit var mType: String
     private val mUser: FirebaseUser? = getCurrentUser()
     private var yellowColor: Int = 0
-    private var lightGreyColor: Int = 0
-    private var greyColor: Int = 0
-    private var blueColor: Int = 0
     private var blueDeeperColor: Int = 0
     private var blackColor: Int = 0
     private var redColor: Int = 0
     private var greenColor: Int = 0
+    private var lightGreyColor = 0
+    private var greyColor = 0
+    private var blueColor = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,13 +74,13 @@ class AddLoanActivity: BaseActivity() {
 
     private fun defineColors() {
         yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
-        lightGreyColor = ContextCompat.getColor(this, R.color.light_grey)
-        greyColor = ContextCompat.getColor(this, R.color.grey)
-        blueColor = ContextCompat.getColor(this, R.color.primaryLightColor)
         blueDeeperColor = ContextCompat.getColor(this, R.color.primaryColor)
         blackColor = ContextCompat.getColor(this, R.color.black)
         greenColor = ContextCompat.getColor(this, R.color.green)
         redColor = ContextCompat.getColor(this, R.color.red)
+        lightGreyColor = ContextCompat.getColor(this, R.color.light_grey)
+        greyColor = ContextCompat.getColor(this, R.color.dark_grey)
+        blueColor = ContextCompat.getColor(this, R.color.primaryLightColor)
     }
 
     /**
@@ -99,8 +99,8 @@ class AddLoanActivity: BaseActivity() {
         notif_d_day.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 notif_d_day.setBackgroundColor(yellowColor)
-                unsetToggle(notif_three_days)
-                unsetToggle(notif_one_week)
+                if (notif_three_days.isClickable) unsetToggle(notif_three_days)
+                if (notif_one_week.isClickable) unsetToggle(notif_one_week)
             } else {
                 notif_d_day.setBackgroundColor(lightGreyColor)
             }
@@ -109,8 +109,8 @@ class AddLoanActivity: BaseActivity() {
         notif_three_days.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 notif_three_days.setBackgroundColor(yellowColor)
-                unsetToggle(notif_one_week)
-                unsetToggle(notif_d_day)
+                if (notif_one_week.isClickable) unsetToggle(notif_one_week)
+                if (notif_d_day.isClickable) unsetToggle(notif_d_day)
             } else {
                 notif_three_days.setBackgroundColor(lightGreyColor)
             }
@@ -119,29 +119,12 @@ class AddLoanActivity: BaseActivity() {
         notif_one_week.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 notif_one_week.setBackgroundColor(yellowColor)
-                unsetToggle(notif_three_days)
-                unsetToggle(notif_d_day)
+                if (notif_three_days.isClickable) unsetToggle(notif_three_days)
+                if (notif_d_day.isClickable) unsetToggle(notif_d_day)
             } else {
                 notif_one_week.setBackgroundColor(lightGreyColor)
             }
         })
-    }
-
-    /**
-     * This method unsets the toggle button
-     */
-    fun unsetToggle(btn: ToggleButton) {
-        btn.isChecked = false
-        btn.setBackgroundColor(lightGreyColor)
-    }
-
-    /**
-     * This method disables the toggle button
-     */
-    fun disableToggle(btn: ToggleButton) {
-        btn.isChecked = false
-        btn.setBackgroundColor(blueColor)
-        btn.setTextColor(greyColor)
     }
 
     /**
@@ -391,7 +374,8 @@ class AddLoanActivity: BaseActivity() {
     }
 
     /**
-     * Method to configure the textWatchers on the fields which requires it
+     * Method to check if the form should be considered valid
+     * @return a Boolean which states if the form is valid
      */
     fun isFormValid(): Boolean {
         return !loan_product.text.toString().equals("") &&  !loan_recipient.text.toString().equals("")
@@ -437,7 +421,9 @@ class AddLoanActivity: BaseActivity() {
             loan_notif_date.text.toString() != "" -> loan_notif_date.text.toString()
             else -> null
         }
-
+        val test = getTimeStampFromString(dueDate)
+        println("And now...")
+        println("Timestamp "+ test.toString())
         val loan = Loan("",requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), notif, returnedDate)
 
         val loanHelper = LoanHelper()
@@ -462,17 +448,6 @@ class AddLoanActivity: BaseActivity() {
                 notif_one_week.isChecked -> returnDate.minusDays(7)
                 else -> returnDate
             }
-        }
-    }
-
-    /**
-     * Set color to float button
-     */
-    private fun setButtonTint(button: FloatingActionButton, tint: ColorStateList) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            button.backgroundTintList = tint
-        } else {
-            ViewCompat.setBackgroundTintList(button, tint)
         }
     }
 

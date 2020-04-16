@@ -12,6 +12,11 @@ import com.google.firebase.firestore.SetOptions
 class LoanHelper {
     val mDb: FirebaseFirestore = FirebaseFirestore.getInstance()
 
+    /**
+     * This method creates the loan
+     * @param loan is a Loan object
+     * @param callback is a lambda returning a boolean, allowing to choose the following actions
+     */
     fun createLoan(loan: Loan, callback: (Boolean, String) -> Unit) {
         val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document()
         val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(
@@ -84,9 +89,13 @@ class LoanHelper {
         }
     }
 
-
+    /**
+     * This method deletes the loan
+     * @param loan is a Loan object
+     * @param callback is a lambda returning a boolean, allowing to choose the following actions
+     */
     fun deleteLoan(loan: Loan, points: Long, callback: (Boolean, String) -> Unit) {
-        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document()
+        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(loan.id)
         val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(
             Constant.LOANERS_COLLECTION).document(loan.recipient_id)
 
