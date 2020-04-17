@@ -1,11 +1,10 @@
-package com.depuisletemps.beback.ui.view
+package com.depuisletemps.beback.controller.activities
 
 import android.Manifest
 import android.app.DatePickerDialog
 import android.content.res.ColorStateList
 import android.content.res.TypedArray
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.text.Editable
@@ -15,21 +14,18 @@ import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.api.LoanHelper
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
-import com.depuisletemps.beback.ui.customview.CategoryAdapter
+import com.depuisletemps.beback.view.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.NotificationManagement
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.getStringFromDate
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
@@ -52,10 +48,8 @@ import kotlinx.android.synthetic.main.activity_loan_detail.notif_one_week
 import kotlinx.android.synthetic.main.activity_loan_detail.notif_three_days
 import kotlinx.android.synthetic.main.activity_loan_detail.spinner_loan_categories
 import kotlinx.android.synthetic.main.activity_loan_detail.toggle_btns
-import kotlinx.android.synthetic.main.toolbar.*
 import org.joda.time.LocalDate
 import java.text.DecimalFormat
-import java.util.*
 
 class LoanDetailActivity: BaseActivity() {
     private val TAG = "LoanDetailActivity"

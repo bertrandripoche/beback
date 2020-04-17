@@ -1,9 +1,7 @@
-package com.depuisletemps.beback.ui.view
+package com.depuisletemps.beback.controller.activities
 
 import android.os.Bundle
 import com.depuisletemps.beback.R
-import kotlinx.android.synthetic.main.toolbar.*
-import java.util.*
 
 class AboutActivity: BaseActivity() {
 

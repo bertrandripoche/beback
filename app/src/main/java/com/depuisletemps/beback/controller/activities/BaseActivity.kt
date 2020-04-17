@@ -1,4 +1,4 @@
-package com.depuisletemps.beback.ui.view
+package com.depuisletemps.beback.controller.activities
 
 import android.app.Activity
 import android.content.Context

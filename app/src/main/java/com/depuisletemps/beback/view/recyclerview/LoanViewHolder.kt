@@ -1,4 +1,4 @@
-package com.depuisletemps.beback.ui.recyclerview
+package com.depuisletemps.beback.view.recyclerview
 
 import android.content.Context
 import android.view.View

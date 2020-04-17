@@ -1,30 +1,19 @@
-package com.depuisletemps.beback.ui.view
+package com.depuisletemps.beback.controller.activities
 
 import android.content.res.ColorStateList
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.Gravity
-import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.User
 import com.depuisletemps.beback.utils.Constant
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.android.synthetic.main.activity_profile.mBtnEdit
-import kotlinx.android.synthetic.main.custom_toast.*
-import kotlinx.android.synthetic.main.toolbar.*
-import java.util.*
 
 class ProfileActivity: BaseActivity() {
     private val TAG = "ProfileActivity"

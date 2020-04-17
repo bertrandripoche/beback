@@ -1,4 +1,4 @@
-package com.depuisletemps.beback.ui.view
+package com.depuisletemps.beback.controller.activities
 
 import android.content.DialogInterface
 import android.content.Intent
@@ -9,7 +9,7 @@ import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.Toolbar
 import com.depuisletemps.beback.R
-import com.depuisletemps.beback.ui.customview.ViewPagerAdapter
+import com.depuisletemps.beback.view.customview.ViewPagerAdapter
 import com.depuisletemps.beback.utils.Constant
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar

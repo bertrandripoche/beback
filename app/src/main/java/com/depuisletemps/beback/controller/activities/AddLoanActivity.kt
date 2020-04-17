@@ -1,9 +1,8 @@
-package com.depuisletemps.beback.ui.view
+package com.depuisletemps.beback.controller.activities
 
 import android.Manifest
 import android.app.DatePickerDialog
 import android.content.res.ColorStateList
-import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.text.Editable
@@ -12,20 +11,15 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.api.LoanHelper
 import com.depuisletemps.beback.model.Loan
-import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
-import com.depuisletemps.beback.ui.customview.CategoryAdapter
+import com.depuisletemps.beback.view.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.*
 import com.depuisletemps.beback.utils.Utils.getTimeStampFromString
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.SetOptions
 import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.activity_add_loan.loan_due_date
@@ -42,10 +36,8 @@ import kotlinx.android.synthetic.main.activity_add_loan.notif_one_week
 import kotlinx.android.synthetic.main.activity_add_loan.notif_three_days
 import kotlinx.android.synthetic.main.activity_add_loan.spinner_loan_categories
 import kotlinx.android.synthetic.main.activity_add_loan.toggle_btns
-import kotlinx.android.synthetic.main.toolbar.*
 import org.joda.time.LocalDate
 import java.text.DecimalFormat
-import java.util.*
 
 class AddLoanActivity: BaseActivity() {
     private val TAG = "AddLoanActivity"

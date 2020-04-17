@@ -1,4 +1,4 @@
-package com.depuisletemps.beback.ui.view
+package com.depuisletemps.beback.controller.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +9,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.Loaner
-import com.depuisletemps.beback.ui.recyclerview.LoanerAdapter
+import com.depuisletemps.beback.controller.activities.LoanPagerActivity
+import com.depuisletemps.beback.view.recyclerview.LoanerAdapter
 import com.depuisletemps.beback.utils.Constant
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseUser

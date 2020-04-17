@@ -1,4 +1,4 @@
-package com.depuisletemps.beback.ui.recyclerview
+package com.depuisletemps.beback.view.recyclerview
 
 import android.content.Context
 import android.content.Intent
@@ -14,7 +14,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.Loaner
-import com.depuisletemps.beback.ui.view.LoanDetailActivity
+import com.depuisletemps.beback.controller.activities.LoanDetailActivity
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
 import com.google.android.flexbox.FlexboxLayout

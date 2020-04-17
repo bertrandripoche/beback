@@ -1,8 +1,7 @@
-package com.depuisletemps.beback.ui.view
+package com.depuisletemps.beback.controller.activities
 
 import android.content.Intent
 import android.content.res.ColorStateList
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,17 +11,12 @@ import android.view.View.OnTouchListener
 import android.widget.ArrayAdapter
 import android.widget.CompoundButton
 import android.widget.Toast
-import android.widget.ToggleButton
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.utils.Constant
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_add_loan.mBtnSubmit
 import kotlinx.android.synthetic.main.activity_filter.*
-import kotlinx.android.synthetic.main.toolbar.*
-import java.util.*
 
 
 class FilterActivity: BaseActivity() {

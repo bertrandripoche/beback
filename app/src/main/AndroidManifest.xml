@@ -9,7 +9,7 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name="com.depuisletemps.beback.ui.view.LoginActivity">
+        <activity android:name="com.depuisletemps.beback.controller.activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <action android:name="android.intent.action.VIEW" />
@@ -17,46 +17,46 @@
             </intent-filter>
         </activity>
         <activity
-                android:name="com.depuisletemps.beback.ui.view.LoanPagerActivity"
-                android:parentActivityName="com.depuisletemps.beback.ui.view.LoginActivity" >
+                android:name="com.depuisletemps.beback.controller.activities.LoanPagerActivity"
+                android:parentActivityName="com.depuisletemps.beback.controller.activities.LoginActivity" >
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.depuisletemps.beback.ui.view.LoginActivity" />
+                    android:value="com.depuisletemps.beback.controller.activities.LoginActivity" />
         </activity>
         <activity
-                android:name="com.depuisletemps.beback.ui.view.AddLoanActivity"
-                android:parentActivityName="com.depuisletemps.beback.ui.view.LoanPagerActivity">
+                android:name="com.depuisletemps.beback.controller.activities.AddLoanActivity"
+                android:parentActivityName="com.depuisletemps.beback.controller.activities.LoanPagerActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.depuisletemps.beback.ui.view.LoanPagerActivity" />
+                    android:value="com.depuisletemps.beback.controller.activities.LoanPagerActivity" />
         </activity>
         <activity
-                android:name="com.depuisletemps.beback.ui.view.LoanDetailActivity"
-                android:parentActivityName="com.depuisletemps.beback.ui.view.LoanPagerActivity">
+                android:name="com.depuisletemps.beback.controller.activities.LoanDetailActivity"
+                android:parentActivityName="com.depuisletemps.beback.controller.activities.LoanPagerActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.depuisletemps.beback.ui.view.LoanPagerActivity" />
+                    android:value="com.depuisletemps.beback.controller.activities.LoanPagerActivity" />
         </activity>
         <activity
-                android:name="com.depuisletemps.beback.ui.view.ProfileActivity"
-                android:parentActivityName="com.depuisletemps.beback.ui.view.LoanPagerActivity">
+                android:name="com.depuisletemps.beback.controller.activities.ProfileActivity"
+                android:parentActivityName="com.depuisletemps.beback.controller.activities.LoanPagerActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.depuisletemps.beback.ui.view.LoanPagerActivity" />
+                    android:value="com.depuisletemps.beback.controller.activities.LoanPagerActivity" />
         </activity>
         <activity
-                android:name="com.depuisletemps.beback.ui.view.FilterActivity"
-                android:parentActivityName="com.depuisletemps.beback.ui.view.LoanPagerActivity">
+                android:name="com.depuisletemps.beback.controller.activities.FilterActivity"
+                android:parentActivityName="com.depuisletemps.beback.controller.activities.LoanPagerActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.depuisletemps.beback.ui.view.LoanPagerActivity" />
+                    android:value="com.depuisletemps.beback.controller.activities.LoanPagerActivity" />
         </activity>
         <activity
-                android:name="com.depuisletemps.beback.ui.view.AboutActivity"
-                android:parentActivityName="com.depuisletemps.beback.ui.view.LoanPagerActivity">
+                android:name="com.depuisletemps.beback.controller.activities.AboutActivity"
+                android:parentActivityName="com.depuisletemps.beback.controller.activities.LoanPagerActivity">
             <meta-data
                     android:name="android.support.PARENT_ACTIVITY"
-                    android:value="com.depuisletemps.beback.ui.view.LoanPagerActivity" />
+                    android:value="com.depuisletemps.beback.controller.activities.LoanPagerActivity" />
         </activity>
         <receiver android:name="com.depuisletemps.beback.utils.AlertReceiver"/>
     </application>

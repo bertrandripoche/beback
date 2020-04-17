@@ -11,7 +11,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest
 import org.powermock.modules.junit4.PowerMockRunner
 
 @RunWith(PowerMockRunner::class)
-@PrepareForTest(LocalDate::class)
+@PrepareForTest(org.joda.time.LocalDate::class)
 class LocalDateUnitTest {
 
     @Test

@@ -1,4 +1,4 @@
-package com.depuisletemps.beback.ui.view
+package com.depuisletemps.beback.controller.fragments
 
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment

@@ -6,11 +6,9 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.provider.Settings.Global.getString
-import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.depuisletemps.beback.R
-import com.depuisletemps.beback.ui.view.LoanDetailActivity
+import com.depuisletemps.beback.controller.activities.LoanDetailActivity
 
 
 class AlertReceiver: BroadcastReceiver() {

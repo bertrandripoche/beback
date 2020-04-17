@@ -1,4 +1,4 @@
-package com.depuisletemps.beback.ui.view
+package com.depuisletemps.beback.controller
 
 
 import android.content.res.ColorStateList
@@ -6,7 +6,6 @@ import android.graphics.Color
 import android.view.View
 import android.view.ViewGroup
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.assertion.ViewAssertions
@@ -18,6 +17,7 @@ import androidx.test.rule.ActivityTestRule
 import androidx.test.rule.GrantPermissionRule
 import androidx.test.runner.AndroidJUnit4
 import com.depuisletemps.beback.R
+import com.depuisletemps.beback.controller.activities.AddLoanActivity
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.hamcrest.Description
 import org.hamcrest.Matcher

@@ -79,7 +79,6 @@ dependencies {
     testImplementation 'androidx.test:core:1.2.0'
     testImplementation 'com.google.truth:truth:1.0'
     testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.0.0'
-
     testImplementation 'org.hamcrest:java-hamcrest:2.0.0.0'
 
     // JUNIT5

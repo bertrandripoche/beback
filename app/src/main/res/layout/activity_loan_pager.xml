@@ -15,7 +15,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.depuisletemps.beback.ui.customview.CustomViewPager
+    <com.depuisletemps.beback.view.customview.CustomViewPager
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

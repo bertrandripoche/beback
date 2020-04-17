@@ -37,6 +37,6 @@ class UtilsTest {
 
     @Test
     fun test() {
-        var loan = Loan("fjks","fdsf","Paul","lending","Car","kitchen", 2020-03-02T00:00:00,	1586334600, null, 1588321800)
+
     }
 }

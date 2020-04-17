@@ -1,4 +1,4 @@
-package com.depuisletemps.beback.ui.view
+package com.depuisletemps.beback.controller.fragments
 
 import android.content.Intent
 import android.graphics.Canvas
@@ -15,18 +15,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.api.LoanHelper
 import com.depuisletemps.beback.model.Loan
-import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
-import com.depuisletemps.beback.ui.recyclerview.ItemClickSupport
-import com.depuisletemps.beback.ui.recyclerview.LoanAdapter
+import com.depuisletemps.beback.controller.activities.LoanDetailActivity
+import com.depuisletemps.beback.controller.activities.LoanPagerActivity
+import com.depuisletemps.beback.view.recyclerview.ItemClickSupport
+import com.depuisletemps.beback.view.recyclerview.LoanAdapter
 import com.depuisletemps.beback.utils.NotificationManagement
 import com.depuisletemps.beback.utils.Constant
-import com.depuisletemps.beback.utils.Utils
-import com.depuisletemps.beback.utils.Utils.getStringFromDate
 import com.depuisletemps.beback.utils.Utils.getTimeStampFromString
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator

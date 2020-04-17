@@ -1,4 +1,4 @@
-package com.depuisletemps.beback.ui.customview
+package com.depuisletemps.beback.view.customview
 
 import android.content.Context
 import android.util.AttributeSet
