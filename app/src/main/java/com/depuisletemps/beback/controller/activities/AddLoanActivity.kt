@@ -13,6 +13,7 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.api.LoanHelper
+import com.depuisletemps.beback.model.FieldType
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.view.customview.CategoryAdapter
@@ -394,9 +395,9 @@ class AddLoanActivity: BaseActivity() {
         val user: FirebaseUser? = getCurrentUser()
 
         val requestorId:String = user?.uid ?: ""
-        val recipientId:String = StringUtils.capitalizeWord(loan_recipient.text.toString())
+        val recipientId:String = StringUtils.capitalizeWords(loan_recipient.text.toString(), FieldType.NAME)
 
-        val product:String = StringUtils.capitalizeWord(loan_product.text.toString())
+        val product:String = StringUtils.capitalizeWords(loan_product.text.toString(), FieldType.PRODUCT)
         val categories: Array<String> =
             this.resources.getStringArray(R.array.product_category)
 

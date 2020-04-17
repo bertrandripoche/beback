@@ -53,6 +53,9 @@ object Utils {
         return context.resources.getString(context.resources.getIdentifier(categoryNumber, Constant.STRING, Constant.PACKAGE))
     }
 
+    /**
+     * This method returns the number of days between both dates
+     */
     fun getDifferenceDays(today: LocalDate, dueDate: LocalDate): Int {
         return Days.daysBetween(today,dueDate).days
     }

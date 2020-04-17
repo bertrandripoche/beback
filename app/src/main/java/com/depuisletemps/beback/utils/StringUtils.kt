@@ -1,20 +1,20 @@
 package com.depuisletemps.beback.utils
 
+import com.depuisletemps.beback.model.FieldType
+import org.apache.commons.text.WordUtils
+import java.util.*
+
 object StringUtils {
 
-    fun capitalizeWord(s: String): String {
-        val splits = s.toLowerCase().split(" ").toTypedArray()
-        val sb = StringBuilder()
-        for (i in splits.indices) {
-            val eachWord = splits[i]
-            if (i > 0 && eachWord.isNotEmpty()) {
-                sb.append(" ")
-            }
-            val cap = (eachWord.substring(0, 1).toUpperCase()
-                    + eachWord.substring(1))
-            sb.append(cap)
-        }
-        return sb.toString()
-    }
+    fun capitalizeWords(s: String, fieldType: FieldType): String {
 
+        return when {
+            fieldType == FieldType.PRODUCT -> {
+                WordUtils.capitalize(s.toLowerCase(Locale.getDefault()),'#')
+            }
+            s == s.toUpperCase(Locale.getDefault()) -> s
+            fieldType == FieldType.NAME -> WordUtils.capitalizeFully(s,' ' ,'-')
+            else -> WordUtils.capitalize(s)
+        }
+    }
 }

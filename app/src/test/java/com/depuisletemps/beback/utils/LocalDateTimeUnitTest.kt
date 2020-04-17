@@ -17,7 +17,6 @@ class LocalDateUnitTest {
     @Test
     fun givenLocalDateTimeMock_whenNow_thenGetFixedLocalDateTime() {
         val expectedDate = LocalDate(2020,2,5)
-        val date: LocalDate = LocalDate.now()
         mockStatic(LocalDate::class.java)
         `when`(LocalDate.now()).doReturn(expectedDate)
         val now = LocalDate.now()

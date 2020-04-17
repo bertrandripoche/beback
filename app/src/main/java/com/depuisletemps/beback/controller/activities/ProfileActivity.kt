@@ -8,12 +8,15 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
+import com.depuisletemps.beback.model.FieldType
 import com.depuisletemps.beback.model.User
 import com.depuisletemps.beback.utils.Constant
+import com.depuisletemps.beback.utils.StringUtils
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.android.synthetic.main.activity_profile.mBtnEdit
+import org.apache.commons.text.WordUtils
 
 class ProfileActivity: BaseActivity() {
     private val TAG = "ProfileActivity"
@@ -193,9 +196,9 @@ class ProfileActivity: BaseActivity() {
     private fun editFirestoreUser(id: String){
         val userRef = mDb.collection(Constant.USERS_COLLECTION).document(id)
 
-        mUser.firstname = firstname.text.toString()
-        mUser.lastname = lastname.text.toString()
-        mUser.pseudo = pseudo.text.toString()
+        mUser.firstname = StringUtils.capitalizeWords(firstname.text.toString(), FieldType.NAME)
+        mUser.lastname = StringUtils.capitalizeWords(lastname.text.toString(), FieldType.NAME)
+        mUser.pseudo = StringUtils.capitalizeWords(pseudo.text.toString(), FieldType.NAME)
 
         mDb.runBatch { batch ->
             batch.set(userRef, mUser, SetOptions.merge())
