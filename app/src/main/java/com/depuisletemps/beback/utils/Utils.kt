@@ -54,21 +54,40 @@ object Utils {
     }
 
     /**
-     * This method returns the number of days between both dates
+     * This method returns the number of days between both dates,
+     * being positive if the 1st date argument is before the 2nd date argument
+     * @param today representing the current day
+     * @param dueDate representing the due date of the loan
+     * @return an Int representing the number of days between today and dueDate (positive if today is before dueDate)
      */
     fun getDifferenceDays(today: LocalDate, dueDate: LocalDate): Int {
         return Days.daysBetween(today,dueDate).days
     }
 
+    /**
+     * This method returns true if a date is already passed
+     * @param date is a String representing a date (dd/MM/yyyy format)
+     * @return a Boolean
+     */
     fun isStringDatePassed(date: String): Boolean {
         return Days.daysBetween(LocalDate.now(),getLocalDateFromString(date)).days < 0
     }
 
+    /**
+     * This method returns a LocalDate object
+     * @param date is a String representing a date (dd/MM/yyyy format)
+     * @return a LocalDate object corresponding to the String date
+     */
     fun getLocalDateFromString(date: String): LocalDate {
         val formatter: DateTimeFormatter = DateTimeFormat.forPattern("dd/MM/yyyy")
         return LocalDate.parse(date, formatter)
     }
 
+    /**
+     * This method returns a String representing the LocalDate date input
+     * @param date is a LocalDate object
+     * @return a String object corresponding to the LocalDate date
+     */
     fun getStringFromLocalDate(localDate: LocalDate): String {
         return localDate.toString("dd/MM/yyyy")
     }
@@ -79,7 +98,7 @@ object Utils {
      * @return a String which represents the date
      */
     fun getStringFromDate(date: Date?): String {
-        val df: DateFormat = SimpleDateFormat("dd/MM/yyyy")
+        val df: DateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
         return df.format(date)
     }
 
@@ -131,7 +150,7 @@ object Utils {
         return when {
             daysDiff > 30 -> 4
             daysDiff > 7 -> 3
-            daysDiff >= 0 -> 2
+            daysDiff >= 1 -> 2
             else -> 1
         }
     }

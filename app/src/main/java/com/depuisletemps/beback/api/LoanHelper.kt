@@ -47,6 +47,7 @@ class LoanHelper {
 
         val returnedDate: Timestamp = Timestamp.now()
         loan.returned_date = returnedDate
+        loan.notif = null
 
         var points = Utils.retrievePointsFromLoan(loan)
 

@@ -145,6 +145,7 @@
     <string name="error_adding_loan">Oops, ça a pas bien marché</string>
     <string name="error_undeleting_loan">Ouch, on a eu un petit souci !</string>
     <string name="invalid_filter">Hummm, y a rien à filtrer…\n</string>
+    <string name="delivery_for">Livraison…</string>
 
     <array name="product_category_icon">
         <item>@drawable/ic_miscellaneous</item>

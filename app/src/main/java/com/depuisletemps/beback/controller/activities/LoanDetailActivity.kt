@@ -303,21 +303,10 @@ class LoanDetailActivity: BaseActivity() {
                 loan_creation_date.setTextColor(greyColor)
 
                 when (loan.notif) {
-                    Constant.NOTIF_D_DAY -> {
-                        displayToggleButtons()
-                        setToggle(notif_d_day)
-                    }
-                    Constant.NOTIF_THREE_DAYS -> {
-                        displayToggleButtons()
-                        setToggle(notif_three_days)
-                    }
-                    Constant.NOTIF_ONE_WEEK -> {
-                        displayToggleButtons()
-                        setToggle(notif_one_week)
-                    }
                     null -> {
                         if (loan_due_date.text != "")
                             displayToggleButtons()
+                            checkNotifBtns()
                     }
                     else -> {
                         setNotifDate(loan.notif!!)
@@ -393,7 +382,7 @@ class LoanDetailActivity: BaseActivity() {
                 loan_type.setBackgroundColor(yellowColor)
                 loan_type_pic.setBackgroundColor(yellowColor)
                 loan_recipient_title.text = getString(R.string.who_no_star)
-                loan_type.text = getString(R.string.i_wait)
+                loan_type.text = getString(R.string.delivery_for)
                 loan_recipient.hint = getString(R.string.delivery_hint)
                 loan_creation_date_title.text = getString(R.string.since)
                 loan_type_pic.setImageResource(R.drawable.ic_delivery_black)

@@ -20,12 +20,12 @@ class StringUtilsTest {
     }
 
     @Test
-    fun capitalizeWordsOnProductShouldReturnAllFirstLettersCapitalized() {
+    fun capitalizeWordsOnProductShouldReturnOnlyFirstLetterCapitalized() {
         Truth.assertThat(StringUtils.capitalizeWords("blue canoe-kayak", FieldType.PRODUCT)).isEqualTo("Blue canoe-kayak")
     }
 
     @Test
-    fun capitalizeWordsOnCapitalizedProductShouldReturnAllFirstLettersCapitalized() {
+    fun capitalizeWordsOnCapitalizedProductShouldReturnOnlyFirstLetterCapitalized() {
         Truth.assertThat(StringUtils.capitalizeWords("BLUE CANOE-KAYAK", FieldType.PRODUCT)).isEqualTo("Blue canoe-kayak")
     }
 }

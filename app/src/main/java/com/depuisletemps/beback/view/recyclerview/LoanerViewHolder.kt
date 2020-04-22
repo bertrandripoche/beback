@@ -25,9 +25,6 @@ import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loaner.view
 
 
 class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
-    companion object {
-        var count = true
-    }
 
     val name: TextView = itemview.item_loaner_name
     val rateIcon: ImageView = itemview.item_loaner_rate
@@ -137,15 +134,6 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                     params.height = 0
                     itemView.layoutParams = params
                 } else {
-//                    count = !count
-//
-//                    if(count) {
-//                        if (mode == Constant.STANDARD) itemView.setBackgroundColor(primaryColor)
-//                        else itemView.setBackgroundColor(grey)
-//                    } else {
-//                        if (mode == Constant.STANDARD) itemView.setBackgroundColor(primaryLightColor)
-//                        else itemView.setBackgroundColor(ligthGrey)
-//                    }
 
                     if(position %2 == 0) {
                         if (mode == Constant.STANDARD) itemView.setBackgroundColor(primaryColor)
