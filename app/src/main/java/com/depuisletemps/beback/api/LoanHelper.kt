@@ -47,12 +47,12 @@ class LoanHelper {
 
         val returnedDate: Timestamp = Timestamp.now()
         loan.returned_date = returnedDate
-        loan.notif = null
 
         var points = Utils.retrievePointsFromLoan(loan)
 
         mDb.runBatch { batch ->
             batch.update(loanRef, Constant.RETURNED_DATE, returnedDate)
+            batch.update(loanRef, Constant.NOTIF, null)
             batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
             batch.update(loanerRef, LoanStatus.ENDED.type, FieldValue.increment(+1))
             batch.update(loanerRef, loan.type, FieldValue.increment(-1))
