@@ -15,8 +15,10 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
-import com.depuisletemps.beback.api.LoanHelper
+import com.depuisletemps.beback.interfaces.NotifyDetailActivity
+import com.depuisletemps.beback.model.api.LoanHelper
 import com.depuisletemps.beback.model.Loan
+import com.depuisletemps.beback.model.LoanAction
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.view.customview.CategoryAdapter
@@ -716,7 +718,6 @@ class LoanDetailActivity: BaseActivity() {
         }
     }
 
-
     private fun deleteTheLoan(loan: Loan) {
         var points = Utils.retrievePointsFromLoan(loan)
 
@@ -725,24 +726,25 @@ class LoanDetailActivity: BaseActivity() {
             if (result) {
                 displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_3, this)
                 NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id, this, this)
+
+                Snackbar.make(activity_loan_detail, loan.product, Snackbar.LENGTH_LONG)
+                    .setAction(getString(R.string.undo)) {
+                        undeleteTheLoan(loan, points)
+                    }.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                        override fun onShown(transientBottomBar: Snackbar?) {
+                        }
+
+                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                            if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+                                startLoanPagerActivity(getString(R.string.archive))
+                            }
+                        }
+                    }).show()
             } else {
                 displayCustomToast(getString(R.string.error_adding_loan), R.drawable.bubble_3, this)
             }
         }
 
-        Snackbar.make(activity_loan_detail, loan.product, Snackbar.LENGTH_LONG)
-            .setAction(getString(R.string.undo)) {
-                undeleteTheLoan(loan, points)
-            }.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
-                override fun onShown(transientBottomBar: Snackbar?) {
-                }
-
-                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
-                        startLoanPagerActivity(getString(R.string.archive))
-                    }
-                }
-            }).show()
     }
 
     /**
@@ -806,5 +808,26 @@ class LoanDetailActivity: BaseActivity() {
             }
         }
     }
+
+//    override fun displayToast(message: String, bubble: Int) {
+//        displayCustomToast(message, bubble, this)
+//    }
+
+//    override fun displaySnackbar(message: String, loan: Loan, bubble: Int, points: Long, action: LoanAction) {
+//        Snackbar.make(activity_loan_detail, loan.product, Snackbar.LENGTH_LONG)
+//            .setAction(getString(R.string.undo)) {
+//                if (action == LoanAction.UNDELETE) undeleteTheLoan(loan, points)
+//                else rearchiveTheLoan(loan)
+//            }.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+//                override fun onShown(transientBottomBar: Snackbar?) {
+//                }
+//
+//                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+//                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
+//                        startLoanPagerActivity(getString(R.string.archive))
+//                    }
+//                }
+//            }).show()
+//    }
 
 }

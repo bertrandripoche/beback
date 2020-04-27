@@ -12,7 +12,7 @@ import android.view.View
 import android.widget.*
 import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
-import com.depuisletemps.beback.api.LoanHelper
+import com.depuisletemps.beback.model.api.LoanHelper
 import com.depuisletemps.beback.model.FieldType
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanType
@@ -423,8 +423,7 @@ class AddLoanActivity: BaseActivity() {
         loanHelper.createLoan(loan) {result, loanId ->
             if (result) {
                 displayCustomToast(getString(R.string.saved), R.drawable.bubble_3, this)
-                if (notif != null)
-                    NotificationManagement.createNotification(loanId, product, mType, recipientId, getNotifDate(), this, this)
+                notif?.let{NotificationManagement.createNotification(loanId, product, mType, recipientId, getNotifDate(), this, this)}
                 startLoanPagerActivity(Constant.STANDARD)
             } else {
                 displayCustomToast(getString(R.string.error_adding_loan), R.drawable.bubble_3, this)

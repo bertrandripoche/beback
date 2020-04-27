@@ -53,10 +53,11 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
             }
         }
         if (mode.equals(Constant.STANDARD)) {
-            if (loan.due_date != null) {
-                val due_date_Date = loan.due_date?.toDate()
-                dueDate.text = getStringFromDate(due_date_Date)
-            }
+//            if (loan.due_date != null) {
+//                val due_date_Date = loan.due_date?.toDate()
+//                dueDate.text = getStringFromDate(due_date_Date)
+//            }
+            loan.due_date?.let{dueDate.text = getStringFromDate(it.toDate())}
             if (dueDate.text != Constant.FAR_AWAY_DATE) {
                 dueDatePic.visibility = View.VISIBLE
                 dueDate.visibility = View.VISIBLE
@@ -91,14 +92,13 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
             }
         } else {
             dueDatePic.setImageResource(R.drawable.ic_checked)
-            if (loan.returned_date != null) dueDate.text = getStringFromDate(loan.returned_date?.toDate())
+            loan.returned_date?.let{dueDate.text = getStringFromDate(loan.returned_date?.toDate())}
         }
 
         if (loan.notif != null) {
             notif.visibility = View.VISIBLE
             if (Utils.isStringDatePassed(loan.notif.toString())) notif.setImageResource(R.drawable.ic_notification_grey)
-        }
-        else notif.visibility = View.INVISIBLE
+        } else notif.visibility = View.INVISIBLE
 
         item.tag = loan.id
     }

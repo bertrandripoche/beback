@@ -146,7 +146,7 @@ object Utils {
      * @param daysDiff is the difference of days between returned date and due date
      * @return a Int which is the number of points to attribute
      */
-    fun getPoints(daysDiff: Int): Int {
+    private fun getPoints(daysDiff: Int): Int {
         return when {
             daysDiff > 30 -> 4
             daysDiff > 7 -> 3

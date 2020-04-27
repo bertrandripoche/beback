@@ -9,6 +9,7 @@ import com.nhaarman.mockitokotlin2.whenever
 import junit.framework.Assert.assertFalse
 import junit.framework.Assert.assertTrue
 import org.joda.time.DateTimeZone
+import org.joda.time.IllegalFieldValueException
 import org.joda.time.LocalDate
 import org.joda.time.format.DateTimeFormat
 import org.junit.Before
@@ -122,6 +123,21 @@ class UtilsTest {
         whenever(loan.returned_date).doReturn(farFutureTimestamp)
 
         Truth.assertThat(Utils.retrievePointsFromLoan(loan)).isEqualTo(4)
+    }
+
+    @Test
+    fun passingACorrectlyFormattedDateShouldReturnALocalDate() {
+        Truth.assertThat(Utils.getLocalDateFromString(todayString)).isEqualTo(today)
+    }
+
+    @Test(expected = IllegalArgumentException::class)
+    fun passingACorrectlyFormattedDateShouldReturnAnException() {
+        Utils.getLocalDateFromString("abc123")
+    }
+
+    @Test(expected = IllegalFieldValueException::class)
+    fun passingAWrongDateShouldReturnAnException() {
+        Utils.getLocalDateFromString("30/02/2020")
     }
 
     @Test

@@ -9,7 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.LinearLayout
 import com.depuisletemps.beback.R
-import com.depuisletemps.beback.api.UserHelper
+import com.depuisletemps.beback.model.api.UserHelper
 import com.depuisletemps.beback.model.User
 import com.depuisletemps.beback.utils.Constant
 import com.firebase.ui.auth.AuthUI

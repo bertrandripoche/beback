@@ -1,4 +1,4 @@
-package com.depuisletemps.beback.api
+package com.depuisletemps.beback.model.api
 
 import com.depuisletemps.beback.model.User
 import com.google.android.gms.tasks.Task

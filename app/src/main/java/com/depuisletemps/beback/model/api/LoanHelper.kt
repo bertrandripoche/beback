@@ -1,6 +1,10 @@
-package com.depuisletemps.beback.api
+package com.depuisletemps.beback.model.api
 
+import com.depuisletemps.beback.R
+import com.depuisletemps.beback.controller.activities.LoanDetailActivity
+import com.depuisletemps.beback.interfaces.NotifyDetailActivity
 import com.depuisletemps.beback.model.Loan
+import com.depuisletemps.beback.model.LoanAction
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
@@ -8,6 +12,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import kotlinx.android.synthetic.main.activity_profile.view.*
 
 class LoanHelper {
     val mDb: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -113,6 +118,8 @@ class LoanHelper {
 
         }.addOnCompleteListener {
             callback(true, loanRef.id)
+//            val loanDetailActivity = LoanDetailActivity()
+//            loanDetailActivity.displayToast("", R.drawable.bubble_3)
         }.addOnFailureListener {
             callback(false, loanRef.id)
         }
@@ -141,6 +148,5 @@ class LoanHelper {
             callback(false)
         }
     }
-
 
 }

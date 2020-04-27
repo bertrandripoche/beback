@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.depuisletemps.beback.R
-import com.depuisletemps.beback.api.LoanHelper
+import com.depuisletemps.beback.model.api.LoanHelper
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.controller.activities.LoanDetailActivity

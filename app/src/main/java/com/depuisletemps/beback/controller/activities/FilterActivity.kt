@@ -19,7 +19,7 @@ import kotlinx.android.synthetic.main.activity_add_loan.mBtnSubmit
 import kotlinx.android.synthetic.main.activity_filter.*
 
 
-class FilterActivity: BaseActivity() {
+class FilterActivity(): BaseActivity() {
 
     private val TAG = "FilterActivity"
     private val mUser: FirebaseUser? = getCurrentUser()
@@ -49,8 +49,8 @@ class FilterActivity: BaseActivity() {
     }
 
     private fun setOriginScreen() {
-        mMode = intent.extras.getString(Constant.MODE)!!
-        mSide = intent.extras!!.getInt(Constant.SIDE)
+        mMode = intent?.extras?.getString(Constant.MODE) ?: Constant.STANDARD
+        mSide = intent?.extras?.getInt(Constant.SIDE) ?: 0
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -172,7 +172,7 @@ class FilterActivity: BaseActivity() {
     /**
      * Method to configure the textWatchers on the fields which requires it
      */
-    fun configureTextWatchers() {
+    private fun configureTextWatchers() {
         filter_recipient.addTextChangedListener(textWatcher)
         filter_product.addTextChangedListener(textWatcher)
     }
@@ -180,7 +180,7 @@ class FilterActivity: BaseActivity() {
     /**
      * Method to describe the actions to complete on text writing
      */
-    val textWatcher: TextWatcher = object : TextWatcher {
+    private val textWatcher: TextWatcher = object : TextWatcher {
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
@@ -194,15 +194,13 @@ class FilterActivity: BaseActivity() {
      * Method to check if the form should be considered valid
      * @return a Boolean which states if the form is valid
      */
-    fun isFormValid(): Boolean {
-        return !filter_product.text.toString().equals("")
-                || !filter_recipient.text.toString().equals("")
-                || toggle_lending.isChecked
-                || toggle_borrowing.isChecked
-                || toggle_delivery.isChecked
-    }
+    private fun isFormValid(): Boolean = !filter_product.text.toString().equals("")
+            || !filter_recipient.text.toString().equals("")
+            || toggle_lending.isChecked
+            || toggle_borrowing.isChecked
+            || toggle_delivery.isChecked
 
-    /**
+    /**T
      * Make the float button enabled
      */
     fun enableFloatButton() {
@@ -219,7 +217,7 @@ class FilterActivity: BaseActivity() {
     /**
      * This method starts the Loan activity
      */
-    fun startLoanPagerActivity() {
+    private fun startLoanPagerActivity() {
         val intent = Intent(this, LoanPagerActivity::class.java)
 
         val filterProduct: String? = when {
