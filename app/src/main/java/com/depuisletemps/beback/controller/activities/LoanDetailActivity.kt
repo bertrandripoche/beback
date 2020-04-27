@@ -15,10 +15,8 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
-import com.depuisletemps.beback.interfaces.NotifyDetailActivity
 import com.depuisletemps.beback.model.api.LoanHelper
 import com.depuisletemps.beback.model.Loan
-import com.depuisletemps.beback.model.LoanAction
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.view.customview.CategoryAdapter
@@ -122,7 +120,7 @@ class LoanDetailActivity: BaseActivity() {
             if (savedInstanceState.getString(Constant.DUESAVED) != null) mCurrentDue = savedInstanceState.getString(Constant.DUESAVED)!!
             if (savedInstanceState.getString(Constant.LOAN_ID) != null) mLoanId = savedInstanceState.getString(Constant.LOAN_ID)!!
             if (savedInstanceState.getString(Constant.NOTIF_DATE) != null) mNotif = savedInstanceState.getString(Constant.NOTIF_DATE)!!
-            setEditBtnState()
+            setEditSubmitFloatBtnState()
             setEditFieldsTextColor()
         }
     }
@@ -156,38 +154,9 @@ class LoanDetailActivity: BaseActivity() {
             }
         }
 
-        notif_d_day.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                notif_d_day.setBackgroundColor(yellowColor)
-                if (notif_three_days.isChecked) unsetToggle(notif_three_days)
-                if (notif_one_week.isChecked) unsetToggle(notif_one_week)
-            } else {
-                notif_d_day.setBackgroundColor(lightGreyColor)
-            }
-            setEditBtnState()
-        })
-
-        notif_three_days.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                notif_three_days.setBackgroundColor(yellowColor)
-                if (notif_one_week.isChecked) unsetToggle(notif_one_week)
-                if (notif_d_day.isChecked) unsetToggle(notif_d_day)
-            } else {
-                notif_three_days.setBackgroundColor(lightGreyColor)
-            }
-            setEditBtnState()
-        })
-
-        notif_one_week.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                notif_one_week.setBackgroundColor(yellowColor)
-                if (notif_three_days.isChecked) unsetToggle(notif_three_days)
-                if (notif_d_day.isChecked) unsetToggle(notif_d_day)
-            } else {
-                notif_one_week.setBackgroundColor(lightGreyColor)
-            }
-            setEditBtnState()
-        })
+        setButton(notif_d_day)
+        setButton(notif_three_days)
+        setButton(notif_one_week)
 
         mBtnDelete.setOnClickListener{deleteTheLoan(mLoan!!)}
         mBtnUnarchive.setOnClickListener{unarchiveTheLoan(mLoan!!)}
@@ -206,7 +175,7 @@ class LoanDetailActivity: BaseActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                setEditBtnState()
+                setEditSubmitFloatBtnState()
                 if (mLoan?.returned_date == null) {
                     if (spinner.selectedView != null) {
                         val text: TextView =
@@ -401,7 +370,7 @@ class LoanDetailActivity: BaseActivity() {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
         override fun afterTextChanged(s: Editable) {
-            setEditBtnState()
+            setEditSubmitFloatBtnState()
             setEditFieldsTextColor()
         }
     }
@@ -441,7 +410,7 @@ class LoanDetailActivity: BaseActivity() {
     /**
      * This method enable/disable the edit button
      */
-    fun setEditBtnState() {
+    fun setEditSubmitFloatBtnState() {
         if (isFormValid())
             enableFloatButton()
         else disableFloatButton()
@@ -460,9 +429,9 @@ class LoanDetailActivity: BaseActivity() {
         }
 
         val currentNotif: String? = when {
-            notif_d_day.isChecked -> Utils.getStringFromLocalDate(getNotifDate())
-            notif_three_days.isChecked -> Utils.getStringFromLocalDate(getNotifDate())
-            notif_one_week.isChecked -> Utils.getStringFromLocalDate(getNotifDate())
+            notif_d_day.isChecked -> if (loan_due_date.text.toString() != "") Utils.getStringFromLocalDate(getNotifDate()) else null
+            notif_three_days.isChecked -> if (loan_due_date.text.toString() != "") Utils.getStringFromLocalDate(getNotifDate()) else null
+            notif_one_week.isChecked -> if (loan_due_date.text.toString() != "") Utils.getStringFromLocalDate(getNotifDate()) else null
             loan_notif_date.text.toString() != "" -> loan_notif_date.text.toString()
             else -> null
         }
@@ -492,7 +461,7 @@ class LoanDetailActivity: BaseActivity() {
 
         val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
             setPickDate(getString(R.string.due_date, df.format(dayOfMonth), df.format(monthOfYear+1), year), btn)
-            setEditBtnState()
+            setEditSubmitFloatBtnState()
         }, year, month, day)
         dpd.datePicker.minDate = System.currentTimeMillis()
         dpd.show()
@@ -621,7 +590,7 @@ class LoanDetailActivity: BaseActivity() {
                 mBtnCancelNotif.visibility = View.GONE
             }
         }
-        setEditBtnState()
+        setEditSubmitFloatBtnState()
         setToggleButtons()
         checkNotifBtns()
     }
@@ -807,6 +776,20 @@ class LoanDetailActivity: BaseActivity() {
                 displayCustomToast(getString(R.string.error_undeleting_loan), R.drawable.bubble_3, this)
             }
         }
+    }
+
+    private fun setButton(btn: ToggleButton) {
+        btn.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                btn.setBackgroundColor(yellowColor)
+                if (btn != notif_d_day && notif_d_day.isChecked) unsetToggle(notif_d_day)
+                if (btn != notif_three_days && notif_three_days.isChecked) unsetToggle(notif_three_days)
+                if (btn != notif_one_week && notif_one_week.isChecked) unsetToggle(notif_one_week)
+            } else {
+                btn.setBackgroundColor(lightGreyColor)
+            }
+            setEditSubmitFloatBtnState()
+        })
     }
 
 //    override fun displayToast(message: String, bubble: Int) {
