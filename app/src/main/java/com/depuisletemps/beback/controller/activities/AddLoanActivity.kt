@@ -37,6 +37,7 @@ import kotlinx.android.synthetic.main.activity_add_loan.notif_one_week
 import kotlinx.android.synthetic.main.activity_add_loan.notif_three_days
 import kotlinx.android.synthetic.main.activity_add_loan.spinner_loan_categories
 import kotlinx.android.synthetic.main.activity_add_loan.toggle_btns
+import kotlinx.android.synthetic.main.activity_loan_detail.*
 import org.joda.time.LocalDate
 import java.text.DecimalFormat
 
@@ -44,20 +45,12 @@ class AddLoanActivity: BaseActivity() {
     private val TAG = "AddLoanActivity"
     lateinit var mType: String
     private val mUser: FirebaseUser? = getCurrentUser()
-    private var yellowColor: Int = 0
-    private var blueDeeperColor: Int = 0
-    private var blackColor: Int = 0
-    private var redColor: Int = 0
-    private var greenColor: Int = 0
-    private var lightGreyColor = 0
-    private var greyColor = 0
-    private var blueColor = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_loan)
 
-        defineColors()
+        defineTheColors(this)
         configureToolbar()
         configureSpinner()
         configureTextWatchers()
@@ -65,59 +58,18 @@ class AddLoanActivity: BaseActivity() {
         configureButtons()
     }
 
-    private fun defineColors() {
-        yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
-        blueDeeperColor = ContextCompat.getColor(this, R.color.primaryColor)
-        blackColor = ContextCompat.getColor(this, R.color.black)
-        greenColor = ContextCompat.getColor(this, R.color.green)
-        redColor = ContextCompat.getColor(this, R.color.red)
-        lightGreyColor = ContextCompat.getColor(this, R.color.light_grey)
-        greyColor = ContextCompat.getColor(this, R.color.dark_grey)
-        blueColor = ContextCompat.getColor(this, R.color.primaryLightColor)
-    }
-
     /**
      * This method sets all the listeners for the buttons
      */
     private fun configureButtons() {
         mBtnSubmit.setOnClickListener(View.OnClickListener {
-            if (isFormValid())
-                createFirestoreLoan()
-            else {
-                Toast.makeText(applicationContext, R.string.invalid_form, Toast.LENGTH_LONG)
-                    .show()
-            }
+            if (isFormValid()) createFirestoreLoan()
+            else Toast.makeText(applicationContext, R.string.invalid_form, Toast.LENGTH_LONG).show()
         })
 
-        notif_d_day.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                notif_d_day.setBackgroundColor(yellowColor)
-                if (notif_three_days.isClickable) unsetToggle(notif_three_days)
-                if (notif_one_week.isClickable) unsetToggle(notif_one_week)
-            } else {
-                notif_d_day.setBackgroundColor(lightGreyColor)
-            }
-        })
-
-        notif_three_days.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                notif_three_days.setBackgroundColor(yellowColor)
-                if (notif_one_week.isClickable) unsetToggle(notif_one_week)
-                if (notif_d_day.isClickable) unsetToggle(notif_d_day)
-            } else {
-                notif_three_days.setBackgroundColor(lightGreyColor)
-            }
-        })
-
-        notif_one_week.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                notif_one_week.setBackgroundColor(yellowColor)
-                if (notif_three_days.isClickable) unsetToggle(notif_three_days)
-                if (notif_d_day.isClickable) unsetToggle(notif_d_day)
-            } else {
-                notif_one_week.setBackgroundColor(lightGreyColor)
-            }
-        })
+        setButtonOnClickListener(notif_d_day)
+        setButtonOnClickListener(notif_three_days)
+        setButtonOnClickListener(notif_one_week)
     }
 
     /**
@@ -183,7 +135,7 @@ class AddLoanActivity: BaseActivity() {
             }
         }
 
-        disableFloatButton()
+        disableFloatButton(mBtnSubmit, this)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -247,7 +199,7 @@ class AddLoanActivity: BaseActivity() {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
         override fun afterTextChanged(s: Editable) { // Enable-disable Floating Action Button
-            if (isFormValid()) enableFloatButton() else disableFloatButton()
+            if (isFormValid()) enableFloatButton(mBtnSubmit,applicationContext) else disableFloatButton(mBtnSubmit, applicationContext)
         }
     }
 
@@ -375,20 +327,6 @@ class AddLoanActivity: BaseActivity() {
     }
 
     /**
-     * Make the float button enabled
-     */
-    fun enableFloatButton() {
-        setButtonTint(mBtnSubmit, ColorStateList.valueOf(yellowColor) )
-    }
-
-    /**
-     * Make the float button disabled
-     */
-    private fun disableFloatButton() {
-        setButtonTint(mBtnSubmit, ColorStateList.valueOf(lightGreyColor) )
-    }
-
-    /**
     * This method create a loan entry in the Firebase database "loan" collection
     */
     private fun createFirestoreLoan(){
@@ -415,8 +353,6 @@ class AddLoanActivity: BaseActivity() {
             else -> null
         }
         val test = getTimeStampFromString(dueDate)
-        println("And now...")
-        println("Timestamp "+ test.toString())
         val loan = Loan("",requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), notif, returnedDate)
 
         val loanHelper = LoanHelper()
@@ -441,6 +377,23 @@ class AddLoanActivity: BaseActivity() {
                 else -> returnDate
             }
         }
+    }
+
+    /**
+     * This method allows to set a listener on a button
+     * @param btn being the button on which to set the listener
+     */
+    private fun setButtonOnClickListener(btn: ToggleButton) {
+        btn.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                btn.setBackgroundColor(yellowColor)
+                if (btn != notif_d_day && notif_d_day.isChecked) unsetToggle(notif_d_day)
+                if (btn != notif_three_days && notif_three_days.isChecked) unsetToggle(notif_three_days)
+                if (btn != notif_one_week && notif_one_week.isChecked) unsetToggle(notif_one_week)
+            } else {
+                btn.setBackgroundColor(lightGreyColor)
+            }
+        })
     }
 
 }

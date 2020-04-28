@@ -7,6 +7,7 @@ import android.content.res.ColorStateList
 import android.os.Build
 import android.view.Gravity
 import android.view.View
+import android.widget.CompoundButton
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
@@ -22,14 +23,27 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.android.synthetic.main.activity_loan_detail.*
+import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.android.synthetic.main.custom_toast.*
 import kotlinx.android.synthetic.main.toolbar.*
 import java.util.*
 
 
-open class BaseActivity: AppCompatActivity() {
+open abstract class BaseActivity: AppCompatActivity() {
     private val TAG = "BaseActivity"
     private val SIGN_OUT_TASK = 10
+
+    protected var orangeColor: Int = 0
+    protected var yellowColor: Int = 0
+    protected var blueDeeperColor: Int = 0
+    protected var blackColor: Int = 0
+    protected var redColor: Int = 0
+    protected var greenColor: Int = 0
+    protected var lightGreyColor = 0
+    protected var greyColor = 0
+    protected var darkGreyColor = 0
+    protected var blueColor = 0
 
     val mDb: FirebaseFirestore = FirebaseFirestore.getInstance()
 
@@ -113,6 +127,19 @@ open class BaseActivity: AppCompatActivity() {
         startActivity(intent)
     }
 
+    protected fun defineTheColors(context: Context) {
+        lightGreyColor = ContextCompat.getColor(context, R.color.light_grey)
+        greyColor = ContextCompat.getColor(context, R.color.dark_grey)
+        blueColor = ContextCompat.getColor(context, R.color.primaryLightColor)
+        yellowColor = ContextCompat.getColor(context, R.color.secondaryColor)
+        blueDeeperColor = ContextCompat.getColor(context, R.color.primaryColor)
+        blackColor = ContextCompat.getColor(context, R.color.black)
+        greenColor = ContextCompat.getColor(context, R.color.green)
+        redColor = ContextCompat.getColor(context, R.color.red)
+        orangeColor = ContextCompat.getColor(this, R.color.secondaryDarkColor)
+        darkGreyColor = ContextCompat.getColor(this, R.color.dark_grey)
+    }
+
     /**
      * This method displays a message in a nice way
      */
@@ -163,5 +190,45 @@ open class BaseActivity: AppCompatActivity() {
         btn.setBackgroundColor(lightGreyColor)
         btn.setTextColor(blackColor)
     }
+
+    /**
+     * Make the float button enabled
+     */
+    protected fun enableFloatButton(btn: FloatingActionButton, context: Context) {
+        setButtonTint(btn, ColorStateList.valueOf(ContextCompat.getColor(context,R.color.secondaryColor)) )
+    }
+
+    /**
+     * Make the float button disabled
+     */
+    protected fun disableFloatButton(btn: FloatingActionButton, context: Context) {
+        setButtonTint(btn, ColorStateList.valueOf(ContextCompat.getColor(context,R.color.light_grey)) )
+    }
+
+//    /**
+//     * This method allows to set a listener on a button
+//     * @param btn being the button on which to set the listener
+//     */
+//    private fun setButtonOnClickListener(btn: ToggleButton, setFloat: Boolean) {
+//        btn.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+//            if (isChecked) {
+//                btn.setBackgroundColor(yellowColor)
+//                if (btn != notif_d_day && notif_d_day.isChecked) unsetToggle(notif_d_day)
+//                if (btn != notif_three_days && notif_three_days.isChecked) unsetToggle(notif_three_days)
+//                if (btn != notif_one_week && notif_one_week.isChecked) unsetToggle(notif_one_week)
+//            } else {
+//                btn.setBackgroundColor(lightGreyColor)
+//            }
+//            if (setFloat) setEditSubmitFloatBtnState()
+//        })
+//    }
+//
+//    /**
+//     * This method enable/disable the edit button
+//     */
+//    fun setEditSubmitFloatBtnState() {
+//        if (isFormValid()) enableFloatButton(mBtnEdit, this)
+//        else disableFloatButton(mBtnEdit, this)
+//    }
 
 }

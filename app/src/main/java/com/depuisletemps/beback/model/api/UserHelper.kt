@@ -1,52 +1,47 @@
 package com.depuisletemps.beback.model.api
 
 import com.depuisletemps.beback.model.User
+import com.depuisletemps.beback.utils.Constant
 import com.google.android.gms.tasks.Task
 import com.google.firebase.firestore.CollectionReference
-import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 
 class UserHelper {
-    companion object {
-        private val COLLECTION_NAME: String = "users"
+    val mDb: FirebaseFirestore = FirebaseFirestore.getInstance()
 
-        // COLLECTION REFERENCE
-        fun getUsersCollection(): CollectionReference {
-            return FirebaseFirestore.getInstance().collection(COLLECTION_NAME)
-        }
+    // COLLECTION REFERENCE
+    fun getUsersCollection(): CollectionReference {
+        return mDb.collection(Constant.USERS_COLLECTION)
+    }
 
-        // CREATE
-        fun createUser(user: User): Task<Void> {
-//            val userToCreate = User(id, mail, firstname, lastname, pseudo, pic)
-            return getUsersCollection().document(user.id).set(user, SetOptions.merge())
-        }
+    // CHECK
+    fun checkUserInDb(user: User, callback: (Boolean, Boolean) -> Unit) {
+        val query = getUsersCollection().whereEqualTo(Constant.MAIL, user.mail)
+        query.get()
+            .addOnSuccessListener { docs ->
+                var userAlreadyExists: Boolean = false
+                for (document in docs) {
+                    userAlreadyExists = true
+                }
+                callback(true, userAlreadyExists)
+            }
+            .addOnFailureListener {
+               callback(false, false)
+            }
+    }
 
-        // GET
-        fun getUserFromId(id: String): Task<DocumentSnapshot> {
-            return getUsersCollection().document(id).get()
-        }
+    // CREATE
+    fun createUser(user: User): Task<Void> {
+        return getUsersCollection().document(user.id).set(user, SetOptions.merge())
+    }
 
-        // UPDATE
-        fun updateFirstname(id: String, firstname: String?): Task<Void> {
-            return getUsersCollection().document(id).update("firstname", firstname)
-        }
-
-        fun updateLastname(id: String, lastname: String?): Task<Void> {
-            return getUsersCollection().document(id).update("lastname", lastname)
-        }
-
-        fun updatePseudo(id: String, pseudo: String?): Task<Void> {
-            return getUsersCollection().document(id).update("pseudo", pseudo)
-        }
-
-        fun updatePic(id: String, pic: String?): Task<Void> {
-            return getUsersCollection().document(id).update("pic", pic)
-        }
-
-        // DELETE
-        fun deleteUser(id: String): Task<Void> {
-            return getUsersCollection().document(id).delete()
-        }
+    // UPDATE
+    fun updateUser(user: User, callback: (Boolean) -> Unit) {
+        mDb.runBatch { batch ->
+            batch.set(getUsersCollection().document(user.id), user, SetOptions.merge())}
+                .addOnSuccessListener { document -> callback(true)}
+                .addOnFailureListener { exception -> callback(false)
+                }
     }
 }

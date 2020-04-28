@@ -66,21 +66,11 @@ class LoanDetailActivity: BaseActivity() {
     lateinit var mCategories: Array<String>
     lateinit var mCategoriesIcons: TypedArray
     val mUser: FirebaseUser? = getCurrentUser()
-    var yellowColor: Int = 0
-    var orangeColor: Int = 0
-    var blueDeeperColor: Int = 0
-    var blackColor: Int = 0
-    var redColor: Int = 0
-    var greenColor: Int = 0
-    var darkGreyColor: Int = 0
-    private var lightGreyColor = 0
-    private var greyColor = 0
-    private var blueColor = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loan_detail)
-        defineColors()
+        defineTheColors(this)
         mCategories = this.resources.getStringArray(R.array.product_category)
         mCategoriesIcons = this.resources.obtainTypedArray(R.array.product_category_icon)
 
@@ -130,20 +120,6 @@ class LoanDetailActivity: BaseActivity() {
         return true
     }
 
-    private fun defineColors() {
-        yellowColor = ContextCompat.getColor(this, R.color.secondaryColor)
-        orangeColor = ContextCompat.getColor(this, R.color.secondaryDarkColor)
-        blueDeeperColor = ContextCompat.getColor(this, R.color.primaryColor)
-        darkGreyColor = ContextCompat.getColor(this, R.color.dark_grey)
-        blackColor = ContextCompat.getColor(this, R.color.black)
-        greenColor = ContextCompat.getColor(this, R.color.green)
-        redColor = ContextCompat.getColor(this, R.color.red)
-        lightGreyColor = ContextCompat.getColor(this, R.color.light_grey)
-        greyColor = ContextCompat.getColor(this, R.color.dark_grey)
-        blueColor = ContextCompat.getColor(this, R.color.primaryLightColor)
-
-    }
-
     private fun configureButtons() {
         mBtnEdit.setOnClickListener{
             if (isFormValid())
@@ -154,9 +130,9 @@ class LoanDetailActivity: BaseActivity() {
             }
         }
 
-        setButton(notif_d_day)
-        setButton(notif_three_days)
-        setButton(notif_one_week)
+        setButtonOnClickListener(notif_d_day)
+        setButtonOnClickListener(notif_three_days)
+        setButtonOnClickListener(notif_one_week)
 
         mBtnDelete.setOnClickListener{deleteTheLoan(mLoan!!)}
         mBtnUnarchive.setOnClickListener{unarchiveTheLoan(mLoan!!)}
@@ -283,7 +259,7 @@ class LoanDetailActivity: BaseActivity() {
                         setNotifDate(loan.notif!!)
                     }
                 }
-                disableFloatButton()
+                disableFloatButton(mBtnEdit, this)
             }
 
             if (mFirstTime) spinner_loan_categories.setSelection(Utils.getIndexFromCategory(loan.product_category, this))
@@ -411,9 +387,8 @@ class LoanDetailActivity: BaseActivity() {
      * This method enable/disable the edit button
      */
     fun setEditSubmitFloatBtnState() {
-        if (isFormValid())
-            enableFloatButton()
-        else disableFloatButton()
+        if (isFormValid()) enableFloatButton(mBtnEdit, this)
+        else disableFloatButton(mBtnEdit, this)
     }
 
     /**
@@ -512,22 +487,11 @@ class LoanDetailActivity: BaseActivity() {
     }
 
     /**
-     * This method sets the toggle button
-     */
-    fun setToggle(btn: ToggleButton) {
-        btn.isChecked = true
-        btn.setBackgroundColor(yellowColor)
-    }
-
-    /**
      * Method to choose to display/hide the toggle notification buttons
      */
     private fun setToggleButtons() {
-        if (loan_due_date.text != "" && loan_notif_date.text == "") {
-            displayToggleButtons()
-        } else {
-            hideToggleButtons()
-        }
+        if (loan_due_date.text != "" && loan_notif_date.text == "") displayToggleButtons()
+        else hideToggleButtons()
         enableNotifBtn()
     }
 
@@ -593,20 +557,6 @@ class LoanDetailActivity: BaseActivity() {
         setEditSubmitFloatBtnState()
         setToggleButtons()
         checkNotifBtns()
-    }
-
-    /**
-     * Make the float button enabled
-     */
-    fun enableFloatButton() {
-        setButtonTint(mBtnEdit, ColorStateList.valueOf(ContextCompat.getColor(this,R.color.secondaryColor)) )
-    }
-
-    /**
-     * Make the float button disabled
-     */
-    private fun disableFloatButton() {
-        setButtonTint(mBtnEdit, ColorStateList.valueOf(ContextCompat.getColor(this,R.color.light_grey)) )
     }
 
     /**
@@ -778,7 +728,11 @@ class LoanDetailActivity: BaseActivity() {
         }
     }
 
-    private fun setButton(btn: ToggleButton) {
+    /**
+     * This method allows to set a listener on a button
+     * @param btn being the button on which to set the listener
+     */
+    private fun setButtonOnClickListener(btn: ToggleButton) {
         btn.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 btn.setBackgroundColor(yellowColor)

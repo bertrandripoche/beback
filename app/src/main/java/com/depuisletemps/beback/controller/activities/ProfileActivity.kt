@@ -10,6 +10,8 @@ import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.FieldType
 import com.depuisletemps.beback.model.User
+import com.depuisletemps.beback.model.api.LoanHelper
+import com.depuisletemps.beback.model.api.UserHelper
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.StringUtils
 import com.google.firebase.auth.FirebaseUser
@@ -44,7 +46,7 @@ class ProfileActivity: BaseActivity() {
     fun configureButtons() {
         mBtnEdit.setOnClickListener{
             if (isFormValid())
-                editFirestoreUser(mId)
+                editFirestoreUser()
             else {
                 Toast.makeText(applicationContext, R.string.invalid_edit_profile_form, Toast.LENGTH_LONG)
                     .show()
@@ -122,7 +124,7 @@ class ProfileActivity: BaseActivity() {
         pseudo.setText(mPseudo)
         mail.text = mMail
 
-        disableFloatButton()
+        disableFloatButton(mBtnEdit, this)
     }
 
     /**
@@ -144,11 +146,8 @@ class ProfileActivity: BaseActivity() {
      * This method enable/disable the edit button
      */
     fun setEditBtnState() {
-        if (isFormValid()) {
-            enableFloatButton()
-        } else {
-            disableFloatButton()
-        }
+        if (isFormValid()) enableFloatButton(mBtnEdit, this)
+        else disableFloatButton(mBtnEdit, this)
     }
 
     /**
@@ -177,38 +176,22 @@ class ProfileActivity: BaseActivity() {
     }
 
     /**
-     * Make the float button enabled
-     */
-    private fun enableFloatButton() {
-        setButtonTint(mBtnEdit, ColorStateList.valueOf(ContextCompat.getColor(this,R.color.secondaryColor)) )
-    }
-
-    /**
-     * Make the float button disabled
-     */
-    private fun disableFloatButton() {
-        setButtonTint(mBtnEdit, ColorStateList.valueOf(ContextCompat.getColor(this,R.color.light_grey)) )
-    }
-
-    /**
     * This method edits a user entry in the Firebase database "users" collection
     */
-    private fun editFirestoreUser(id: String){
-        val userRef = mDb.collection(Constant.USERS_COLLECTION).document(id)
-
+    private fun editFirestoreUser(){
         mUser.firstname = StringUtils.capitalizeWords(firstname.text.toString(), FieldType.NAME)
         mUser.lastname = StringUtils.capitalizeWords(lastname.text.toString(), FieldType.NAME)
         mUser.pseudo = StringUtils.capitalizeWords(pseudo.text.toString(), FieldType.NAME)
 
-        mDb.runBatch { batch ->
-            batch.set(userRef, mUser, SetOptions.merge())
-        }.addOnCompleteListener {
-            displayCustomToast(getString(R.string.saved), R.drawable.bubble_3,this)
-            startLoanPagerActivity(Constant.STANDARD)
-        }.addOnFailureListener { e ->
-            Log.w(TAG, getString(R.string.transaction_failure), e)
+        val userHelper = UserHelper()
+        userHelper.updateUser(mUser) {result ->
+            if (result) {
+                displayCustomToast(getString(R.string.saved), R.drawable.bubble_3,this)
+                startLoanPagerActivity(Constant.STANDARD)
+            } else {
+                Log.w(TAG, getString(R.string.transaction_failure))
+            }
         }
-
     }
 
 }

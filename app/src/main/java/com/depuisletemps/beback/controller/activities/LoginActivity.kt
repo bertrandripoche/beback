@@ -77,17 +77,17 @@ class LoginActivity : BaseActivity() {
 
             if (resultCode == Activity.RESULT_OK) {
                 checkAndCreateFirestoreUser()
-                startLoanPagerActivity(Constant.STANDARD)
+//                startLoanPagerActivity(Constant.STANDARD)
             } else {
-                if (response == null) {
-                    showSnackBar( login_activity_linear_layout, getString(R.string.error_authentication_canceled)
-                    )
-                } else if (response.error!!.errorCode == ErrorCodes.NO_NETWORK) {
-                    showSnackBar(login_activity_linear_layout, getString(R.string.error_no_internet))
-                } else if (response.error!!.errorCode == ErrorCodes.UNKNOWN_ERROR) {
-                    showSnackBar(login_activity_linear_layout, getString(R.string.error_unknown))
-                } else {
-                    showSnackBar(login_activity_linear_layout, getString(R.string.error_undefined))
+                when {
+                    response == null ->
+                        showSnackBar( login_activity_linear_layout, getString(R.string.error_authentication_canceled))
+                    response.error!!.errorCode == ErrorCodes.NO_NETWORK ->
+                        showSnackBar(login_activity_linear_layout, getString(R.string.error_no_internet))
+                    response.error!!.errorCode == ErrorCodes.UNKNOWN_ERROR ->
+                        showSnackBar(login_activity_linear_layout, getString(R.string.error_unknown))
+                    else ->
+                        showSnackBar(login_activity_linear_layout, getString(R.string.error_undefined))
                 }
             }
         }
@@ -95,7 +95,7 @@ class LoginActivity : BaseActivity() {
 
     /**
      * Method allowing to display a snackbar message
-     * @param coordinatorLayout is the element where the snackbar should be displayed
+     * @param linearLayout is the element where the snackbar should be displayed
      * @param message is the message we want to display
      */
     private fun showSnackBar(linearLayout: LinearLayout, message: String) {
@@ -123,24 +123,23 @@ class LoginActivity : BaseActivity() {
      * This method checks existence of user in Firestore db
      */
     fun checkUserInDb(user: User) {
-        val userRef = mDb.collection(Constant.USERS_COLLECTION).document(user.id)
-        userRef.get()
-            .addOnSuccessListener { document ->
-                if (document == null) {
-                    addUserInFirestore(user)
-                }
+        val userHelper = UserHelper()
+        userHelper.checkUserInDb(user) {result,documentExists ->
+            if (result) {
+                if (!documentExists) addUserInFirestore(user)
+                startLoanPagerActivity(Constant.STANDARD)
+            } else {
+                Log.d(TAG, getString(R.string.transaction_failure))
             }
-            .addOnFailureListener { exception ->
-                addUserInFirestore(user)
-                Log.d(TAG, getString(R.string.transaction_failure), exception)
-            }
+        }
     }
 
     /**
      * This method adds the user in Firestore
      */
     fun addUserInFirestore(user: User): Task<Void> {
-        return UserHelper.createUser(user)
+        val userHelper = UserHelper()
+        return userHelper.createUser(user)
     }
 
     /**
