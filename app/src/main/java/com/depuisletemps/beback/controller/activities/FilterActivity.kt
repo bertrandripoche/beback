@@ -136,7 +136,9 @@ class FilterActivity(): BaseActivity() {
             } else {
                 btn.setBackgroundResource(R.drawable.round_grey_color_button)
             }
-            if (isFormValid()) enableFloatButton(mBtnSubmit, this) else disableFloatButton(mBtnSubmit, this)
+            setFloatBtnState(isFormValid(),mBtnSubmit, this)
+
+            //if (isFormValid()) enableFloatButton(mBtnSubmit, this) else disableFloatButton(mBtnSubmit, this)
         })
     }
 

@@ -12,7 +12,7 @@
     <string name="error_authentication_canceled">Pas nous ! \n T\'as annulé le process.</string>
     <string name="error_no_internet">On dirait que tu n\'es connecté\nqu\'au monde réel</string>
     <string name="error_unknown">Oops, on dirait une erreur inconnue.\nEssaye encore.</string>
-    <string name="error_undefined">Houston&amp;#8230, nous avons un problème \n(indéfini) !</string>
+    <string name="error_undefined">Houston !\nOn a un problème \n(indéfini) !</string>
 
     <string name="profile">Profil</string>
     <string name="archive">Archive</string>

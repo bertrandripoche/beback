@@ -12,7 +12,7 @@
     <string name="error_authentication_canceled">Not us ! \n You cancelled the process</string>
     <string name="error_no_internet">Looks like you are only\n connected to the real world</string>
     <string name="error_unknown">Oops, looks like an unknown error.\nTry again.</string>
-    <string name="error_undefined">Damned&amp;#8230, we hit an undefined error !</string>
+    <string name="error_undefined">Damned !\nWe hit an undefined error !</string>
 
     <string name="google" translatable="false">google</string>
     <string name="facebook" translatable="false">facebook</string>

@@ -199,7 +199,8 @@ class AddLoanActivity: BaseActivity() {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
         override fun afterTextChanged(s: Editable) { // Enable-disable Floating Action Button
-            if (isFormValid()) enableFloatButton(mBtnSubmit,applicationContext) else disableFloatButton(mBtnSubmit, applicationContext)
+            setFloatBtnState(isFormValid(),mBtnSubmit, applicationContext)
+            //if (isFormValid()) enableFloatButton(mBtnSubmit,applicationContext) else disableFloatButton(mBtnSubmit, applicationContext)
         }
     }
 

@@ -110,7 +110,7 @@ class LoanDetailActivity: BaseActivity() {
             if (savedInstanceState.getString(Constant.DUESAVED) != null) mCurrentDue = savedInstanceState.getString(Constant.DUESAVED)!!
             if (savedInstanceState.getString(Constant.LOAN_ID) != null) mLoanId = savedInstanceState.getString(Constant.LOAN_ID)!!
             if (savedInstanceState.getString(Constant.NOTIF_DATE) != null) mNotif = savedInstanceState.getString(Constant.NOTIF_DATE)!!
-            setEditSubmitFloatBtnState()
+            setFloatBtnState(isFormValid(),mBtnEdit, this)
             setEditFieldsTextColor()
         }
     }
@@ -151,7 +151,7 @@ class LoanDetailActivity: BaseActivity() {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
             override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                setEditSubmitFloatBtnState()
+                setFloatBtnState(isFormValid(),mBtnEdit, applicationContext)
                 if (mLoan?.returned_date == null) {
                     if (spinner.selectedView != null) {
                         val text: TextView =
@@ -346,7 +346,7 @@ class LoanDetailActivity: BaseActivity() {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
         override fun afterTextChanged(s: Editable) {
-            setEditSubmitFloatBtnState()
+            setFloatBtnState(isFormValid(),mBtnEdit, applicationContext)
             setEditFieldsTextColor()
         }
     }
@@ -384,14 +384,6 @@ class LoanDetailActivity: BaseActivity() {
     }
 
     /**
-     * This method enable/disable the edit button
-     */
-    fun setEditSubmitFloatBtnState() {
-        if (isFormValid()) enableFloatButton(mBtnEdit, this)
-        else disableFloatButton(mBtnEdit, this)
-    }
-
-    /**
      * Method to tell if the form is valid
      */
     fun isFormValid(): Boolean {
@@ -399,7 +391,7 @@ class LoanDetailActivity: BaseActivity() {
             this.resources.getStringArray(R.array.product_category)
 
         if (loan_returned_date == null) {
-            if (!loan_due_date.text.toString().equals(mDue) && mDue != null) loan_due_date.setTextColor(blackColor)
+            if (!loan_due_date.text.toString().equals(mDue)) loan_due_date.setTextColor(blackColor)
             else loan_due_date.setTextColor(darkGreyColor)
         }
 
@@ -436,8 +428,9 @@ class LoanDetailActivity: BaseActivity() {
 
         val dpd = DatePickerDialog(this, DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
             setPickDate(getString(R.string.due_date, df.format(dayOfMonth), df.format(monthOfYear+1), year), btn)
-            setEditSubmitFloatBtnState()
+            setFloatBtnState(isFormValid(),mBtnEdit, this)
         }, year, month, day)
+
         dpd.datePicker.minDate = System.currentTimeMillis()
         dpd.show()
     }
@@ -448,12 +441,8 @@ class LoanDetailActivity: BaseActivity() {
     private fun setPickDate(date: String?, btn: String) {
         if (date != null) {
             when (btn) {
-                getString(R.string.due) -> {
-                    setDueDate(date)
-                }
-                getString(R.string.notif) -> {
-                    setNotifDate(date)
-                }
+                getString(R.string.due) ->  setDueDate(date)
+                getString(R.string.notif) -> setNotifDate(date)
             }
             unsetToggle(notif_d_day)
             unsetToggle(notif_three_days)
@@ -554,7 +543,7 @@ class LoanDetailActivity: BaseActivity() {
                 mBtnCancelNotif.visibility = View.GONE
             }
         }
-        setEditSubmitFloatBtnState()
+        setFloatBtnState(isFormValid(),mBtnEdit, this)
         setToggleButtons()
         checkNotifBtns()
     }
@@ -742,7 +731,7 @@ class LoanDetailActivity: BaseActivity() {
             } else {
                 btn.setBackgroundColor(lightGreyColor)
             }
-            setEditSubmitFloatBtnState()
+            setFloatBtnState(isFormValid(),mBtnEdit, this)
         })
     }
 

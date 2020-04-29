@@ -31,6 +31,15 @@ class UserHelper {
             }
     }
 
+    // GET
+    fun getUser(id: String, callback: (Boolean, User) -> Unit) {
+        getUsersCollection().document(id).get()
+            .addOnSuccessListener { documentSnapshot ->
+                val user = documentSnapshot.toObject(User::class.java)!!
+                callback(true, user)
+            }
+    }
+
     // CREATE
     fun createUser(user: User): Task<Void> {
         return getUsersCollection().document(user.id).set(user, SetOptions.merge())

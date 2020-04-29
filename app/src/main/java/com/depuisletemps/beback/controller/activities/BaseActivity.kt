@@ -223,12 +223,12 @@ open abstract class BaseActivity: AppCompatActivity() {
 //        })
 //    }
 //
-//    /**
-//     * This method enable/disable the edit button
-//     */
-//    fun setEditSubmitFloatBtnState() {
-//        if (isFormValid()) enableFloatButton(mBtnEdit, this)
-//        else disableFloatButton(mBtnEdit, this)
-//    }
+    /**
+     * This method enable/disable the edit button
+     */
+    fun setFloatBtnState(validForm: Boolean, btn: FloatingActionButton, context: Context) {
+        if (validForm) enableFloatButton(btn, context)
+        else disableFloatButton(btn, context)
+    }
 
 }

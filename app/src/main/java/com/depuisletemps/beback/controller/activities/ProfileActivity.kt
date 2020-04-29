@@ -71,7 +71,7 @@ class ProfileActivity: BaseActivity() {
             mPseudo = savedInstanceState.getString(Constant.MPSEUDO)!!
             mMail = savedInstanceState.getString(Constant.MAIL)!!
             mFirstTime = false
-            setEditBtnState()
+            setFloatBtnState(isFormValid(),mBtnEdit, this)
             setEditFieldsTextColor()
         }
     }
@@ -92,18 +92,21 @@ class ProfileActivity: BaseActivity() {
      */
     private fun getUserInfos() {
         mUserFb = getCurrentUser()
-        val docRef = mDb.collection(Constant.USERS_COLLECTION).document(mUserFb!!.uid)
-
-        docRef.get()
-            .addOnSuccessListener { documentSnapshot ->
-                mUser = documentSnapshot.toObject(User::class.java)!!
+        val userHelper = UserHelper()
+        userHelper.getUser(mUserFb!!.uid) {result, user ->
+            if (result) {
+                mUser = user
                 mFirst = mUser.firstname.toString()
                 mLast = mUser.lastname.toString()
                 mPseudo = mUser.pseudo.toString()
                 mMail = mUser.mail
                 mId = mUser.id
                 if (mFirstTime) configureScreen()
+            } else {
+                Log.w(TAG, getString(R.string.transaction_failure))
             }
+        }
+
     }
 
     /**
@@ -136,18 +139,9 @@ class ProfileActivity: BaseActivity() {
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
         override fun afterTextChanged(s: Editable) {
-            // Enable-disable Floating Action Button
-            setEditBtnState()
+            setFloatBtnState(isFormValid(),mBtnEdit, applicationContext)
             setEditFieldsTextColor()
         }
-    }
-
-    /**
-     * This method enable/disable the edit button
-     */
-    fun setEditBtnState() {
-        if (isFormValid()) enableFloatButton(mBtnEdit, this)
-        else disableFloatButton(mBtnEdit, this)
     }
 
     /**
