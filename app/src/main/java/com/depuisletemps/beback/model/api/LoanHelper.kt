@@ -142,4 +142,19 @@ class LoanHelper {
         }
     }
 
+
+    fun getLoanNames(userId: String, callback: (Boolean, MutableList<String>?) -> Unit) {
+        val loanRef = mDb.collection(Constant.LOANS_COLLECTION)
+        loanRef.whereEqualTo(Constant.REQUESTOR_ID, userId)
+            .get()
+            .addOnSuccessListener {result ->
+                val listNames = mutableListOf<String>()
+                for (document in result) listNames.add(document.data.getValue(Constant.PRODUCT).toString())
+                callback(true,listNames)
+            }
+            .addOnFailureListener { exception ->
+                callback(false,null)
+            }
+    }
+
 }

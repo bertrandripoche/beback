@@ -2,7 +2,6 @@ package com.depuisletemps.beback.controller.activities
 
 import android.Manifest
 import android.app.DatePickerDialog
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.text.Editable
@@ -10,12 +9,12 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.widget.*
-import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.api.LoanHelper
 import com.depuisletemps.beback.model.FieldType
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanType
+import com.depuisletemps.beback.model.api.LoanerHelper
 import com.depuisletemps.beback.view.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.*
 import com.depuisletemps.beback.utils.Utils.getTimeStampFromString
@@ -37,7 +36,6 @@ import kotlinx.android.synthetic.main.activity_add_loan.notif_one_week
 import kotlinx.android.synthetic.main.activity_add_loan.notif_three_days
 import kotlinx.android.synthetic.main.activity_add_loan.spinner_loan_categories
 import kotlinx.android.synthetic.main.activity_add_loan.toggle_btns
-import kotlinx.android.synthetic.main.activity_loan_detail.*
 import org.joda.time.LocalDate
 import java.text.DecimalFormat
 
@@ -77,61 +75,59 @@ class AddLoanActivity: BaseActivity() {
      */
     private fun configureScreenFromType() {
         mType = getLoanType()
-        if (mType.equals(LoanType.LENDING.type)) {
-            loan_type.setBackgroundColor(greenColor)
-            loan_type_pic.setBackgroundColor(greenColor)
-            loan_recipient_title.text = getString(R.string.whom)
-            loan_type.text = getString(R.string.i_lend)
-            loan_type_pic.setImageResource(R.drawable.ic_loan_black)
-        } else if (mType.equals(LoanType.BORROWING.type)) {
-            loan_type.setBackgroundColor(redColor)
-            loan_type_pic.setBackgroundColor(redColor)
-            loan_recipient_title.text = getString(R.string.who)
-            loan_type.text = getString(R.string.i_borrow)
-            loan_type_pic.setImageResource(R.drawable.ic_borrowing_black)
-        } else if (mType.equals(LoanType.DELIVERY.type)) {
-            loan_type.setBackgroundColor(yellowColor)
-            loan_type_pic.setBackgroundColor(yellowColor)
-            loan_recipient_title.text = getString(R.string.who)
-            loan_type.text = getString(R.string.i_wait)
-            loan_recipient.hint = getString(R.string.delivery_hint)
-            loan_type_pic.setImageResource(R.drawable.ic_delivery_black)
+        when {
+            mType.equals(LoanType.LENDING.type) -> {
+                loan_type.setBackgroundColor(greenColor)
+                loan_type_pic.setBackgroundColor(greenColor)
+                loan_recipient_title.text = getString(R.string.whom)
+                loan_type.text = getString(R.string.i_lend)
+                loan_type_pic.setImageResource(R.drawable.ic_loan_black)
+            }
+            mType.equals(LoanType.BORROWING.type) -> {
+                loan_type.setBackgroundColor(redColor)
+                loan_type_pic.setBackgroundColor(redColor)
+                loan_recipient_title.text = getString(R.string.who)
+                loan_type.text = getString(R.string.i_borrow)
+                loan_type_pic.setImageResource(R.drawable.ic_borrowing_black)
+            }
+            mType.equals(LoanType.DELIVERY.type) -> {
+                loan_type.setBackgroundColor(yellowColor)
+                loan_type_pic.setBackgroundColor(yellowColor)
+                loan_recipient_title.text = getString(R.string.who)
+                loan_type.text = getString(R.string.i_wait)
+                loan_recipient.hint = getString(R.string.delivery_hint)
+                loan_type_pic.setImageResource(R.drawable.ic_delivery_black)
+            }
         }
 
         if (mUser != null) {
             var nameToPopulate = arrayListOf<String>()
 
             runWithPermissions(Manifest.permission.READ_CONTACTS) {
-                val phones = contentResolver.query(
-                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                    null,
-                    null,
-                    null,
-                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
-                )
+                val phones = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,null,null,ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC")
                 while (phones!!.moveToNext()) {
-                    val name =
-                        phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                    val name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
                     if (!nameToPopulate.contains(name)) nameToPopulate.add(name)
                 }
 
-                val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(mUser.uid)
-                    .collection(Constant.LOANERS_COLLECTION)
-                loanerRef
-                    .get()
-                    .addOnSuccessListener { result ->
-                        for (document in result) nameToPopulate.add(document.data.getValue(Constant.NAME).toString())
-
+                val loanerHelper = LoanerHelper()
+                loanerHelper.getLoanersNames(mUser.uid) { result, names ->
+                    if (result) {
+                        if (!names!!.isEmpty())
+                            for (name in names) {
+                                nameToPopulate.add(name)
+                            }
                         val loanRecipientNamesListAdapter = ArrayAdapter<String>(
                             this,
-                            android.R.layout.simple_dropdown_item_1line, nameToPopulate
+                            android.R.layout.simple_dropdown_item_1line,
+                            nameToPopulate
                         )
                         loan_recipient.setAdapter(loanRecipientNamesListAdapter)
                         loan_recipient.threshold = 1
+                    } else {
+                        Log.d(TAG, getString(R.string.error_getting_docs), null)
                     }
-                    .addOnFailureListener { exception ->
-                        Log.d(TAG, getString(R.string.error_getting_docs), exception)
-                    }
+                }
             }
         }
 
@@ -198,9 +194,8 @@ class AddLoanActivity: BaseActivity() {
 
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-        override fun afterTextChanged(s: Editable) { // Enable-disable Floating Action Button
+        override fun afterTextChanged(s: Editable) {
             setFloatBtnState(isFormValid(),mBtnSubmit, applicationContext)
-            //if (isFormValid()) enableFloatButton(mBtnSubmit,applicationContext) else disableFloatButton(mBtnSubmit, applicationContext)
         }
     }
 
@@ -353,7 +348,6 @@ class AddLoanActivity: BaseActivity() {
             loan_notif_date.text.toString() != "" -> loan_notif_date.text.toString()
             else -> null
         }
-        val test = getTimeStampFromString(dueDate)
         val loan = Loan("",requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), notif, returnedDate)
 
         val loanHelper = LoanHelper()

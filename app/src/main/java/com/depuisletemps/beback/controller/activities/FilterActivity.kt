@@ -14,11 +14,15 @@ import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
+import com.depuisletemps.beback.model.api.LoanHelper
+import com.depuisletemps.beback.model.api.LoanerHelper
 import com.depuisletemps.beback.utils.Constant
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.activity_add_loan.mBtnSubmit
 import kotlinx.android.synthetic.main.activity_filter.*
 import kotlinx.android.synthetic.main.activity_loan_detail.*
+import kotlinx.android.synthetic.main.activity_loan_detail.loan_recipient
 
 
 class FilterActivity(): BaseActivity() {
@@ -53,42 +57,36 @@ class FilterActivity(): BaseActivity() {
 
     private fun configureAutoCompleteFields() {
         if (mUser != null) {
-            val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(mUser.uid).collection(Constant.LOANERS_COLLECTION)
-
             var nameToPopulate = arrayListOf<String>()
-            loanerRef
-                .get()
-                .addOnSuccessListener { result ->
-                    for (document in result) nameToPopulate.add(document.data.getValue(Constant.NAME).toString())
 
-                    val filterRecipientNamesListAdapter = ArrayAdapter<String>(
-                        this,
-                        android.R.layout.simple_dropdown_item_1line, nameToPopulate
-                    )
-                    filter_recipient.setAdapter(filterRecipientNamesListAdapter)
-                    filter_recipient.threshold = 1
+            val loanerHelper = LoanerHelper()
+            loanerHelper.getLoanersNames(mUser.uid) { result, names ->
+                if (result) {
+                    if (!names!!.isEmpty()) {
+                        for (name in names) nameToPopulate.add(name)
+                        val filterRecipientNamesListAdapter = ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line,nameToPopulate)
+                        filter_recipient.setAdapter(filterRecipientNamesListAdapter)
+                        filter_recipient.threshold = 1
+                    }
+                } else {
+                    Log.d(TAG, getString(R.string.error_getting_docs), null)
                 }
-                .addOnFailureListener { exception ->
-                    Log.d(TAG, getString(R.string.error_getting_docs), exception)
-                }
+            }
 
-            val loanRef = mDb.collection(Constant.LOANS_COLLECTION)
             var productToPopulate = arrayListOf<String>()
-            loanRef.whereEqualTo(Constant.REQUESTOR_ID, mUser.uid)
-                .get()
-                .addOnSuccessListener { result ->
-                    for (document in result) productToPopulate.add(document.data.getValue(Constant.PRODUCT).toString())
-
-                    val filterRecipientNamesListAdapter = ArrayAdapter<String>(
-                        this,
-                        android.R.layout.simple_dropdown_item_1line, productToPopulate
-                    )
-                    filter_product.setAdapter(filterRecipientNamesListAdapter)
-                    filter_product.threshold = 1
+            val loanHelper = LoanHelper()
+            loanHelper.getLoanNames(mUser.uid) {result, names ->
+                if (result) {
+                    if (!names!!.isEmpty()) {
+                        for (name in names) productToPopulate.add(name)
+                        val filterProductNamesListAdapter = ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line,productToPopulate)
+                        filter_product.setAdapter(filterProductNamesListAdapter)
+                        filter_product.threshold = 1
+                    }
+                } else {
+                    Log.d(TAG, getString(R.string.error_getting_docs), null)
                 }
-                .addOnFailureListener { exception ->
-                    Log.d(TAG, getString(R.string.error_getting_docs), exception)
-                }
+            }
         }
     }
 
@@ -137,8 +135,6 @@ class FilterActivity(): BaseActivity() {
                 btn.setBackgroundResource(R.drawable.round_grey_color_button)
             }
             setFloatBtnState(isFormValid(),mBtnSubmit, this)
-
-            //if (isFormValid()) enableFloatButton(mBtnSubmit, this) else disableFloatButton(mBtnSubmit, this)
         })
     }
 
