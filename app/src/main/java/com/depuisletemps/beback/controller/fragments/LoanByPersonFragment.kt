@@ -10,6 +10,7 @@ import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.Loaner
 import com.depuisletemps.beback.controller.activities.LoanPagerActivity
+import com.depuisletemps.beback.model.api.LoanerHelper
 import com.depuisletemps.beback.view.recyclerview.LoanerAdapter
 import com.depuisletemps.beback.utils.Constant
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
@@ -23,7 +24,6 @@ class LoanByPersonFragment: BaseFragment() {
 
     private val TAG = "LoanByPersonFragment"
     private var mAdapter: LoanerAdapter? = null
-    lateinit var mLoanersRef: CollectionReference
     var mUser: FirebaseUser? = null
     lateinit var mDb: FirebaseFirestore
 
@@ -50,22 +50,9 @@ class LoanByPersonFragment: BaseFragment() {
         mUser = (activity as LoanPagerActivity).getCurrentUser()
         val requesterId: String = mUser?.uid ?: ""
 
-        var query: Query
-        mLoanersRef = mDb.collection(Constant.USERS_COLLECTION).document(requesterId).collection(Constant.LOANERS_COLLECTION)
-        if (mMode == Constant.STANDARD) {
-            query = mLoanersRef
-            if ((activity as LoanPagerActivity).mFilterRecipient != null)
-                query = query.whereEqualTo(Constant.NAME, (activity as LoanPagerActivity).mFilterRecipient)
-            query = query.whereGreaterThanOrEqualTo(LoanStatus.PENDING.type, 1).orderBy(LoanStatus.PENDING.type, Query.Direction.DESCENDING)
-        } else {
-            query = mLoanersRef
-            if ((activity as LoanPagerActivity).mFilterRecipient != null)
-                query = query.whereEqualTo(Constant.NAME, (activity as LoanPagerActivity).mFilterRecipient)
-            query = query.whereGreaterThanOrEqualTo(LoanStatus.ENDED.type, 1).orderBy(LoanStatus.ENDED.type, Query.Direction.DESCENDING)
-        }
-
-        val options = FirestoreRecyclerOptions.Builder<Loaner>().setQuery(query, Loaner::class.java).build()
-        mAdapter = LoanerAdapter(options, ctx, mMode, requesterId, (activity as LoanPagerActivity).mFilterProduct, (activity as LoanPagerActivity).mFilterType)
+        val loanerHelper = LoanerHelper()
+        val firestoreRecyclerOptions = loanerHelper.getFilteredLoanerFirestoreRecylerOptions(requesterId, mMode, activity as LoanPagerActivity)
+        mAdapter = LoanerAdapter(firestoreRecyclerOptions, ctx, mMode, requesterId, (activity as LoanPagerActivity).mFilterProduct, (activity as LoanPagerActivity).mFilterType)
 
         val orientation = resources.getInteger(R.integer.gallery_orientation)
 

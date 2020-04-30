@@ -1,13 +1,19 @@
 package com.depuisletemps.beback.model.api
 
+import android.app.Activity
+import com.depuisletemps.beback.controller.activities.LoanPagerActivity
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
+import com.depuisletemps.beback.model.Loaner
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
+import com.depuisletemps.beback.utils.Utils.getTimeStampFromString
+import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 
 class LoanHelper {
@@ -219,4 +225,39 @@ class LoanHelper {
             }
     }
 
+    /**
+     * This method allows to get the required options for RecyclerView for "by person" screen
+     * @param requesterId is the id of the user
+     * @param mode is the current mode, standard or archive
+     * @param activity is the activity where the recyclerView resides
+     * @return a FirestoreRecyclerOptions object required for the adapter
+     */
+    fun getFilteredLoanFirestoreRecylerOptions(requesterId: String, mode: String, activity: Activity): FirestoreRecyclerOptions<Loan> {
+        var query: Query
+        val loanRef = mDb.collection(Constant.LOANS_COLLECTION)
+        if (mode == Constant.STANDARD) {
+            query = loanRef.whereEqualTo(Constant.REQUESTOR_ID, requesterId)
+
+            if ((activity as LoanPagerActivity).mFilterProduct != null)
+                query = query.whereEqualTo(Constant.PRODUCT, (activity as LoanPagerActivity).mFilterProduct)
+            if ((activity as LoanPagerActivity).mFilterRecipient != null)
+                query = query.whereEqualTo(Constant.RECIPIENT_ID, (activity as LoanPagerActivity).mFilterRecipient)
+            if ((activity as LoanPagerActivity).mFilterType != null)
+                query = query.whereEqualTo(Constant.TYPE, (activity as LoanPagerActivity).mFilterType)
+
+            query= query.whereEqualTo(Constant.RETURNED_DATE, null).orderBy(Constant.DUE_DATE, Query.Direction.ASCENDING)
+        } else {
+            query = loanRef.whereEqualTo(Constant.REQUESTOR_ID, requesterId)
+
+            if ((activity as LoanPagerActivity).mFilterProduct != null)
+                query = query.whereEqualTo(Constant.PRODUCT, (activity as LoanPagerActivity).mFilterProduct)
+            if ((activity as LoanPagerActivity).mFilterRecipient != null)
+                query = query.whereEqualTo(Constant.RECIPIENT_ID, (activity as LoanPagerActivity).mFilterRecipient)
+            if ((activity as LoanPagerActivity).mFilterType != null)
+                query = query.whereEqualTo(Constant.TYPE, (activity as LoanPagerActivity).mFilterType)
+            query= query.whereGreaterThan(Constant.RETURNED_DATE, getTimeStampFromString(Constant.FAR_PAST_DATE)!! ).orderBy(Constant.RETURNED_DATE, Query.Direction.ASCENDING)
+        }
+
+        return FirestoreRecyclerOptions.Builder<Loan>().setQuery(query, Loan::class.java).build()
+    }
 }
