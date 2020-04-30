@@ -89,10 +89,10 @@ class LoanPagerActivity: BaseActivity() {
      */
     private fun configurePager() {
         if (this.intent.extras != null)
-            if (this.intent.extras.getString(Constant.FILTERS) == Constant.YES) {
-                if (this.intent.extras.getString(Constant.FILTER_TYPE) != null) mFilterType = this.intent.extras.getString(Constant.FILTER_TYPE)
-                if (this.intent.extras.getString(Constant.FILTER_PRODUCT) != null) mFilterProduct = this.intent.extras.getString(Constant.FILTER_PRODUCT)
-                if (this.intent.extras.getString(Constant.FILTER_RECIPIENT) != null) mFilterRecipient = this.intent.extras.getString(Constant.FILTER_RECIPIENT)
+            if (this.intent.extras?.getString(Constant.FILTERS) == Constant.YES) {
+                if (this.intent.extras?.getString(Constant.FILTER_TYPE) != null) mFilterType = this.intent.extras.getString(Constant.FILTER_TYPE)
+                if (this.intent.extras?.getString(Constant.FILTER_PRODUCT) != null) mFilterProduct = this.intent.extras.getString(Constant.FILTER_PRODUCT)
+                if (this.intent.extras?.getString(Constant.FILTER_RECIPIENT) != null) mFilterRecipient = this.intent.extras.getString(Constant.FILTER_RECIPIENT)
 
                 btn_erase_filter.visibility = View.VISIBLE
 
@@ -135,21 +135,19 @@ class LoanPagerActivity: BaseActivity() {
     }
 
     override fun onPrepareOptionsPanel(view: View?, menu: Menu): Boolean {
-        if (menu != null) {
-            if (menu.javaClass.simpleName == "MenuBuilder") {
-                try {
-                    val m: Method = menu.javaClass.getDeclaredMethod(
-                        "setOptionalIconsVisible", java.lang.Boolean.TYPE
-                    )
-                    m.isAccessible = true
-                    m.invoke(menu, true)
-                } catch (e: Exception) {
-                    Log.e(
-                        javaClass.simpleName,
-                        "onMenuOpened...unable to set icons for overflow menu",
-                        e
-                    )
-                }
+        if (menu.javaClass.simpleName == "MenuBuilder") {
+            try {
+                val m: Method = menu.javaClass.getDeclaredMethod(
+                    "setOptionalIconsVisible", java.lang.Boolean.TYPE
+                )
+                m.isAccessible = true
+                m.invoke(menu, true)
+            } catch (e: Exception) {
+                Log.e(
+                    javaClass.simpleName,
+                    "onMenuOpened...unable to set icons for overflow menu",
+                    e
+                )
             }
         }
         return super.onPrepareOptionsPanel(view, menu!!)
@@ -280,21 +278,21 @@ class LoanPagerActivity: BaseActivity() {
     /**
      * Alert dialog buttons management
      */
-    fun activateButtonListeners(dialogView: View, alertDialog: AlertDialog) {
-        val btn_loaner = dialogView.findViewById<Button>(R.id.btn_loaner)
-        btn_loaner.setOnClickListener{
+    private fun activateButtonListeners(dialogView: View, alertDialog: AlertDialog) {
+        val btnLoaner = dialogView.findViewById<Button>(R.id.btn_loaner)
+        btnLoaner.setOnClickListener{
             startAddLoanActivity(Constant.LENDING)
         }
-        val btn_borrower= dialogView.findViewById<Button>(R.id.btn_borrower)
-        btn_borrower.setOnClickListener{
+        val btnBorrower= dialogView.findViewById<Button>(R.id.btn_borrower)
+        btnBorrower.setOnClickListener{
             startAddLoanActivity(Constant.BORROWING)
         }
-        val btn_delivery= dialogView.findViewById<Button>(R.id.btn_delivery)
-        btn_delivery.setOnClickListener{
+        val btnDelivery= dialogView.findViewById<Button>(R.id.btn_delivery)
+        btnDelivery.setOnClickListener{
             startAddLoanActivity(Constant.DELIVERY)
         }
-        val btn_cancel = dialogView.findViewById<Button>(R.id.btn_cancel)
-        btn_cancel.setOnClickListener {
+        val btnCancel = dialogView.findViewById<Button>(R.id.btn_cancel)
+        btnCancel.setOnClickListener {
             mIsLoanAlertDialogDisplayed = false
             alertDialog.cancel()
         }
@@ -303,7 +301,7 @@ class LoanPagerActivity: BaseActivity() {
     /**
      * This method starts the AddLoan activity
      */
-    fun startAddLoanActivity(type: String) {
+    private fun startAddLoanActivity(type: String) {
         val intent = Intent(this, AddLoanActivity::class.java)
         intent.putExtra(Constant.TYPE, type)
         startActivity(intent)
@@ -312,7 +310,7 @@ class LoanPagerActivity: BaseActivity() {
     /**
      * This method starts the Profile activity
      */
-    fun startProfileActivity() {
+    private fun startProfileActivity() {
         val intent = Intent(this, ProfileActivity::class.java)
         startActivity(intent)
     }
@@ -320,7 +318,7 @@ class LoanPagerActivity: BaseActivity() {
     /**
      * This method starts the Profile activity
      */
-    fun startAboutActivity() {
+    private fun startAboutActivity() {
         val intent = Intent(this, AboutActivity::class.java)
         startActivity(intent)
     }
@@ -328,7 +326,7 @@ class LoanPagerActivity: BaseActivity() {
     /**
      * This method starts the Filter activity
      */
-    fun startFilterActivity() {
+    private fun startFilterActivity() {
         val intent = Intent(this, FilterActivity::class.java)
         intent.putExtra(Constant.MODE, mMode)
         intent.putExtra(Constant.SIDE, viewPager.currentItem)

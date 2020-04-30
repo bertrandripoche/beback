@@ -2,6 +2,7 @@ package com.depuisletemps.beback.model.api
 
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanStatus
+import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
 import com.google.firebase.Timestamp
@@ -34,6 +35,57 @@ class LoanHelper {
         }.addOnFailureListener {
             callback(false, loanRef.id)
         }
+    }
+
+    /**
+     * This method get a specific loan
+     * @param loanId is the id of the loan to be retrieved
+     * @param callback is a lambda returning a boolean, allowing to choose the following actions
+     */
+    fun getLoan(loanId: String, callback: (Loan?) -> Unit) {
+        val docRef = mDb.collection(Constant.LOANS_COLLECTION).document(loanId)
+        docRef.get()
+            .addOnSuccessListener { documentSnapshot ->
+                val loan = documentSnapshot.toObject(Loan::class.java)
+            callback(loan)
+            }
+    }
+
+    /**
+     * This method get a specific loan
+     * @param loanId is the id of the loan to be retrieved
+     * @param callback is a lambda returning a boolean, allowing to choose the following actions
+     */
+    fun editLoan(loan: Loan, oldRecipient: String?, callback: (Boolean) -> Unit) {
+        mDb.runBatch { batch ->
+            batch.set(mDb.collection(Constant.LOANS_COLLECTION).document(loan.id), loan, SetOptions.merge())
+            if (oldRecipient != null) {
+                val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(oldRecipient)
+                val loanerRefNew =
+                    mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id)
+                        .collection(Constant.LOANERS_COLLECTION)
+                        .document(loan.recipient_id)
+                val loanerData = hashMapOf(Constant.NAME to loan.recipient_id)
+
+                when (loan.type) {
+                    LoanType.LENDING.type -> batch.update(loanerRef,LoanType.LENDING.type,FieldValue.increment(-1))
+                    LoanType.BORROWING.type -> batch.update(loanerRef,LoanType.BORROWING.type,FieldValue.increment(-1))
+                    LoanType.DELIVERY.type -> batch.update(loanerRef,LoanType.DELIVERY.type,FieldValue.increment(-1))
+                }
+                batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
+
+                batch.set(loanerRefNew, loanerData, SetOptions.merge())
+                batch.update(loanerRefNew, LoanStatus.PENDING.type, FieldValue.increment(+1))
+                when (loan.type) {
+                    LoanType.LENDING.type -> batch.update(loanerRefNew,LoanType.LENDING.type,FieldValue.increment(+1))
+                    LoanType.BORROWING.type -> batch.update(loanerRefNew,LoanType.BORROWING.type,FieldValue.increment(+1))
+                    LoanType.DELIVERY.type -> batch.update(loanerRefNew,LoanType.DELIVERY.type,FieldValue.increment(+1))
+                }
+            }
+        }
+            .addOnSuccessListener { document -> callback(true)}
+            .addOnFailureListener { exception -> callback(false)
+            }
     }
 
     /**
@@ -118,6 +170,12 @@ class LoanHelper {
         }
     }
 
+    /**
+     * This method undeletes the loan
+     * @param loan is a Loan object
+     * @param points is the number of points previously attributed for this loan
+     * @param callback is a lambda returning a boolean, allowing to choose the following actions
+     */
     fun undeleteLoan(loan: Loan, points: Long, callback: (Boolean) -> Unit) {
         val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(loan.id)
         val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION)
@@ -142,7 +200,11 @@ class LoanHelper {
         }
     }
 
-
+    /**
+     * This method gets the product names of the loans owned by the user
+     * @param userId is the id of the user
+     * @param callback is a lambda returning a boolean, allowing to choose the following actions
+     */
     fun getLoanNames(userId: String, callback: (Boolean, MutableList<String>?) -> Unit) {
         val loanRef = mDb.collection(Constant.LOANS_COLLECTION)
         loanRef.whereEqualTo(Constant.REQUESTOR_ID, userId)

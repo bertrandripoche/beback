@@ -19,6 +19,7 @@ import com.depuisletemps.beback.model.api.LoanHelper
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
+import com.depuisletemps.beback.model.api.LoanerHelper
 import com.depuisletemps.beback.view.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.NotificationManagement
 import com.depuisletemps.beback.utils.Constant
@@ -30,6 +31,7 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.SetOptions
 import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
+import kotlinx.android.synthetic.main.activity_filter.*
 import kotlinx.android.synthetic.main.activity_loan_detail.*
 import kotlinx.android.synthetic.main.activity_loan_detail.loan_due_date
 import kotlinx.android.synthetic.main.activity_loan_detail.loan_due_date_title
@@ -122,12 +124,8 @@ class LoanDetailActivity: BaseActivity() {
 
     private fun configureButtons() {
         mBtnEdit.setOnClickListener{
-            if (isFormValid())
-                editFirestoreLoan()
-            else {
-                Toast.makeText(applicationContext, R.string.invalid_edit_form, Toast.LENGTH_LONG)
-                    .show()
-            }
+            if (isFormValid()) editFirestoreLoan()
+            else  Toast.makeText(applicationContext, R.string.invalid_edit_form, Toast.LENGTH_LONG).show()
         }
 
         setButtonOnClickListener(notif_d_day)
@@ -272,36 +270,26 @@ class LoanDetailActivity: BaseActivity() {
             val nameToPopulate = arrayListOf<String>()
 
             runWithPermissions(Manifest.permission.READ_CONTACTS) {
-                val phones = contentResolver.query(
-                    ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                    null,
-                    null,
-                    null,
-                    ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC"
-                )
+                val phones = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,null,null,ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC")
                 while (phones!!.moveToNext()) {
-                    val name =
-                        phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                    val name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
                     if (!nameToPopulate.contains(name)) nameToPopulate.add(name)
                 }
 
-                val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(mUser.uid)
-                    .collection(Constant.LOANERS_COLLECTION)
-                loanerRef
-                    .get()
-                    .addOnSuccessListener { result ->
-                        for (document in result) nameToPopulate.add(document.data.getValue(Constant.NAME).toString())
-
-                        val loanRecipientNamesListAdapter = ArrayAdapter<String>(
-                            this,
-                            android.R.layout.simple_dropdown_item_1line, nameToPopulate
-                        )
-                        loan_recipient.setAdapter(loanRecipientNamesListAdapter)
-                        loan_recipient.threshold = 1
+                val loanerHelper = LoanerHelper()
+                loanerHelper.getLoanersNames(mUser.uid) { result, names ->
+                    if (result) {
+                        if (names!!.isNotEmpty()) {
+                            for (name in names)
+                                if (!nameToPopulate.contains(name)) nameToPopulate.add(name)
+                            val loanRecipientNamesListAdapter = ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line,nameToPopulate)
+                            loan_recipient.setAdapter(loanRecipientNamesListAdapter)
+                            loan_recipient.threshold = 1
+                        }
+                    } else {
+                        Log.d(TAG, getString(R.string.error_getting_docs), null)
                     }
-                    .addOnFailureListener { exception ->
-                        Log.d(TAG, getString(R.string.error_getting_docs), exception)
-                    }
+                }
             }
         }
     }
@@ -357,21 +345,18 @@ class LoanDetailActivity: BaseActivity() {
     private fun getLoan() {
         val i = intent
         mLoanId = i.extras?.getString(Constant.LOAN_ID) ?: ""
-        val docRef = mDb.collection(Constant.LOANS_COLLECTION).document(mLoanId)
-        docRef.get()
-            .addOnSuccessListener { documentSnapshot ->
-                mLoan = documentSnapshot.toObject(Loan::class.java)
-
-                mLoan?.let {
-                    mProductCategory = mLoan!!.product_category
-                    mWhat = mLoan!!.product
-                    mWho = mLoan!!.recipient_id
-                    mDue = getStringFromDate(mLoan!!.due_date?.toDate())
-                    mNotif = mLoan!!.notif
-                }
-
-                configureScreen(mLoan)
+        val loanHelper = LoanHelper()
+        loanHelper.getLoan(mLoanId) {loan ->
+            loan?.let {
+                mLoan = loan
+                mProductCategory = loan.product_category
+                mWhat = loan.product
+                mWho = loan.recipient_id
+                mDue = getStringFromDate(loan.due_date?.toDate())
+                mNotif = loan.notif
             }
+            configureScreen(loan)
+        }
     }
 
     /**
@@ -464,12 +449,11 @@ class LoanDetailActivity: BaseActivity() {
     }
 
     /**
-     * This method set a due date
+     * This method set a notif date
      */
     private fun setNotifDate(date: String) {
         loan_notif_date.text = date
-        if ((loan_notif_date.text == mNotif && loan_due_date.text == mDue) || (loan_notif_date.text == mNotif && loan_due_date.text == "" && mDue == Constant.FAR_AWAY_DATE))
-            loan_notif_date.setTextColor(greyColor)
+        if (loan_notif_date.text == mNotif) loan_notif_date.setTextColor(greyColor)
         else loan_notif_date.setTextColor(blackColor)
         loan_notif_date.setBackgroundColor(blueColor)
         mBtnCancelNotif.visibility = View.VISIBLE
@@ -552,10 +536,8 @@ class LoanDetailActivity: BaseActivity() {
     * This method edits a loan entry in the Firebase database "loans" collection
     */
     private fun editFirestoreLoan(){
-        val categories: Array<String> =
-            this.resources.getStringArray(R.array.product_category)
-        val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(mLoan!!.id)
-        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(mLoan!!.requestor_id).collection(Constant.LOANERS_COLLECTION).document(mLoan!!.recipient_id)
+        val newLoan = mLoan!!
+        val categories: Array<String> = this.resources.getStringArray(R.array.product_category)
 
         val currentNotif: String? = when {
             notif_d_day.isChecked -> Utils.getStringFromLocalDate(getNotifDate())
@@ -565,48 +547,29 @@ class LoanDetailActivity: BaseActivity() {
             else -> null
         }
 
-        mDb.runBatch { batch ->
-            if (categories[spinner_loan_categories.selectedItemPosition] != mProductCategory) batch.update(loanRef, "product_category", categories[spinner_loan_categories.selectedItemPosition])
-            if (!loan_product.text.toString().equals("")) batch.update(loanRef, Constant.PRODUCT, loan_product.text.toString())
-            if (!loan_recipient.text.toString().equals("")) {
-                val loanerRefNew = mDb.collection(Constant.USERS_COLLECTION).document(mLoan!!.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan_recipient.text.toString())
-                val loanerData = hashMapOf(Constant.NAME to loan_recipient.text.toString())
+        if (categories[spinner_loan_categories.selectedItemPosition] != mProductCategory) newLoan.product_category = categories[spinner_loan_categories.selectedItemPosition]
+        if (loan_recipient.text.toString() != mWho) newLoan.recipient_id = loan_recipient.text.toString()
+        if (loan_product.text.toString() != mWhat) newLoan.product= loan_product.text.toString()
+        if (loan_due_date.text.toString() == "") newLoan.due_date = Utils.getTimeStampFromString(Constant.FAR_AWAY_DATE)
+        if (loan_due_date.text.toString() != "") newLoan.due_date = Utils.getTimeStampFromString(loan_due_date.text.toString())
+        if (loan_due_date.text.toString() != mDue || (currentNotif != mNotif || loan_due_date.text.toString() != mDue)) newLoan.notif = currentNotif
+        val oldRecipient = when (loan_recipient.text.toString()) {
+                mWho -> null
+                else -> mWho
+        }
 
-                if (!loan_due_date.text.toString().equals(mDue) || (currentNotif != mNotif || loan_due_date.text.toString() != mDue)) {
-                    batch.update(loanRef, Constant.NOTIF, currentNotif)
+        val loanHelper = LoanHelper()
+        loanHelper.editLoan(newLoan,oldRecipient) {result ->
+            if (result) {
+                displayCustomToast(getString(R.string.saved),R.drawable.bubble_3,this)
+                if (currentNotif != mNotif) {
+                    NotificationManagement.stopAlarm(mLoan!!.id, mLoan!!.product, mLoan!!.type, mLoan!!.recipient_id, this, this)
+                    NotificationManagement.createNotification(newLoan.id, newLoan.product, newLoan.type, newLoan.recipient_id, getNotifDate(), this, this)
                 }
-
-                batch.update(loanRef, Constant.RECIPIENT_ID, loan_recipient.text.toString())
-                when (mLoan!!.type) {
-                    LoanType.LENDING.type -> batch.update(loanerRef, LoanType.LENDING.type, FieldValue.increment(-1))
-                    LoanType.BORROWING.type -> batch.update(loanerRef, LoanType.BORROWING.type, FieldValue.increment(-1))
-                    LoanType.DELIVERY.type -> batch.update(loanerRef, LoanType.DELIVERY.type, FieldValue.increment(-1))
-                }
-                batch.update(loanerRef, LoanStatus.PENDING.type, FieldValue.increment(-1))
-
-                batch.set(loanerRefNew,loanerData, SetOptions.merge())
-                batch.update(loanerRefNew, LoanStatus.PENDING.type, FieldValue.increment(+1))
-                when (mLoan!!.type) {
-                    LoanType.LENDING.type -> batch.update(loanerRefNew, LoanType.LENDING.type, FieldValue.increment(+1))
-                    LoanType.BORROWING.type -> batch.update(loanerRefNew, LoanType.BORROWING.type, FieldValue.increment(+1))
-                    LoanType.DELIVERY.type -> batch.update(loanerRefNew, LoanType.DELIVERY.type, FieldValue.increment(+1))
-                }
+                startLoanPagerActivity(Constant.STANDARD)
+            } else {
+                displayCustomToast(getString(R.string.transaction_failure), R.drawable.bubble_3, this)
             }
-            if (loan_due_date.text.toString().equals("")) batch.update(loanRef,Constant.DUE_DATE, Utils.getTimeStampFromString(Constant.FAR_AWAY_DATE))
-            if (!loan_due_date.text.toString().equals("")) batch.update(loanRef, Constant.DUE_DATE, Utils.getTimeStampFromString(loan_due_date.text.toString()))
-        }.addOnCompleteListener {
-            displayCustomToast(
-                getString(R.string.saved),
-                R.drawable.bubble_3,
-                this
-            )
-            if (!loan_due_date.text.toString().equals(mDue) || (currentNotif != mNotif || loan_due_date.text.toString() != mDue)) {
-                NotificationManagement.stopAlarm(mLoan!!.id, mLoan!!.product, mLoan!!.type, mLoan!!.recipient_id, this, this)
-                NotificationManagement.createNotification(mLoan!!.id, mLoan!!.product, mLoan!!.type, mLoan!!.recipient_id, getNotifDate(), this, this)
-            }
-            startLoanPagerActivity(Constant.STANDARD)
-        }.addOnFailureListener { e ->
-            Log.w(TAG, getString(R.string.transaction_failure), e)
         }
     }
 
@@ -639,25 +602,21 @@ class LoanDetailActivity: BaseActivity() {
                     .setAction(getString(R.string.undo)) {
                         undeleteTheLoan(loan, points)
                     }.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
-                        override fun onShown(transientBottomBar: Snackbar?) {
-                        }
-
+                        override fun onShown(transientBottomBar: Snackbar?) {}
                         override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                            if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
-                                startLoanPagerActivity(getString(R.string.archive))
-                            }
+                            if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) startLoanPagerActivity(getString(R.string.archive))
                         }
                     }).show()
             } else {
                 displayCustomToast(getString(R.string.error_adding_loan), R.drawable.bubble_3, this)
             }
         }
-
     }
 
     /**
      * This method undeletes the previously detetedItem
      * @param loan is a Loan representing the loan object
+     *  @param points is the number of points affected to the deleted loan
      */
     private fun undeleteTheLoan(loan: Loan, points: Long) {
         val loanHelper = LoanHelper()
@@ -734,26 +693,4 @@ class LoanDetailActivity: BaseActivity() {
             setFloatBtnState(isFormValid(),mBtnEdit, this)
         })
     }
-
-//    override fun displayToast(message: String, bubble: Int) {
-//        displayCustomToast(message, bubble, this)
-//    }
-
-//    override fun displaySnackbar(message: String, loan: Loan, bubble: Int, points: Long, action: LoanAction) {
-//        Snackbar.make(activity_loan_detail, loan.product, Snackbar.LENGTH_LONG)
-//            .setAction(getString(R.string.undo)) {
-//                if (action == LoanAction.UNDELETE) undeleteTheLoan(loan, points)
-//                else rearchiveTheLoan(loan)
-//            }.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
-//                override fun onShown(transientBottomBar: Snackbar?) {
-//                }
-//
-//                override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-//                    if (event == Snackbar.Callback.DISMISS_EVENT_TIMEOUT) {
-//                        startLoanPagerActivity(getString(R.string.archive))
-//                    }
-//                }
-//            }).show()
-//    }
-
 }

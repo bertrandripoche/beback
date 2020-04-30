@@ -98,8 +98,10 @@ object Utils {
      * @return a String which represents the date
      */
     fun getStringFromDate(date: Date?): String {
-        val df: DateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
-        return df.format(date)
+        return if (date != null) {
+            val df: DateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+            df.format(date)
+        } else return Constant.FAR_AWAY_DATE
     }
 
     /**
