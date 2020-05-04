@@ -205,24 +205,23 @@ open abstract class BaseActivity: AppCompatActivity() {
         setButtonTint(btn, ColorStateList.valueOf(ContextCompat.getColor(context,R.color.light_grey)) )
     }
 
-//    /**
-//     * This method allows to set a listener on a button
-//     * @param btn being the button on which to set the listener
-//     */
-//    private fun setButtonOnClickListener(btn: ToggleButton, setFloat: Boolean) {
-//        btn.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-//            if (isChecked) {
-//                btn.setBackgroundColor(yellowColor)
-//                if (btn != notif_d_day && notif_d_day.isChecked) unsetToggle(notif_d_day)
-//                if (btn != notif_three_days && notif_three_days.isChecked) unsetToggle(notif_three_days)
-//                if (btn != notif_one_week && notif_one_week.isChecked) unsetToggle(notif_one_week)
-//            } else {
-//                btn.setBackgroundColor(lightGreyColor)
-//            }
-//            if (setFloat) setEditSubmitFloatBtnState()
-//        })
-//    }
-//
+    /**
+     * This method allows to set a listener on a button
+     * @param btn being the button on which to set the listener
+     */
+    protected open fun setButtonOnClickListener(btn: ToggleButton) {
+        btn.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                btn.setBackgroundColor(yellowColor)
+                if (btn != notif_d_day && notif_d_day.isChecked) unsetToggle(notif_d_day)
+                if (btn != notif_three_days && notif_three_days.isChecked) unsetToggle(
+                    notif_three_days
+                )
+                if (btn != notif_one_week && notif_one_week.isChecked) unsetToggle(notif_one_week)
+            } else btn.setBackgroundColor(lightGreyColor)
+        })
+    }
+
     /**
      * This method enable/disable the edit button
      */

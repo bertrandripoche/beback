@@ -36,6 +36,7 @@ import kotlinx.android.synthetic.main.activity_add_loan.notif_one_week
 import kotlinx.android.synthetic.main.activity_add_loan.notif_three_days
 import kotlinx.android.synthetic.main.activity_add_loan.spinner_loan_categories
 import kotlinx.android.synthetic.main.activity_add_loan.toggle_btns
+import kotlinx.android.synthetic.main.activity_loan_detail.*
 import org.joda.time.LocalDate
 import java.text.DecimalFormat
 
@@ -103,32 +104,8 @@ class AddLoanActivity: BaseActivity() {
         if (mUser != null) {
             var nameToPopulate = arrayListOf<String>()
 
-            runWithPermissions(Manifest.permission.READ_CONTACTS) {
-                val phones = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,null,null,null,ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + " ASC")
-                while (phones!!.moveToNext()) {
-                    val name = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
-                    if (!nameToPopulate.contains(name)) nameToPopulate.add(name)
-                }
-
-                val loanerHelper = LoanerHelper()
-                loanerHelper.getLoanersNames(mUser.uid) { result, names ->
-                    if (result) {
-                        if (!names!!.isEmpty())
-                            for (name in names) {
-                                nameToPopulate.add(name)
-                            }
-                        val loanRecipientNamesListAdapter = ArrayAdapter<String>(
-                            this,
-                            android.R.layout.simple_dropdown_item_1line,
-                            nameToPopulate
-                        )
-                        loan_recipient.setAdapter(loanRecipientNamesListAdapter)
-                        loan_recipient.threshold = 1
-                    } else {
-                        Log.d(TAG, getString(R.string.error_getting_docs), null)
-                    }
-                }
-            }
+            val autocompletionField = AutocompletionField(this)
+            autocompletionField.getAutocompletionListFromPhoneContactsAndFirebase(mUser.uid, nameToPopulate, loan_recipient)
         }
 
         disableFloatButton(mBtnSubmit, this)
@@ -328,19 +305,30 @@ class AddLoanActivity: BaseActivity() {
     private fun createFirestoreLoan(){
         val user: FirebaseUser? = getCurrentUser()
 
+        val loan = createLoanObjectFromUserInput(user)
+
+        val loanHelper = LoanHelper()
+        loanHelper.createLoan(loan) {result, loanId ->
+            if (result) {
+                displayCustomToast(getString(R.string.saved), R.drawable.bubble_3, this)
+                loan.notif?.let{NotificationManagement.createNotification(loanId, loan.product, mType, loan.recipient_id, getNotifDate(), this, this)}
+                startLoanPagerActivity(Constant.STANDARD)
+            } else {
+                displayCustomToast(getString(R.string.error_adding_loan), R.drawable.bubble_3, this)
+            }
+        }
+    }
+
+    private fun createLoanObjectFromUserInput(user: FirebaseUser?): Loan {
         val requestorId:String = user?.uid ?: ""
         val recipientId:String = StringUtils.capitalizeWords(loan_recipient.text.toString(), FieldType.NAME)
-
         val product:String = StringUtils.capitalizeWords(loan_product.text.toString(), FieldType.PRODUCT)
-        val categories: Array<String> =
-            this.resources.getStringArray(R.array.product_category)
-
+        val categories: Array<String> = this.resources.getStringArray(R.array.product_category)
         val productCategory:String = categories[spinner_loan_categories.selectedItemPosition]
         val creationDate = Timestamp.now()
         var dueDate = loan_due_date.text.toString()
         if (dueDate == "") dueDate = Constant.FAR_AWAY_DATE
         val returnedDate = null
-
         val notif: String? = when {
             notif_d_day.isChecked -> Utils.getStringFromLocalDate(getNotifDate())
             notif_three_days.isChecked -> Utils.getStringFromLocalDate(getNotifDate())
@@ -348,18 +336,7 @@ class AddLoanActivity: BaseActivity() {
             loan_notif_date.text.toString() != "" -> loan_notif_date.text.toString()
             else -> null
         }
-        val loan = Loan("",requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), notif, returnedDate)
-
-        val loanHelper = LoanHelper()
-        loanHelper.createLoan(loan) {result, loanId ->
-            if (result) {
-                displayCustomToast(getString(R.string.saved), R.drawable.bubble_3, this)
-                notif?.let{NotificationManagement.createNotification(loanId, product, mType, recipientId, getNotifDate(), this, this)}
-                startLoanPagerActivity(Constant.STANDARD)
-            } else {
-                displayCustomToast(getString(R.string.error_adding_loan), R.drawable.bubble_3, this)
-            }
-        }
+        return Loan("",requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), notif, returnedDate)
     }
 
     private fun getNotifDate(): LocalDate {
@@ -373,22 +350,4 @@ class AddLoanActivity: BaseActivity() {
             }
         }
     }
-
-    /**
-     * This method allows to set a listener on a button
-     * @param btn being the button on which to set the listener
-     */
-    private fun setButtonOnClickListener(btn: ToggleButton) {
-        btn.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                btn.setBackgroundColor(yellowColor)
-                if (btn != notif_d_day && notif_d_day.isChecked) unsetToggle(notif_d_day)
-                if (btn != notif_three_days && notif_three_days.isChecked) unsetToggle(notif_three_days)
-                if (btn != notif_one_week && notif_one_week.isChecked) unsetToggle(notif_one_week)
-            } else {
-                btn.setBackgroundColor(lightGreyColor)
-            }
-        })
-    }
-
 }

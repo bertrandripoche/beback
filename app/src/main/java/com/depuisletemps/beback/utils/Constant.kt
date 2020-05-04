@@ -22,6 +22,8 @@ class Constant {
 
         const val SIDE = "Side"
 
+        const val AUTOCOMPLETIONCLASS = "AutocompletionClass"
+
         const val ID = "id"
         const val NAME = "name"
         const val LOAN_ID = "loanId"
@@ -32,9 +34,6 @@ class Constant {
         const val DUE_DATE_SET = "dueDateSet"
         const val NOTIF = "notif"
         const val NOTIF_DATE = "notif_date"
-        const val NOTIF_D_DAY = "notif_d_day"
-        const val NOTIF_THREE_DAYS = "notif_three_days"
-        const val NOTIF_ONE_WEEK = "notif_one_week"
         const val FAR_AWAY_DATE = "01/01/3000"
         const val FAR_PAST_DATE = "01/01/1970"
 
@@ -55,9 +54,6 @@ class Constant {
         const val FILTER_PRODUCT = "filterProduct"
         const val FILTER_RECIPIENT = "filterRecipient"
         const val FILTER_TYPE = "filterType"
-        const val FILTER_BORROWING = "filterBorrowing"
-        const val FILTER_LENDING = "filterLending"
-        const val FILTER_DELIVERY = "filterDelivery"
 
         const val MFIRST = "mFirst"
         const val MLAST = "mLast"
@@ -66,8 +62,6 @@ class Constant {
         const val LAST = "last"
         const val PSEUDO = "pseudo"
         const val MAIL = "mail"
-        const val FIRSTNAME = "firstname"
-        const val LASTNAME = "lastname"
 
         const val MWHAT = "mWhat"
         const val MWHO = "mWho"

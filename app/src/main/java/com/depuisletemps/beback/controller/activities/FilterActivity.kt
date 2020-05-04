@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.api.LoanHelper
 import com.depuisletemps.beback.model.api.LoanerHelper
+import com.depuisletemps.beback.utils.AutocompletionField
 import com.depuisletemps.beback.utils.Constant
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_add_loan.*
@@ -57,36 +58,13 @@ class FilterActivity(): BaseActivity() {
 
     private fun configureAutoCompleteFields() {
         if (mUser != null) {
-            var nameToPopulate = arrayListOf<String>()
+            val autocompletionField = AutocompletionField(this)
 
-            val loanerHelper = LoanerHelper()
-            loanerHelper.getLoanersNames(mUser.uid) { result, names ->
-                if (result) {
-                    if (!names!!.isEmpty()) {
-                        for (name in names) nameToPopulate.add(name)
-                        val filterRecipientNamesListAdapter = ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line,nameToPopulate)
-                        filter_recipient.setAdapter(filterRecipientNamesListAdapter)
-                        filter_recipient.threshold = 1
-                    }
-                } else {
-                    Log.d(TAG, getString(R.string.error_getting_docs), null)
-                }
-            }
+            var nameToPopulate = arrayListOf<String>()
+            autocompletionField.getAutocompletionNameListFromFirebase(mUser.uid, nameToPopulate, filter_recipient)
 
             var productToPopulate = arrayListOf<String>()
-            val loanHelper = LoanHelper()
-            loanHelper.getLoanNames(mUser.uid) {result, names ->
-                if (result) {
-                    if (!names!!.isEmpty()) {
-                        for (name in names) productToPopulate.add(name)
-                        val filterProductNamesListAdapter = ArrayAdapter<String>(this,android.R.layout.simple_dropdown_item_1line,productToPopulate)
-                        filter_product.setAdapter(filterProductNamesListAdapter)
-                        filter_product.threshold = 1
-                    }
-                } else {
-                    Log.d(TAG, getString(R.string.error_getting_docs), null)
-                }
-            }
+            autocompletionField.getAutocompletionProductListFromFirebase(mUser.uid, productToPopulate, filter_product)
         }
     }
 
@@ -103,9 +81,9 @@ class FilterActivity(): BaseActivity() {
             }
         })
 
-        setButtonOnClickListener(toggle_lending)
-        setButtonOnClickListener(toggle_borrowing)
-        setButtonOnClickListener(toggle_delivery)
+        setToggleButtonOnClickListener(toggle_lending)
+        setToggleButtonOnClickListener(toggle_borrowing)
+        setToggleButtonOnClickListener(toggle_delivery)
 
         filter_product.setOnTouchListener(OnTouchListener { v, event ->
             filter_product.showDropDown()
@@ -124,7 +102,7 @@ class FilterActivity(): BaseActivity() {
      * This method allows to set a listener on a button
      * @param btn being the button on which to set the listener
      */
-    private fun setButtonOnClickListener(btn: ToggleButton) {
+    fun setToggleButtonOnClickListener(btn: ToggleButton) {
         btn.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 btn.setBackgroundResource(R.drawable.round_secondary_color_button)
@@ -134,7 +112,7 @@ class FilterActivity(): BaseActivity() {
             } else {
                 btn.setBackgroundResource(R.drawable.round_grey_color_button)
             }
-            setFloatBtnState(isFormValid(),mBtnSubmit, this)
+        setFloatBtnState(isFormValid(),mBtnSubmit, this)
         })
     }
 

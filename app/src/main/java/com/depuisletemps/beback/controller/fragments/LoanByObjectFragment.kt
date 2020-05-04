@@ -94,15 +94,7 @@ class LoanByObjectFragment: BaseFragment() {
                         else returnMessage = getString(R.string.returned)
                     }
 
-                    RecyclerViewSwipeDecorator.Builder(
-                        c,
-                        recyclerView,
-                        viewHolder,
-                        dX,
-                        dY,
-                        actionState,
-                        isCurrentlyActive
-                    )
+                    RecyclerViewSwipeDecorator.Builder(c,recyclerView,viewHolder,dX,dY,actionState,isCurrentlyActive)
                         .addSwipeLeftActionIcon(R.drawable.ic_archive_color)
                         .addSwipeLeftBackgroundColor(
                             ContextCompat.getColor(
@@ -175,7 +167,7 @@ class LoanByObjectFragment: BaseFragment() {
     }
 
     /**
-     * This method indicates when the adapter needs to start listening
+     * This method indicates when the adapter needs to start listening for Firestore
      */
     override fun onStart() {
         super.onStart()
@@ -183,7 +175,7 @@ class LoanByObjectFragment: BaseFragment() {
     }
 
     /**
-     * This method indicates when the adapter needs to stop listening
+     * This method indicates when the adapter needs to stop listening for Firestore
      */
     override fun onStop() {
         super.onStop()
