@@ -110,6 +110,10 @@
     <string name="credits_author">Author : Bertrand Ripoche\nMail : pafacil@gmail.com\n(Please specify "BeBack app feedback" as subject)</string>
     <string name="credits_illustration">Icons obtained from\nhttps://www.flaticon.com/authors/freepik\nhttps://www.flaticon.com/authors/vectors-market\nThanks !</string>
     <string name="thanks">Thanks for using the app !</string>
+    <string name="error_adding_loan">Oops, something went wrong</string>
+    <string name="error_undeleting_loan">Ouch, something went terribly wrong !</string>
+    <string name="invalid_filter">Hummm, what do you want me to filter…\nif there is no filter</string>
+    <string name="delivery_for">Delivery…</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">
@@ -129,6 +133,7 @@
         <item>sport</item>
         <item>ticket</item>
         <item>tool</item>
+        <item>vehicle</item>
     </string-array>
 
     <string name="miscelleanous">Miscelleanous</string>
@@ -147,10 +152,7 @@
     <string name="sport">Sport</string>
     <string name="ticket">Ticket</string>
     <string name="tool">Tools</string>
-    <string name="error_adding_loan">Oops, something went wrong</string>
-    <string name="error_undeleting_loan">Ouch, something went terribly wrong !</string>
-    <string name="invalid_filter">Hummm, what do you want me to filter…\nif there is no filter</string>
-    <string name="delivery_for">Delivery…</string>
+    <string name="vehicle">Vehicle</string>
 
     <array name="product_category_icon">
         <item>@drawable/ic_miscellaneous</item>
@@ -169,6 +171,7 @@
         <item>@drawable/ic_sport</item>
         <item>@drawable/ic_ticket</item>
         <item>@drawable/ic_tools</item>
+        <item>@drawable/ic_vehicle</item>
     </array>
 
 </resources>

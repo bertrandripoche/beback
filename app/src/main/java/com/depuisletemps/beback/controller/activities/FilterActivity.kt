@@ -1,32 +1,22 @@
 package com.depuisletemps.beback.controller.activities
 
 import android.content.Intent
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.View.OnTouchListener
-import android.widget.ArrayAdapter
 import android.widget.CompoundButton
 import android.widget.Toast
 import android.widget.ToggleButton
-import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
-import com.depuisletemps.beback.model.api.LoanHelper
-import com.depuisletemps.beback.model.api.LoanerHelper
 import com.depuisletemps.beback.utils.AutocompletionField
 import com.depuisletemps.beback.utils.Constant
 import com.google.firebase.auth.FirebaseUser
-import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.activity_add_loan.mBtnSubmit
 import kotlinx.android.synthetic.main.activity_filter.*
-import kotlinx.android.synthetic.main.activity_loan_detail.*
-import kotlinx.android.synthetic.main.activity_loan_detail.loan_recipient
 
-
-class FilterActivity(): BaseActivity() {
+class FilterActivity: BaseFormActivity() {
 
     private val TAG = "FilterActivity"
     private val mUser: FirebaseUser? = getCurrentUser()
@@ -141,8 +131,8 @@ class FilterActivity(): BaseActivity() {
      * Method to check if the form should be considered valid
      * @return a Boolean which states if the form is valid
      */
-    private fun isFormValid(): Boolean = !filter_product.text.toString().equals("")
-            || !filter_recipient.text.toString().equals("")
+    private fun isFormValid(): Boolean = filter_product.text.toString() != ("")
+            || filter_recipient.text.toString() != ("")
             || toggle_lending.isChecked
             || toggle_borrowing.isChecked
             || toggle_delivery.isChecked
@@ -155,7 +145,7 @@ class FilterActivity(): BaseActivity() {
 
         val filterProduct: String? = when {
             filter_product.text.toString() != "" -> filter_product.text.toString()
-                else -> null
+            else -> null
         }
         val filterRecipient: String? = when {
             filter_recipient.text.toString() != "" -> filter_recipient.text.toString()

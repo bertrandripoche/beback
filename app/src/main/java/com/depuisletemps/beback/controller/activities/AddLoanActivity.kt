@@ -1,12 +1,9 @@
 package com.depuisletemps.beback.controller.activities
 
-import android.Manifest
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.*
 import com.depuisletemps.beback.R
@@ -14,13 +11,11 @@ import com.depuisletemps.beback.model.api.LoanHelper
 import com.depuisletemps.beback.model.FieldType
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanType
-import com.depuisletemps.beback.model.api.LoanerHelper
 import com.depuisletemps.beback.view.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.*
 import com.depuisletemps.beback.utils.Utils.getTimeStampFromString
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser
-import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.activity_add_loan.loan_due_date
 import kotlinx.android.synthetic.main.activity_add_loan.loan_notif_date
@@ -36,11 +31,10 @@ import kotlinx.android.synthetic.main.activity_add_loan.notif_one_week
 import kotlinx.android.synthetic.main.activity_add_loan.notif_three_days
 import kotlinx.android.synthetic.main.activity_add_loan.spinner_loan_categories
 import kotlinx.android.synthetic.main.activity_add_loan.toggle_btns
-import kotlinx.android.synthetic.main.activity_loan_detail.*
 import org.joda.time.LocalDate
 import java.text.DecimalFormat
 
-class AddLoanActivity: BaseActivity() {
+class AddLoanActivity: BaseFormActivity() {
     private val TAG = "AddLoanActivity"
     lateinit var mType: String
     private val mUser: FirebaseUser? = getCurrentUser()
@@ -77,21 +71,21 @@ class AddLoanActivity: BaseActivity() {
     private fun configureScreenFromType() {
         mType = getLoanType()
         when {
-            mType.equals(LoanType.LENDING.type) -> {
+            mType == (LoanType.LENDING.type) -> {
                 loan_type.setBackgroundColor(greenColor)
                 loan_type_pic.setBackgroundColor(greenColor)
                 loan_recipient_title.text = getString(R.string.whom)
                 loan_type.text = getString(R.string.i_lend)
                 loan_type_pic.setImageResource(R.drawable.ic_loan_black)
             }
-            mType.equals(LoanType.BORROWING.type) -> {
+            mType == (LoanType.BORROWING.type) -> {
                 loan_type.setBackgroundColor(redColor)
                 loan_type_pic.setBackgroundColor(redColor)
                 loan_recipient_title.text = getString(R.string.who)
                 loan_type.text = getString(R.string.i_borrow)
                 loan_type_pic.setImageResource(R.drawable.ic_borrowing_black)
             }
-            mType.equals(LoanType.DELIVERY.type) -> {
+            mType == (LoanType.DELIVERY.type) -> {
                 loan_type.setBackgroundColor(yellowColor)
                 loan_type_pic.setBackgroundColor(yellowColor)
                 loan_recipient_title.text = getString(R.string.who)
@@ -296,7 +290,7 @@ class AddLoanActivity: BaseActivity() {
      * @return a Boolean which states if the form is valid
      */
     fun isFormValid(): Boolean {
-        return !loan_product.text.toString().equals("") &&  !loan_recipient.text.toString().equals("")
+        return loan_product.text.toString() != ("") &&  loan_recipient.text.toString() != ("")
     }
 
     /**

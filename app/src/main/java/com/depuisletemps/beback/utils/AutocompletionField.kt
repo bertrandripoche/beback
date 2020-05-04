@@ -11,8 +11,6 @@ import com.depuisletemps.beback.model.api.LoanHelper
 import com.depuisletemps.beback.model.api.LoanerHelper
 import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 
-import kotlinx.android.synthetic.main.activity_loan_detail.*
-
 class AutocompletionField(val context: Context) {
 
     fun getAutocompletionListFromPhoneContactsAndFirebase(userId: String, list: ArrayList<String>, textView: AutoCompleteTextView) {
@@ -49,9 +47,7 @@ class AutocompletionField(val context: Context) {
                     textView.setAdapter(loanRecipientNamesListAdapter)
                     textView.threshold = 1
                 }
-            } else {
-                Log.d(Constant.AUTOCOMPLETIONCLASS, context.resources.getString(com.depuisletemps.beback.R.string.error_getting_docs), null)
-            }
+            } else Log.d(Constant.AUTOCOMPLETIONCLASS, context.resources.getString(com.depuisletemps.beback.R.string.error_getting_docs), null)
         }
     }
 
@@ -70,9 +66,7 @@ class AutocompletionField(val context: Context) {
                     textView.setAdapter(loanRecipientNamesListAdapter)
                     textView.threshold = 1
                 }
-            } else {
-                Log.d(Constant.AUTOCOMPLETIONCLASS, context.resources.getString(com.depuisletemps.beback.R.string.error_getting_docs), null)
-            }
+            } else Log.d(Constant.AUTOCOMPLETIONCLASS, context.resources.getString(com.depuisletemps.beback.R.string.error_getting_docs), null)
         }
     }
 }

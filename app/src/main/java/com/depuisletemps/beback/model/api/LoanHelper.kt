@@ -5,7 +5,6 @@ import com.depuisletemps.beback.controller.activities.LoanPagerActivity
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanStatus
 import com.depuisletemps.beback.model.LoanType
-import com.depuisletemps.beback.model.Loaner
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.getTimeStampFromString

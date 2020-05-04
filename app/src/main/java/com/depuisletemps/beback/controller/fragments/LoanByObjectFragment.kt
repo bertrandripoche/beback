@@ -89,7 +89,7 @@ class LoanByObjectFragment: BaseFragment() {
                     var returnMessage: String = ""
                     if (position >= 0) {
                         val loan: Loan = mAdapter.getItem(position)
-                        if (loan.type.equals(LoanType.DELIVERY.type)) returnMessage =
+                        if (loan.type == (LoanType.DELIVERY.type)) returnMessage =
                             getString(R.string.received)
                         else returnMessage = getString(R.string.returned)
                     }
@@ -191,7 +191,7 @@ class LoanByObjectFragment: BaseFragment() {
         val loanHelper = LoanHelper()
         loanHelper.archiveLoan(loan) {result ->
             if (result) {
-                if (loan.type.equals(LoanType.DELIVERY.type)) (activity as LoanPagerActivity).displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1, context!!)
+                if (loan.type == (LoanType.DELIVERY.type)) (activity as LoanPagerActivity).displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1, context!!)
                 else (activity as LoanPagerActivity).displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1, context!!)
                 mAdapter.notifyDataSetChanged()
                 NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id, activity as LoanPagerActivity, context!!)
@@ -213,7 +213,7 @@ class LoanByObjectFragment: BaseFragment() {
         val loanHelper = LoanHelper()
         loanHelper.unarchiveLoan(loan) {result ->
             if (result) {
-                if (loan.type.equals(LoanType.DELIVERY.type)) (activity as LoanPagerActivity).displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2, context!!)
+                if (loan.type == (LoanType.DELIVERY.type)) (activity as LoanPagerActivity).displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2, context!!)
                 else (activity as LoanPagerActivity).displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2, context!!)
                 mAdapter.notifyDataSetChanged()
             } else {

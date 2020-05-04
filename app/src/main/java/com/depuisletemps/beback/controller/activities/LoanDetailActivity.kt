@@ -1,14 +1,11 @@
 package com.depuisletemps.beback.controller.activities
 
-import android.Manifest
 import android.app.DatePickerDialog
 import android.content.res.TypedArray
 import android.graphics.Color
 import android.os.Bundle
-import android.provider.ContactsContract
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -16,7 +13,6 @@ import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.api.LoanHelper
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanType
-import com.depuisletemps.beback.model.api.LoanerHelper
 import com.depuisletemps.beback.utils.AutocompletionField
 import com.depuisletemps.beback.view.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.NotificationManagement
@@ -26,7 +22,6 @@ import com.depuisletemps.beback.utils.Utils.getStringFromDate
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
-import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 import kotlinx.android.synthetic.main.activity_loan_detail.*
 import kotlinx.android.synthetic.main.activity_loan_detail.loan_due_date
 import kotlinx.android.synthetic.main.activity_loan_detail.loan_due_date_title
@@ -48,7 +43,7 @@ import kotlinx.android.synthetic.main.activity_loan_detail.toggle_btns
 import org.joda.time.LocalDate
 import java.text.DecimalFormat
 
-class LoanDetailActivity: BaseActivity() {
+class LoanDetailActivity: BaseFormActivity() {
     private val TAG = "LoanDetailActivity"
     var mWhat:String = ""
     var mWho:String = ""
@@ -162,7 +157,7 @@ class LoanDetailActivity: BaseActivity() {
     /**
      * Method to configure the textWatchers on the fields which requires it
      */
-    fun configureTextWatchers() {
+    private fun configureTextWatchers() {
         loan_product.addTextChangedListener(textWatcher)
         loan_recipient.addTextChangedListener(textWatcher)
     }
@@ -346,7 +341,7 @@ class LoanDetailActivity: BaseActivity() {
             this.resources.getStringArray(R.array.product_category)
 
         if (loan_returned_date == null) {
-            if (!loan_due_date.text.toString().equals(mDue)) loan_due_date.setTextColor(blackColor)
+            if (loan_due_date.text.toString() != (mDue)) loan_due_date.setTextColor(blackColor)
             else loan_due_date.setTextColor(darkGreyColor)
         }
 
@@ -358,9 +353,9 @@ class LoanDetailActivity: BaseActivity() {
             else -> null
         }
 
-        return !loan_product.text.toString().equals(mWhat)
-                || !loan_recipient.text.toString().equals(mWho)
-                || (!loan_due_date.text.toString().equals(mDue) && !loan_due_date.text.toString().equals(""))
+        return loan_product.text.toString() != (mWhat)
+                || loan_recipient.text.toString() != (mWho)
+                || (loan_due_date.text.toString() != (mDue) && loan_due_date.text.toString() != (""))
                 || (mDue != Constant.FAR_AWAY_DATE && loan_due_date.text.toString() == "")
                 || categories[spinner_loan_categories.selectedItemPosition] != mProductCategory
                 || currentNotif != mNotif
@@ -601,7 +596,7 @@ class LoanDetailActivity: BaseActivity() {
         val loanHelper = LoanHelper()
         loanHelper.unarchiveLoan(loan) {result ->
             if (result) {
-                if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2, this)
+                if (loan.type == (LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.not_received_message, loan.product), R.drawable.bubble_2, this)
                 else displayCustomToast(getString(R.string.unarchived_message, loan.product), R.drawable.bubble_2, this)
             } else displayCustomToast(getString(R.string.error_undeleting_loan), R.drawable.bubble_3, this)
         }
@@ -625,7 +620,7 @@ class LoanDetailActivity: BaseActivity() {
         val loanHelper = LoanHelper()
         loanHelper.archiveLoan(loan) {result ->
             if (result) {
-                if (loan.type.equals(LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1, this)
+                if (loan.type == (LoanType.DELIVERY.type)) displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1, this)
                 else displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1, this)
             } else displayCustomToast(getString(R.string.error_undeleting_loan), R.drawable.bubble_3, this)
         }

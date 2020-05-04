@@ -105,6 +105,10 @@
     <string name="credits_author">Auteur : Bertrand Ripoche\nMail : pafacil@gmail.com\n(Merci de préciser "BeBack app feedback" comme sujet)</string>
     <string name="credits_illustration">Icones obtenues depuis\nhttps://www.flaticon.com/authors/freepik\nhttps://www.flaticon.com/authors/vectors-market\nThanks !</string>
     <string name="thanks">Merci d\'utiliser cette app !</string>
+    <string name="error_adding_loan">Oops, ça a pas bien marché</string>
+    <string name="error_undeleting_loan">Ouch, on a eu un petit souci !</string>
+    <string name="invalid_filter">Hummm, y a rien à filtrer…\n</string>
+    <string name="delivery_for">Livraison…</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">
@@ -124,6 +128,7 @@
         <item>tool</item>
         <item>sport</item>
         <item>ticket</item>
+        <item>vehicle</item>
     </string-array>
 
     <string name="miscelleanous">Divers</string>
@@ -142,10 +147,7 @@
     <string name="tool">Outil</string>
     <string name="sport">Sport</string>
     <string name="ticket">Ticket</string>
-    <string name="error_adding_loan">Oops, ça a pas bien marché</string>
-    <string name="error_undeleting_loan">Ouch, on a eu un petit souci !</string>
-    <string name="invalid_filter">Hummm, y a rien à filtrer…\n</string>
-    <string name="delivery_for">Livraison…</string>
+    <string name="vehicle">Véhicule</string>
 
     <array name="product_category_icon">
         <item>@drawable/ic_miscellaneous</item>
@@ -164,6 +166,7 @@
         <item>@drawable/ic_tools</item>
         <item>@drawable/ic_sport</item>
         <item>@drawable/ic_ticket</item>
+        <item>@drawable/ic_vehicle</item>
     </array>
 
 </resources>

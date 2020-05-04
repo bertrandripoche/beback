@@ -39,11 +39,11 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
         product.text = loan.product
         recipient.text = loan.recipient_id
         when {
-            loan.type.equals(LoanType.LENDING.type) -> {
+            loan.type == (LoanType.LENDING.type) -> {
                 loanType.setImageResource(R.drawable.ic_loan)
                 recipient.setTextColor(green)
             }
-            loan.type.equals(LoanType.BORROWING.type) -> {
+            loan.type == (LoanType.BORROWING.type) -> {
                 loanType.setImageResource(R.drawable.ic_borrowing)
                 recipient.setTextColor(red)
             }
@@ -52,11 +52,7 @@ class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                 recipient.setTextColor(secondaryDarkColor)
             }
         }
-        if (mode.equals(Constant.STANDARD)) {
-//            if (loan.due_date != null) {
-//                val due_date_Date = loan.due_date?.toDate()
-//                dueDate.text = getStringFromDate(due_date_Date)
-//            }
+        if (mode == (Constant.STANDARD)) {
             loan.due_date?.let{dueDate.text = getStringFromDate(it.toDate())}
             if (dueDate.text != Constant.FAR_AWAY_DATE) {
                 dueDatePic.visibility = View.VISIBLE
