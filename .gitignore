@@ -15,8 +15,5 @@ gradle.properties
 .externalNativeBuild
 gradle.properties
 /app/google-services.json
-/app/src/main/res/drawable/bubble_1.9.png
-/app/src/main/res/drawable/bubble_2.9.png
-/app/src/main/res/drawable/bubble_3.9.png
-/app/src/main/res/drawable/bubble_4.9.png
+
 
