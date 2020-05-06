@@ -19,5 +19,4 @@ open abstract class BaseFragment: Fragment() {
             recyclerView.setBackgroundColor(ContextCompat.getColor(context!!, R.color.light_grey))
         }
     }
-
 }

@@ -1,6 +1,5 @@
 package com.depuisletemps.beback.controller.activities
 
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,15 +9,12 @@ import androidx.core.content.ContextCompat
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.FieldType
 import com.depuisletemps.beback.model.User
-import com.depuisletemps.beback.model.api.LoanHelper
 import com.depuisletemps.beback.model.api.UserHelper
 import com.depuisletemps.beback.utils.Constant
 import com.depuisletemps.beback.utils.StringUtils
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.SetOptions
 import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.android.synthetic.main.activity_profile.mBtnEdit
-import org.apache.commons.text.WordUtils
 
 class ProfileActivity: BaseActivity() {
     private val TAG = "ProfileActivity"
@@ -43,24 +39,26 @@ class ProfileActivity: BaseActivity() {
         configureButtons()
     }
 
-    fun configureButtons() {
-        mBtnEdit.setOnClickListener{
-            if (isFormValid())
-                editFirestoreUser()
-            else {
-                Toast.makeText(applicationContext, R.string.invalid_edit_profile_form, Toast.LENGTH_LONG)
-                    .show()
-            }
-        }
-
-    }
-
     override fun onSupportNavigateUp(): Boolean {
         onBackPressed()
         return true
     }
 
-    fun getSavedInstanceData(savedInstanceState: Bundle?) {
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putString(Constant.MFIRST, mFirst)
+        outState.putString(Constant.MLAST, mLast)
+        outState.putString(Constant.MPSEUDO, mPseudo)
+        outState.putString(Constant.FIRST, firstname.text.toString())
+        outState.putString(Constant.LAST, lastname.text.toString())
+        outState.putString(Constant.PSEUDO, pseudo.text.toString())
+        outState.putString(Constant.MAIL, mMail)
+    }
+
+    /**
+     * Get the required user info from SavedInstance
+     */
+    private fun getSavedInstanceData(savedInstanceState: Bundle?) {
         if (savedInstanceState != null){
             firstname.setText(savedInstanceState.getString(Constant.FIRST))
             lastname.setText(savedInstanceState.getString(Constant.LAST)!!)
@@ -76,15 +74,14 @@ class ProfileActivity: BaseActivity() {
         }
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        outState.putString(Constant.MFIRST, mFirst)
-        outState.putString(Constant.MLAST, mLast)
-        outState.putString(Constant.MPSEUDO, mPseudo)
-        outState.putString(Constant.FIRST, firstname.text.toString())
-        outState.putString(Constant.LAST, lastname.text.toString())
-        outState.putString(Constant.PSEUDO, pseudo.text.toString())
-        outState.putString(Constant.MAIL, mMail)
+    /**
+     * Configure the Edit button
+     */
+    private fun configureButtons() {
+        mBtnEdit.setOnClickListener{
+            if (isFormValid()) editFirestoreUser()
+            else  Toast.makeText(applicationContext, R.string.invalid_edit_profile_form, Toast.LENGTH_LONG).show()
+        }
     }
 
     /**
@@ -102,17 +99,14 @@ class ProfileActivity: BaseActivity() {
                 mMail = mUser.mail
                 mId = mUser.id
                 if (mFirstTime) configureScreen()
-            } else {
-                Log.w(TAG, getString(R.string.transaction_failure))
-            }
+            } else Log.w(TAG, getString(R.string.transaction_failure))
         }
-
     }
 
     /**
      * Method to configure the textWatchers on the fields which requires it
      */
-    fun configureTextWatchers() {
+    private fun configureTextWatchers() {
         firstname.addTextChangedListener(textWatcher)
         lastname.addTextChangedListener(textWatcher)
         pseudo.addTextChangedListener(textWatcher)
@@ -187,5 +181,4 @@ class ProfileActivity: BaseActivity() {
             }
         }
     }
-
 }

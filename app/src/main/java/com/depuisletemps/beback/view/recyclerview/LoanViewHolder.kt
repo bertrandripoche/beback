@@ -15,7 +15,6 @@ import com.depuisletemps.beback.utils.Utils.getStringFromDate
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loan.view.*
 import org.joda.time.LocalDate
 
-
 class LoanViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
     val item = itemview
     val category = itemview.item_product_category

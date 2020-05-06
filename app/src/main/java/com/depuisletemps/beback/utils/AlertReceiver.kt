@@ -16,20 +16,20 @@ class AlertReceiver: BroadcastReceiver() {
     lateinit var mNotification: Notification
 
     override fun onReceive(context: Context, intent: Intent) {
-
+        //On alarm reception, trigger the notification on user's phone
         val loanId = intent.getStringExtra(Constant.LOAN_ID)
         val loanProduct = intent.getStringExtra(Constant.PRODUCT)
         val loanType = intent.getStringExtra(Constant.TYPE)
         val loanRecipient = intent.getStringExtra(Constant.RECIPIENT_ID)
 
-        val title = when {
-            loanType == Constant.LENDING -> context.resources.getString(R.string.notif_lending)
-            loanType == Constant.BORROWING -> context.resources.getString(R.string.notif_borrowing)
+        val title = when (loanType) {
+            Constant.LENDING -> context.resources.getString(R.string.notif_lending)
+            Constant.BORROWING -> context.resources.getString(R.string.notif_borrowing)
             else -> context.resources.getString(R.string.notif_delivery)
         }
-        val notif_message = when {
-            loanType == Constant.LENDING -> context.resources.getString(R.string.notif_message_lending, loanProduct, loanRecipient)
-            loanType == Constant.BORROWING -> context.resources.getString(R.string.notif_message_borrowing, loanProduct, loanRecipient)
+        val notifMessage = when (loanType) {
+            Constant.LENDING -> context.resources.getString(R.string.notif_message_lending, loanProduct, loanRecipient)
+            Constant.BORROWING -> context.resources.getString(R.string.notif_message_borrowing, loanProduct, loanRecipient)
             else -> context.resources.getString(R.string.notif_message_delivery, loanProduct, loanRecipient)
         }
 
@@ -44,16 +44,16 @@ class AlertReceiver: BroadcastReceiver() {
                 .setSmallIcon(R.drawable.icon)
                 .setAutoCancel(true)
                 .setContentTitle(title)
-                .setStyle(Notification.BigTextStyle().bigText(notif_message))
-                .setContentText(notif_message).build()
+                .setStyle(Notification.BigTextStyle().bigText(notifMessage))
+                .setContentText(notifMessage).build()
         } else {
             mNotification = Notification.Builder(context)
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.icon)
                 .setAutoCancel(true)
                 .setContentTitle(title)
-                .setStyle(Notification.BigTextStyle().bigText(notif_message))
-                .setContentText(notif_message).build()
+                .setStyle(Notification.BigTextStyle().bigText(notifMessage))
+                .setContentText(notifMessage).build()
         }
 
         val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(context)

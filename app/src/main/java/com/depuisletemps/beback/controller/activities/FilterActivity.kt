@@ -4,22 +4,15 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
-import android.view.View.OnTouchListener
-import android.widget.CompoundButton
 import android.widget.Toast
 import android.widget.ToggleButton
 import com.depuisletemps.beback.R
-import com.depuisletemps.beback.utils.AutocompletionField
 import com.depuisletemps.beback.utils.Constant
-import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_add_loan.mBtnSubmit
 import kotlinx.android.synthetic.main.activity_filter.*
 
 class FilterActivity: BaseFormActivity() {
-
     private val TAG = "FilterActivity"
-    private val mUser: FirebaseUser? = getCurrentUser()
 
     private var mMode = Constant.STANDARD
     private var mSide = 0
@@ -33,12 +26,7 @@ class FilterActivity: BaseFormActivity() {
         configureToolbar()
         configureButtons()
         configureTextWatchers()
-        configureAutoCompleteFields()
-    }
-
-    private fun setOriginScreen() {
-        mMode = intent?.extras?.getString(Constant.MODE) ?: Constant.STANDARD
-        mSide = intent?.extras?.getInt(Constant.SIDE) ?: 0
+        configureAutoCompleteFields(filter_product,filter_recipient, false, 1)
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -46,44 +34,36 @@ class FilterActivity: BaseFormActivity() {
         return true
     }
 
-    private fun configureAutoCompleteFields() {
-        if (mUser != null) {
-            val autocompletionField = AutocompletionField(this)
-
-            var nameToPopulate = arrayListOf<String>()
-            autocompletionField.getAutocompletionNameListFromFirebase(mUser.uid, nameToPopulate, filter_recipient)
-
-            var productToPopulate = arrayListOf<String>()
-            autocompletionField.getAutocompletionProductListFromFirebase(mUser.uid, productToPopulate, filter_product)
-        }
+    /**
+     * This method allows to know which screen the user is coming from
+     */
+    private fun setOriginScreen() {
+        mMode = intent?.extras?.getString(Constant.MODE) ?: Constant.STANDARD
+        mSide = intent?.extras?.getInt(Constant.SIDE) ?: 0
     }
 
     /**
      * This method sets all the listeners for the buttons
      */
     private fun configureButtons() {
-        mBtnSubmit.setOnClickListener(View.OnClickListener {
-            if (isFormValid())
-                startLoanPagerActivity()
-            else {
-                Toast.makeText(applicationContext, R.string.invalid_filter, Toast.LENGTH_LONG)
-                    .show()
-            }
-        })
+        mBtnSubmit.setOnClickListener {
+            if (isFormValid()) startLoanPagerActivity()
+            else Toast.makeText(applicationContext, R.string.invalid_filter, Toast.LENGTH_LONG).show()
+        }
 
         setToggleButtonOnClickListener(toggle_lending)
         setToggleButtonOnClickListener(toggle_borrowing)
         setToggleButtonOnClickListener(toggle_delivery)
 
-        filter_product.setOnTouchListener(OnTouchListener { v, event ->
+        filter_product.setOnTouchListener{v, event ->
             filter_product.showDropDown()
             false
-        })
+        }
 
-        filter_recipient.setOnTouchListener(OnTouchListener { v, event ->
+        filter_recipient.setOnTouchListener{ v, event ->
             filter_recipient.showDropDown()
             false
-        })
+        }
 
         disableFloatButton(mBtnSubmit, this)
     }
@@ -92,8 +72,8 @@ class FilterActivity: BaseFormActivity() {
      * This method allows to set a listener on a button
      * @param btn being the button on which to set the listener
      */
-    fun setToggleButtonOnClickListener(btn: ToggleButton) {
-        btn.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+    private fun setToggleButtonOnClickListener(btn: ToggleButton) {
+        btn.setOnCheckedChangeListener {buttonView, isChecked ->
             if (isChecked) {
                 btn.setBackgroundResource(R.drawable.round_secondary_color_button)
                 if (btn != toggle_lending && toggle_lending.isChecked) unsetToggle(toggle_lending)
@@ -103,7 +83,7 @@ class FilterActivity: BaseFormActivity() {
                 btn.setBackgroundResource(R.drawable.round_grey_color_button)
             }
         setFloatBtnState(isFormValid(),mBtnSubmit, this)
-        })
+        }
     }
 
     /**
@@ -122,8 +102,9 @@ class FilterActivity: BaseFormActivity() {
 
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
 
-        override fun afterTextChanged(s: Editable) { // Enable-disable Floating Action Button
-            if (isFormValid()) enableFloatButton(mBtnSubmit, applicationContext) else disableFloatButton(mBtnSubmit, applicationContext)
+        override fun afterTextChanged(s: Editable) {
+            // Enable-disable Floating Action Button
+            setFloatBtnState(isFormValid(),mBtnSubmit, applicationContext)
         }
     }
 

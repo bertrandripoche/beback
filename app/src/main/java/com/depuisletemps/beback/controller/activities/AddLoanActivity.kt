@@ -16,7 +16,6 @@ import com.depuisletemps.beback.utils.*
 import com.depuisletemps.beback.utils.Utils.getTimeStampFromString
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseUser
-import kotlinx.android.synthetic.main.activity_add_loan.*
 import kotlinx.android.synthetic.main.activity_add_loan.loan_due_date
 import kotlinx.android.synthetic.main.activity_add_loan.loan_notif_date
 import kotlinx.android.synthetic.main.activity_add_loan.loan_product
@@ -26,6 +25,7 @@ import kotlinx.android.synthetic.main.activity_add_loan.loan_type
 import kotlinx.android.synthetic.main.activity_add_loan.loan_type_pic
 import kotlinx.android.synthetic.main.activity_add_loan.mBtnCancelDate
 import kotlinx.android.synthetic.main.activity_add_loan.mBtnCancelNotif
+import kotlinx.android.synthetic.main.activity_add_loan.mBtnSubmit
 import kotlinx.android.synthetic.main.activity_add_loan.notif_d_day
 import kotlinx.android.synthetic.main.activity_add_loan.notif_one_week
 import kotlinx.android.synthetic.main.activity_add_loan.notif_three_days
@@ -37,7 +37,6 @@ import java.text.DecimalFormat
 class AddLoanActivity: BaseFormActivity() {
     private val TAG = "AddLoanActivity"
     lateinit var mType: String
-    private val mUser: FirebaseUser? = getCurrentUser()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +44,7 @@ class AddLoanActivity: BaseFormActivity() {
 
         defineTheColors(this)
         configureToolbar()
+        configureAutoCompleteFields(loan_product,loan_recipient,true, 2)
         configureSpinner()
         configureTextWatchers()
         configureScreenFromType()
@@ -55,10 +55,10 @@ class AddLoanActivity: BaseFormActivity() {
      * This method sets all the listeners for the buttons
      */
     private fun configureButtons() {
-        mBtnSubmit.setOnClickListener(View.OnClickListener {
+        mBtnSubmit.setOnClickListener {
             if (isFormValid()) createFirestoreLoan()
             else Toast.makeText(applicationContext, R.string.invalid_form, Toast.LENGTH_LONG).show()
-        })
+        }
 
         setButtonOnClickListener(notif_d_day)
         setButtonOnClickListener(notif_three_days)
@@ -70,22 +70,22 @@ class AddLoanActivity: BaseFormActivity() {
      */
     private fun configureScreenFromType() {
         mType = getLoanType()
-        when {
-            mType == (LoanType.LENDING.type) -> {
+        when (mType) {
+            (LoanType.LENDING.type) -> {
                 loan_type.setBackgroundColor(greenColor)
                 loan_type_pic.setBackgroundColor(greenColor)
                 loan_recipient_title.text = getString(R.string.whom)
                 loan_type.text = getString(R.string.i_lend)
                 loan_type_pic.setImageResource(R.drawable.ic_loan_black)
             }
-            mType == (LoanType.BORROWING.type) -> {
+            (LoanType.BORROWING.type) -> {
                 loan_type.setBackgroundColor(redColor)
                 loan_type_pic.setBackgroundColor(redColor)
                 loan_recipient_title.text = getString(R.string.who)
                 loan_type.text = getString(R.string.i_borrow)
                 loan_type_pic.setImageResource(R.drawable.ic_borrowing_black)
             }
-            mType == (LoanType.DELIVERY.type) -> {
+            (LoanType.DELIVERY.type) -> {
                 loan_type.setBackgroundColor(yellowColor)
                 loan_type_pic.setBackgroundColor(yellowColor)
                 loan_recipient_title.text = getString(R.string.who)
@@ -93,13 +93,6 @@ class AddLoanActivity: BaseFormActivity() {
                 loan_recipient.hint = getString(R.string.delivery_hint)
                 loan_type_pic.setImageResource(R.drawable.ic_delivery_black)
             }
-        }
-
-        if (mUser != null) {
-            var nameToPopulate = arrayListOf<String>()
-
-            val autocompletionField = AutocompletionField(this)
-            autocompletionField.getAutocompletionListFromPhoneContactsAndFirebase(mUser.uid, nameToPopulate, loan_recipient)
         }
 
         disableFloatButton(mBtnSubmit, this)
@@ -185,7 +178,7 @@ class AddLoanActivity: BaseFormActivity() {
             else -> getString(R.string.notif)
         }
 
-        val dpd = DatePickerDialog(this,DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+        val dpd = DatePickerDialog(this,DatePickerDialog.OnDateSetListener {view, year, monthOfYear, dayOfMonth ->
                 setPickDate(getString(R.string.due_date, df.format(dayOfMonth),df.format(monthOfYear + 1),year), btn)}, year, month,day)
         dpd.datePicker.minDate = System.currentTimeMillis()
         dpd.show()

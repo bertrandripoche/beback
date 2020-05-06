@@ -7,10 +7,8 @@ import android.content.res.ColorStateList
 import android.os.Build
 import android.view.Gravity
 import android.view.View
-import android.widget.CompoundButton
 import android.widget.TextView
 import android.widget.Toast
-import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -23,8 +21,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
-import kotlinx.android.synthetic.main.activity_loan_detail.*
-import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.android.synthetic.main.custom_toast.*
 import kotlinx.android.synthetic.main.toolbar.*
 import java.util.*
@@ -32,7 +28,6 @@ import java.util.*
 
 open abstract class BaseActivity: AppCompatActivity() {
     private val TAG = "BaseActivity"
-    private val SIGN_OUT_TASK = 10
 
     protected var orangeColor: Int = 0
     protected var yellowColor: Int = 0
@@ -81,17 +76,14 @@ open abstract class BaseActivity: AppCompatActivity() {
             .signOut(activity!!)
             .addOnSuccessListener(
                 activity,
-                this.updateUIAfterRESTRequestsCompleted(SIGN_OUT_TASK, activity)
+                this.updateUIAfterRESTRequestsCompleted(Constant.SIGN_OUT_TASK, activity)
             )
     }
 
-    open fun updateUIAfterRESTRequestsCompleted(
-        origin: Int,
-        activity: Activity
-    ): OnSuccessListener<Void?> {
+    open fun updateUIAfterRESTRequestsCompleted(origin: Int, activity: Activity): OnSuccessListener<Void?> {
         return OnSuccessListener {
             when (origin) {
-                SIGN_OUT_TASK -> {
+                Constant.SIGN_OUT_TASK -> {
                     startLoginActivity()
                     activity.finish()
                 }
@@ -122,11 +114,14 @@ open abstract class BaseActivity: AppCompatActivity() {
     /**
      * This method starts the Loan activity
      */
-    protected fun startLoginActivity() {
+    private fun startLoginActivity() {
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
     }
 
+    /**
+     * Declare the colors to be available anywhere
+     */
     protected fun defineTheColors(context: Context) {
         lightGreyColor = ContextCompat.getColor(context, R.color.light_grey)
         greyColor = ContextCompat.getColor(context, R.color.dark_grey)
@@ -157,18 +152,18 @@ open abstract class BaseActivity: AppCompatActivity() {
         }
     }
 
+    /**
+     * Sets the background color of the FloatActionButton
+     */
     private fun setButtonTint(button: FloatingActionButton, tint: ColorStateList) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            button.backgroundTintList = tint
-        } else {
-            ViewCompat.setBackgroundTintList(button, tint)
-        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) button.backgroundTintList = tint
+        else ViewCompat.setBackgroundTintList(button, tint)
     }
 
     /**
      * Make the float button enabled
      */
-    protected fun enableFloatButton(btn: FloatingActionButton, context: Context) {
+    private fun enableFloatButton(btn: FloatingActionButton, context: Context) {
         setButtonTint(btn, ColorStateList.valueOf(ContextCompat.getColor(context,R.color.secondaryColor)) )
     }
 
@@ -180,7 +175,7 @@ open abstract class BaseActivity: AppCompatActivity() {
     }
 
     /**
-     * This method enable/disable the edit button
+     * This method enables/disables the edit button
      */
     fun setFloatBtnState(validForm: Boolean, btn: FloatingActionButton, context: Context) {
         if (validForm) enableFloatButton(btn, context)

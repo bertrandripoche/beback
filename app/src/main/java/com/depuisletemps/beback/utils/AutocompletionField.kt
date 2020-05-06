@@ -13,7 +13,10 @@ import com.livinglifetechway.quickpermissions_kotlin.runWithPermissions
 
 class AutocompletionField(val context: Context) {
 
-    fun getAutocompletionListFromPhoneContactsAndFirebase(userId: String, list: ArrayList<String>, textView: AutoCompleteTextView) {
+    /**
+     * Gets phone contacts list plus recipient names list from Firebase
+     */
+    fun getAutocompletionListFromPhoneContactsAndFirebase(userId: String, list: ArrayList<String>, acTextView: AutoCompleteTextView, threshold: Int) {
         context.runWithPermissions(Manifest.permission.READ_CONTACTS) {
             val phones = context.contentResolver.query(
                 ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
@@ -28,11 +31,14 @@ class AutocompletionField(val context: Context) {
                 if (!list.contains(name)) list.add(name)
             }
 
-            getAutocompletionNameListFromFirebase(userId, list, textView)
+            getAutocompletionNameListFromFirebase(userId, list, acTextView, threshold)
         }
     }
 
-    fun getAutocompletionNameListFromFirebase(userId: String, list: ArrayList<String>, textView: AutoCompleteTextView) {
+    /**
+     * Gets recipient names list from Firebase
+     */
+    fun getAutocompletionNameListFromFirebase(userId: String, list: ArrayList<String>, acTextView: AutoCompleteTextView, threshold: Int) {
         val loanerHelper = LoanerHelper()
         loanerHelper.getLoanersNames(userId) { result, names ->
             if (result) {
@@ -44,14 +50,17 @@ class AutocompletionField(val context: Context) {
                         R.layout.simple_dropdown_item_1line,
                         list
                     )
-                    textView.setAdapter(loanRecipientNamesListAdapter)
-                    textView.threshold = 1
+                    acTextView.setAdapter(loanRecipientNamesListAdapter)
+                    acTextView.threshold = threshold
                 }
             } else Log.d(Constant.AUTOCOMPLETIONCLASS, context.resources.getString(com.depuisletemps.beback.R.string.error_getting_docs), null)
         }
     }
 
-    fun getAutocompletionProductListFromFirebase(userId: String, list: ArrayList<String>, textView: AutoCompleteTextView) {
+    /**
+     * Gets product names list from Firebase
+     */
+    fun getAutocompletionProductListFromFirebase(userId: String, list: ArrayList<String>, acTextView: AutoCompleteTextView, threshold: Int) {
         val loanHelper = LoanHelper()
         loanHelper.getLoanNames(userId) { result, names ->
             if (result) {
@@ -63,8 +72,8 @@ class AutocompletionField(val context: Context) {
                         R.layout.simple_dropdown_item_1line,
                         list
                     )
-                    textView.setAdapter(loanRecipientNamesListAdapter)
-                    textView.threshold = 1
+                    acTextView.setAdapter(loanRecipientNamesListAdapter)
+                    acTextView.threshold = threshold
                 }
             } else Log.d(Constant.AUTOCOMPLETIONCLASS, context.resources.getString(com.depuisletemps.beback.R.string.error_getting_docs), null)
         }

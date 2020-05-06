@@ -22,7 +22,6 @@ import com.depuisletemps.beback.view.recyclerview.ItemClickSupport
 import com.depuisletemps.beback.view.recyclerview.LoanAdapter
 import com.depuisletemps.beback.utils.NotificationManagement
 import com.depuisletemps.beback.utils.Constant
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
@@ -32,14 +31,11 @@ import kotlinx.android.synthetic.main.fragment_loan_by_object.*
 class LoanByObjectFragment: BaseFragment() {
 
     private val TAG = "LoanByObjectFragment"
-    lateinit var mLoansRef: CollectionReference
-    lateinit private var mAdapter: LoanAdapter
+    private lateinit var mAdapter: LoanAdapter
     var mUser: FirebaseUser? = null
     lateinit var mDb: FirebaseFirestore
 
-    override fun onCreateView(inflater: LayoutInflater,
-                            container: ViewGroup?,
-                            savedInstanceState: Bundle?): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mDb = (activity as LoanPagerActivity).mDb
         mMode = (activity as LoanPagerActivity).mMode
         return inflater.inflate(R.layout.fragment_loan_by_object, container, false)
@@ -50,81 +46,77 @@ class LoanByObjectFragment: BaseFragment() {
         configureOnClickRecyclerView()
         setBackgroundForRecyclerView(fragment_loan_by_object_recycler_view)
 
-        if (mMode == Constant.STANDARD) {
+        if (mMode == Constant.STANDARD) manageSwipeOnLoan()
+    }
 
-            val simpleCallback = object :
-                ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
+    /**
+     * Manage swipe on item recyclerView item
+     */
+    private fun manageSwipeOnLoan() {
+        val simpleCallback = object :
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT or ItemTouchHelper.LEFT) {
 
-                override fun onMove(
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder,
-                    viewHolder1: RecyclerView.ViewHolder
-                ): Boolean {
-                    return false
-                }
+            override fun onMove(recyclerView: RecyclerView,viewHolder: RecyclerView.ViewHolder,viewHolder1: RecyclerView.ViewHolder): Boolean {
+                return false
+            }
 
-                /**
-                 * this method manages the swipes on items
-                 */
-                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                    val position = viewHolder.adapterPosition
-                    val loan: Loan = mAdapter.getItem(position)
+            /**
+             * this method manages the swipes on items
+             */
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                val loan: Loan = mAdapter.getItem(position)
 
-                    when (direction) {
-                        // Right : Delete
-                        ItemTouchHelper.RIGHT -> deleteTheLoan(loan)
-
-                        // Left : Archive
-                        ItemTouchHelper.LEFT -> archiveTheLoan(loan)
-
-                        else -> return
-                    }
-                }
-
-                /**
-                 * this method manages the layout below the item (for swipe effect)
-                 */
-                override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean ) {
-                    val position = viewHolder.adapterPosition
-                    var returnMessage: String = ""
-                    if (position >= 0) {
-                        val loan: Loan = mAdapter.getItem(position)
-                        if (loan.type == (LoanType.DELIVERY.type)) returnMessage =
-                            getString(R.string.received)
-                        else returnMessage = getString(R.string.returned)
-                    }
-
-                    RecyclerViewSwipeDecorator.Builder(c,recyclerView,viewHolder,dX,dY,actionState,isCurrentlyActive)
-                        .addSwipeLeftActionIcon(R.drawable.ic_archive_color)
-                        .addSwipeLeftBackgroundColor(
-                            ContextCompat.getColor(
-                                context!!,
-                                R.color.dark_green
-                            )
-                        )
-                        .addSwipeLeftLabel(returnMessage)
-                        .setSwipeLeftLabelTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
-                        .setSwipeLeftLabelColor(ContextCompat.getColor(context!!, R.color.white))
-                        .addSwipeRightActionIcon(R.drawable.ic_delete)
-                        .addSwipeRightBackgroundColor(
-                            ContextCompat.getColor(
-                                context!!,
-                                R.color.red
-                            )
-                        )
-                        .addSwipeRightLabel(getString(R.string.delete))
-                        .setSwipeRightLabelTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
-                        .setSwipeRightLabelColor(ContextCompat.getColor(context!!, R.color.white))
-                        .create()
-                        .decorate()
-                    super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+                when (direction) {
+                    // Right : Delete
+                    ItemTouchHelper.RIGHT -> deleteTheLoan(loan)
+                    // Left : Archive
+                    ItemTouchHelper.LEFT -> archiveTheLoan(loan)
+                    else -> return
                 }
             }
 
-            val itemTouchHelper = ItemTouchHelper(simpleCallback)
-            itemTouchHelper.attachToRecyclerView(fragment_loan_by_object_recycler_view)
+            /**
+             * this method manages the layout below the item (for swipe effect)
+             */
+            override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean ) {
+                val position = viewHolder.adapterPosition
+                var returnMessage = ""
+                if (position >= 0) {
+                    val loan: Loan = mAdapter.getItem(position)
+                    returnMessage = if (loan.type == (LoanType.DELIVERY.type)) getString(R.string.received)
+                    else getString(R.string.returned)
+                }
+
+                RecyclerViewSwipeDecorator.Builder(c,recyclerView,viewHolder,dX,dY,actionState,isCurrentlyActive)
+                    .addSwipeLeftActionIcon(R.drawable.ic_archive_color)
+                    .addSwipeLeftBackgroundColor(
+                        ContextCompat.getColor(
+                            context!!,
+                            R.color.dark_green
+                        )
+                    )
+                    .addSwipeLeftLabel(returnMessage)
+                    .setSwipeLeftLabelTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
+                    .setSwipeLeftLabelColor(ContextCompat.getColor(context!!, R.color.white))
+                    .addSwipeRightActionIcon(R.drawable.ic_delete)
+                    .addSwipeRightBackgroundColor(
+                        ContextCompat.getColor(
+                            context!!,
+                            R.color.red
+                        )
+                    )
+                    .addSwipeRightLabel(getString(R.string.delete))
+                    .setSwipeRightLabelTextSize(TypedValue.COMPLEX_UNIT_DIP, 20F)
+                    .setSwipeRightLabelColor(ContextCompat.getColor(context!!, R.color.white))
+                    .create()
+                    .decorate()
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
+            }
         }
 
+        val itemTouchHelper = ItemTouchHelper(simpleCallback)
+        itemTouchHelper.attachToRecyclerView(fragment_loan_by_object_recycler_view)
     }
 
     /**
@@ -145,7 +137,6 @@ class LoanByObjectFragment: BaseFragment() {
         if (fragment_loan_by_object_recycler_view != null) {
             fragment_loan_by_object_recycler_view.setHasFixedSize(true)
             fragment_loan_by_object_recycler_view.layoutManager = LinearLayoutManager(context, orientation, false)
-            //fragment_loan_by_object_recycler_view.addItemDecoration(DividerItemDecoration(activity, DividerItemDecoration.VERTICAL))
             fragment_loan_by_object_recycler_view.adapter = mAdapter
         }
     }
@@ -153,7 +144,7 @@ class LoanByObjectFragment: BaseFragment() {
     /**
      * This method manages the click on an item from the recyclerView
      */
-    fun configureOnClickRecyclerView() {
+    private fun configureOnClickRecyclerView() {
         ItemClickSupport.addTo(fragment_loan_by_object_recycler_view, R.layout.loanactivity_recyclerview_item_loan)
             .setOnItemClickListener(object : ItemClickSupport.OnItemClickListener {
                 override fun onItemClicked(

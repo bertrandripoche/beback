@@ -10,7 +10,6 @@ import com.depuisletemps.beback.utils.Constant
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter
 import com.firebase.ui.firestore.FirestoreRecyclerOptions
 
-
 class LoanAdapter(options: FirestoreRecyclerOptions<Loan>, private val context: Context, val mode: String): FirestoreRecyclerAdapter<Loan,LoanViewHolder>(options) {
     val primaryLightColor = ContextCompat.getColor(context, R.color.primaryLightColor)
     val primaryColor = ContextCompat.getColor(context, R.color.primaryColor)

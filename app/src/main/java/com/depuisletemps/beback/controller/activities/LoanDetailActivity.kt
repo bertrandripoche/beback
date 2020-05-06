@@ -13,7 +13,6 @@ import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.api.LoanHelper
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanType
-import com.depuisletemps.beback.utils.AutocompletionField
 import com.depuisletemps.beback.view.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.NotificationManagement
 import com.depuisletemps.beback.utils.Constant
@@ -21,7 +20,6 @@ import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.getStringFromDate
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_loan_detail.*
 import kotlinx.android.synthetic.main.activity_loan_detail.loan_due_date
 import kotlinx.android.synthetic.main.activity_loan_detail.loan_due_date_title
@@ -57,7 +55,6 @@ class LoanDetailActivity: BaseFormActivity() {
     var mFirstTime: Boolean = true
     lateinit var mCategories: Array<String>
     lateinit var mCategoriesIcons: TypedArray
-    val mUser: FirebaseUser? = getCurrentUser()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,6 +109,9 @@ class LoanDetailActivity: BaseFormActivity() {
         return true
     }
 
+    /**
+     * Configure the different buttons on the activity
+     */
     private fun configureButtons() {
         mBtnEdit.setOnClickListener{
             if (isFormValid()) editFirestoreLoan()
@@ -128,7 +128,7 @@ class LoanDetailActivity: BaseFormActivity() {
     }
 
     /**
-     * This method configuree the spinner
+     * This method configures the spinner for the product type
      */
     private fun configureSpinner() {
         val spinner = findViewById<View>(R.id.spinner_loan_categories) as Spinner
@@ -173,7 +173,7 @@ class LoanDetailActivity: BaseFormActivity() {
             if (loan.returned_date != null) {
                 setArchiveScreen(loan)
                 setDueDateField(loan)
-                displayFeedback()
+                generateFeedback()
             } else {
                 mBtnEdit.visibility = View.VISIBLE
                 if (getStringFromDate(loan.due_date?.toDate()) != Constant.FAR_AWAY_DATE && mFirstTime) setDueDate(getStringFromDate(loan.due_date?.toDate()))
@@ -189,9 +189,12 @@ class LoanDetailActivity: BaseFormActivity() {
             loan_creation_date.text = getStringFromDate(loan.creation_date?.toDate())
         }
 
-        getAutocompletionListForRecipientField()
+        configureAutoCompleteFields(loan_product,loan_recipient, true,2)
     }
 
+    /**
+     * Correctly displays the notif field
+     */
     private fun setNotifField(loan: Loan) {
         when (loan.notif) {
             null -> {
@@ -203,7 +206,10 @@ class LoanDetailActivity: BaseFormActivity() {
         }
     }
 
-    private fun displayFeedback() {
+    /**
+     * Choose the appropriate feedback to display for ended loans
+     */
+    private fun generateFeedback() {
         if (loan_due_date.text != "") {
             feedback.visibility = View.VISIBLE
             val dueDateLocalDate = Utils.getLocalDateFromString(loan_due_date.text.toString())
@@ -218,6 +224,9 @@ class LoanDetailActivity: BaseFormActivity() {
         } else displayEvaluationMessage(greenColor, R.drawable.bubble_1, R.string.happy)
     }
 
+    /**
+     * Correctly displays the due date field
+     */
     private fun setDueDateField(loan: Loan) {
         if (getStringFromDate(loan.due_date?.toDate()) == Constant.FAR_AWAY_DATE) {
             loan_due_date_title.visibility = View.GONE
@@ -229,6 +238,9 @@ class LoanDetailActivity: BaseFormActivity() {
         }
     }
 
+    /**
+     * Displays the required feedback for returned loans
+     */
     private fun displayEvaluationMessage(color: Int, img: Int, text: Int) {
         loan_returned_date.setTextColor(color)
         feedback.setTextColor(color)
@@ -236,15 +248,10 @@ class LoanDetailActivity: BaseFormActivity() {
         feedback.setText(text)
     }
 
-    private fun getAutocompletionListForRecipientField() {
-        if (mUser != null) {
-            val nameToPopulate = arrayListOf<String>()
-
-            val autocompletionField = AutocompletionField(this)
-            autocompletionField.getAutocompletionListFromPhoneContactsAndFirebase(mUser.uid, nameToPopulate, loan_recipient)
-        }
-    }
-
+    /**
+     * Set the screen for returned loan
+     * @param loan is a Loan object representing the current described loan
+     */
     private fun setArchiveScreen(loan: Loan) {
         mBtnDelete.visibility = View.VISIBLE
         mBtnUnarchive.visibility = View.VISIBLE
@@ -269,12 +276,12 @@ class LoanDetailActivity: BaseFormActivity() {
      * This method configures the Type title section
      */
     private fun configureType(loan: Loan) {
-        when {
-            loan.type == LoanType.LENDING.type ->
+        when (loan.type) {
+            LoanType.LENDING.type ->
                 setTypeScreen(greenColor,R.string.whom_no_star,R.string.i_lended,R.drawable.ic_loan_black)
-            loan.type== LoanType.BORROWING.type ->
+            LoanType.BORROWING.type ->
                 setTypeScreen(redColor,R.string.who_no_star,R.string.i_borrowed,R.drawable.ic_borrowing_black)
-            loan.type == LoanType.DELIVERY.type -> {
+            LoanType.DELIVERY.type -> {
                 setTypeScreen(yellowColor,R.string.who_no_star,R.string.delivery_for,R.drawable.ic_delivery_black)
                 loan_recipient.hint = getString(R.string.delivery_hint)
                 loan_creation_date_title.text = getString(R.string.since)
@@ -282,6 +289,9 @@ class LoanDetailActivity: BaseFormActivity() {
         }
     }
 
+    /**
+     * Sets the type title
+     */
     private fun setTypeScreen(color: Int, recipient: Int, type: Int, img: Int) {
         loan_type.setBackgroundColor(color)
         loan_type_pic.setBackgroundColor(color)
@@ -293,7 +303,7 @@ class LoanDetailActivity: BaseFormActivity() {
     /**
      * Method to describe the actions to complete on text writing
      */
-    val textWatcher: TextWatcher = object : TextWatcher {
+    private val textWatcher: TextWatcher = object : TextWatcher {
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
 
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
@@ -552,6 +562,10 @@ class LoanDetailActivity: BaseFormActivity() {
         }
     }
 
+    /**
+     * This method deletes the item
+     * @param loan is a Loan representing the loan object
+     */
     private fun deleteTheLoan(loan: Loan) {
         var points = Utils.retrievePointsFromLoan(loan)
 

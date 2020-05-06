@@ -8,10 +8,10 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 
 class UserHelper {
-    val mDb: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val mDb: FirebaseFirestore = FirebaseFirestore.getInstance()
 
     // COLLECTION REFERENCE
-    fun getUsersCollection(): CollectionReference {
+    private fun getUsersCollection(): CollectionReference {
         return mDb.collection(Constant.USERS_COLLECTION)
     }
 

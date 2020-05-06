@@ -7,17 +7,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.depuisletemps.beback.R
-import com.depuisletemps.beback.model.LoanStatus
-import com.depuisletemps.beback.model.Loaner
 import com.depuisletemps.beback.controller.activities.LoanPagerActivity
 import com.depuisletemps.beback.model.api.LoanerHelper
 import com.depuisletemps.beback.view.recyclerview.LoanerAdapter
-import com.depuisletemps.beback.utils.Constant
-import com.firebase.ui.firestore.FirestoreRecyclerOptions
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.fragment_loan_by_person.*
 
 class LoanByPersonFragment: BaseFragment() {

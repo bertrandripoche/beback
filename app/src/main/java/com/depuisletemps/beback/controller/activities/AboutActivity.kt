@@ -11,5 +11,4 @@ class AboutActivity: BaseActivity() {
 
         configureToolbar()
     }
-
 }

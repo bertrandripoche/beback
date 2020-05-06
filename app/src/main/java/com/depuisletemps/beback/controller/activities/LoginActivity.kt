@@ -23,7 +23,6 @@ import com.google.firebase.auth.FirebaseUser
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
 
-
 class LoginActivity : BaseActivity() {
 
     private val TAG = "LoginActivity"
@@ -62,7 +61,7 @@ class LoginActivity : BaseActivity() {
                 .createSignInIntentBuilder()
                 .setAvailableProviders(Arrays.asList(provider))
                 .build(),
-            RC_SIGN_IN
+            Constant.RC_SIGN_IN
         )
     }
 
@@ -72,22 +71,17 @@ class LoginActivity : BaseActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == RC_SIGN_IN) {
+        if (requestCode == Constant.RC_SIGN_IN) {
             val response = IdpResponse.fromResultIntent(data)
 
             if (resultCode == Activity.RESULT_OK) {
                 checkAndCreateFirestoreUser()
-//                startLoanPagerActivity(Constant.STANDARD)
             } else {
                 when {
-                    response == null ->
-                        showSnackBar( login_activity_linear_layout, getString(R.string.error_authentication_canceled))
-                    response.error!!.errorCode == ErrorCodes.NO_NETWORK ->
-                        showSnackBar(login_activity_linear_layout, getString(R.string.error_no_internet))
-                    response.error!!.errorCode == ErrorCodes.UNKNOWN_ERROR ->
-                        showSnackBar(login_activity_linear_layout, getString(R.string.error_unknown))
-                    else ->
-                        showSnackBar(login_activity_linear_layout, getString(R.string.error_undefined))
+                    response == null ->  showSnackBar( login_activity_linear_layout, getString(R.string.error_authentication_canceled))
+                    response.error!!.errorCode == ErrorCodes.NO_NETWORK -> showSnackBar(login_activity_linear_layout, getString(R.string.error_no_internet))
+                    response.error!!.errorCode == ErrorCodes.UNKNOWN_ERROR ->  showSnackBar(login_activity_linear_layout, getString(R.string.error_unknown))
+                    else -> showSnackBar(login_activity_linear_layout, getString(R.string.error_undefined))
                 }
             }
         }
@@ -122,7 +116,7 @@ class LoginActivity : BaseActivity() {
     /**
      * This method checks existence of user in Firestore db
      */
-    fun checkUserInDb(user: User) {
+    private fun checkUserInDb(user: User) {
         val userHelper = UserHelper()
         userHelper.checkUserInDb(user) {result,documentExists ->
             if (result) {
@@ -137,7 +131,7 @@ class LoginActivity : BaseActivity() {
     /**
      * This method adds the user in Firestore
      */
-    fun addUserInFirestore(user: User): Task<Void> {
+    private fun addUserInFirestore(user: User): Task<Void> {
         val userHelper = UserHelper()
         return userHelper.createUser(user)
     }
@@ -153,9 +147,5 @@ class LoginActivity : BaseActivity() {
             val notificationManager = getSystemService(NotificationManager::class.java)
             Objects.requireNonNull(notificationManager).createNotificationChannel(channel)
         }
-    }
-
-    companion object {
-        private const val RC_SIGN_IN = 123
     }
 }

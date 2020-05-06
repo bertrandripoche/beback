@@ -24,7 +24,7 @@ class LoanPagerActivity: BaseActivity() {
     var mFilterProduct:String? = null
     var mFilterRecipient:String? = null
     var mFilterType:String? = null
-    var mIsLoanAlertDialogDisplayed:Boolean = false
+    private var mIsLoanAlertDialogDisplayed:Boolean = false
     var mMode: String = Constant.STANDARD
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,25 +38,6 @@ class LoanPagerActivity: BaseActivity() {
 
         mBtnAdd.setOnClickListener{createLoanAlertDialog()}
         mBtnFilter.setOnClickListener{startFilterActivity()}
-    }
-
-    private fun checkScreenSideForFilter() {
-        if (intent.extras?.getInt(Constant.SIDE) != 0) {
-            viewPager.currentItem = 1
-            intent.extras?.putInt(Constant.SIDE, 0)
-        }
-    }
-
-    /**
-     * This method returns the mode from the bundle
-     * @return the placeId or null
-     */
-    private fun getLoanMode(savedInstanceState: Bundle?): String {
-        if (savedInstanceState != null) return savedInstanceState.getString(Constant.MODE)!!
-
-        if (intent.extras?.getString(Constant.MODE) != null) return intent.extras.getString(Constant.MODE)!!
-
-        return Constant.STANDARD
     }
 
     /**
@@ -82,6 +63,48 @@ class LoanPagerActivity: BaseActivity() {
             mFilterRecipient = savedInstanceState.getString(Constant.FILTER_RECIPIENT)
             mFilterProduct = savedInstanceState.getString(Constant.FILTER_PRODUCT)
         }
+    }
+
+    override fun onPrepareOptionsPanel(view: View?, menu: Menu): Boolean {
+        // Allows to have the icon on the toolbar sub-menu
+        if (menu.javaClass.simpleName == "MenuBuilder") {
+            try {
+                val m: Method = menu.javaClass.getDeclaredMethod(
+                    "setOptionalIconsVisible", java.lang.Boolean.TYPE
+                )
+                m.isAccessible = true
+                m.invoke(menu, true)
+            } catch (e: Exception) {
+                Log.e(
+                    javaClass.simpleName,
+                    "onMenuOpened...unable to set icons for overflow menu",
+                    e
+                )
+            }
+        }
+        return super.onPrepareOptionsPanel(view, menu!!)
+    }
+
+    /**
+     * This method check if we come from the filter screen and set the viewpager accordingly
+     */
+    private fun checkScreenSideForFilter() {
+        if (intent.extras?.getInt(Constant.SIDE) != 0) {
+            viewPager.currentItem = 1
+            intent.extras?.putInt(Constant.SIDE, 0)
+        }
+    }
+
+    /**
+     * This method returns the mode from the bundle
+     * @return the placeId or null
+     */
+    private fun getLoanMode(savedInstanceState: Bundle?): String {
+        if (savedInstanceState != null) return savedInstanceState.getString(Constant.MODE)!!
+
+        if (intent.extras?.getString(Constant.MODE) != null) return intent.extras.getString(Constant.MODE)!!
+
+        return Constant.STANDARD
     }
 
     /**
@@ -132,25 +155,6 @@ class LoanPagerActivity: BaseActivity() {
     private fun configureMainToolbar() {
         mToolbar = findViewById(R.id.toolbar)
         setSupportActionBar(mToolbar)
-    }
-
-    override fun onPrepareOptionsPanel(view: View?, menu: Menu): Boolean {
-        if (menu.javaClass.simpleName == "MenuBuilder") {
-            try {
-                val m: Method = menu.javaClass.getDeclaredMethod(
-                    "setOptionalIconsVisible", java.lang.Boolean.TYPE
-                )
-                m.isAccessible = true
-                m.invoke(menu, true)
-            } catch (e: Exception) {
-                Log.e(
-                    javaClass.simpleName,
-                    "onMenuOpened...unable to set icons for overflow menu",
-                    e
-                )
-            }
-        }
-        return super.onPrepareOptionsPanel(view, menu!!)
     }
 
     /**
@@ -220,7 +224,7 @@ class LoanPagerActivity: BaseActivity() {
     /**
      * Switch from archive to standard / standard to archive mode
      */
-    fun switchArchiveStandardMode() {
+    private fun switchArchiveStandardMode() {
         when (mMode) {
             Constant.STANDARD -> enableArchiveMode()
             getString(R.string.archive) -> disableArchiveMode()

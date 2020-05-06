@@ -1,13 +1,13 @@
 package com.depuisletemps.beback.utils
 
-import androidx.core.content.ContextCompat
-import com.depuisletemps.beback.R
-
 class Constant {
     companion object {
         const val YES = "yes"
         const val FB = "facebook"
         const val GOOGLE = "google"
+
+        const val SIGN_OUT_TASK = 10
+        const val RC_SIGN_IN = 123
 
         const val CHANNEL_ID = "CHANNEL_ID"
         const val CHANNEL_NAME = "Notification channel name"

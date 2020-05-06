@@ -23,7 +23,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import kotlinx.android.synthetic.main.loanactivity_recyclerview_item_loaner.view.*
 
-
 class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
 
     val name: TextView = itemview.item_loaner_name
