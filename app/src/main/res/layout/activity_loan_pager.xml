@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/activity_loan_pager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto">
+        >
 
     <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
@@ -49,7 +50,7 @@
     </com.google.android.material.tabs.TabLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@id/mBtnAdd"
+            android:id="@+id/mBtnAdd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/extra"
@@ -61,7 +62,7 @@
             />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@id/mBtnFilter"
+            android:id="@+id/mBtnFilter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/extra"

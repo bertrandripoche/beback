@@ -127,7 +127,6 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                 }
 
                 if (loanCount == 0) {
-
                     itemView.visibility = View.GONE
                     var params = itemView.layoutParams
                     params.height = 0
@@ -153,10 +152,11 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                         else -> rateIcon.setImageResource(R.drawable.ic_rate_5)
                     }
                 }
+                loanCount = 0
             }
             .addOnFailureListener {
             }
-
     }
+
 
 }
