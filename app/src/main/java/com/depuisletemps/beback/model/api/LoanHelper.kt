@@ -26,8 +26,8 @@ class LoanHelper {
     fun createLoan(loan: Loan, callback: (Boolean, String) -> Unit) {
         val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document()
         val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(
-            Constant.LOANERS_COLLECTION).document(loan.recipient_id)
-        val loanerData = hashMapOf(Constant.NAME to loan.recipient_id)
+            Constant.LOANERS_COLLECTION).document(loan.recipient)
+        val loanerData = hashMapOf(Constant.NAME to loan.recipient)
         loan.id = loanRef.id
 
         mDb.runBatch { batch ->
@@ -69,8 +69,8 @@ class LoanHelper {
                 val loanerRefNew =
                     mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id)
                         .collection(Constant.LOANERS_COLLECTION)
-                        .document(loan.recipient_id)
-                val loanerData = hashMapOf(Constant.NAME to loan.recipient_id)
+                        .document(loan.recipient)
+                val loanerData = hashMapOf(Constant.NAME to loan.recipient)
 
                 when (loan.type) {
                     LoanType.LENDING.type -> batch.update(loanerRef,LoanType.LENDING.type,FieldValue.increment(-1))
@@ -100,7 +100,7 @@ class LoanHelper {
      */
     fun archiveLoan(loan: Loan, callback: (Boolean) -> Unit) {
         val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(loan.id)
-        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
+        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient)
 
         val returnedDate: Timestamp = Timestamp.now()
         loan.returned_date = returnedDate
@@ -129,7 +129,7 @@ class LoanHelper {
      */
     fun unarchiveLoan(loan: Loan, callback: (Boolean) -> Unit) {
         val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(loan.id)
-        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient_id)
+        val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION).document(loan.recipient)
         var points = Utils.retrievePointsFromLoan(loan)
 
         mDb.runBatch { batch ->
@@ -155,7 +155,7 @@ class LoanHelper {
     fun deleteLoan(loan: Loan, points: Long, callback: (Boolean, String) -> Unit) {
         val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(loan.id)
         val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(
-            Constant.LOANERS_COLLECTION).document(loan.recipient_id)
+            Constant.LOANERS_COLLECTION).document(loan.recipient)
 
         mDb.runBatch { batch ->
             batch.delete(loanRef)
@@ -184,8 +184,8 @@ class LoanHelper {
     fun undeleteLoan(loan: Loan, points: Long, callback: (Boolean) -> Unit) {
         val loanRef = mDb.collection(Constant.LOANS_COLLECTION).document(loan.id)
         val loanerRef = mDb.collection(Constant.USERS_COLLECTION).document(loan.requestor_id).collection(Constant.LOANERS_COLLECTION)
-            .document(loan.recipient_id)
-        val loanerData = hashMapOf(Constant.NAME to loan.recipient_id)
+            .document(loan.recipient)
+        val loanerData = hashMapOf(Constant.NAME to loan.recipient)
 
         mDb.runBatch { batch ->
             batch.set(loanRef, loan)

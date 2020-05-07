@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.toolbar.*
 import java.util.*
 
 
-open abstract class BaseActivity: AppCompatActivity() {
+abstract class BaseActivity: AppCompatActivity() {
     private val TAG = "BaseActivity"
 
     protected var orangeColor: Int = 0
@@ -73,7 +73,7 @@ open abstract class BaseActivity: AppCompatActivity() {
      */
     open fun signOutUserFromFirebase(activity: Activity) {
         AuthUI.getInstance()
-            .signOut(activity!!)
+            .signOut(activity)
             .addOnSuccessListener(
                 activity,
                 this.updateUIAfterRESTRequestsCompleted(Constant.SIGN_OUT_TASK, activity)

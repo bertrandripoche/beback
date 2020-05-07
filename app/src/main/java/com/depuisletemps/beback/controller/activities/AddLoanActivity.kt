@@ -273,7 +273,7 @@ class AddLoanActivity: BaseFormActivity() {
     /**
      * Method to configure the textWatchers on the fields which requires it
      */
-     fun configureTextWatchers() {
+     private fun configureTextWatchers() {
         loan_product.addTextChangedListener(textWatcher)
         loan_recipient.addTextChangedListener(textWatcher)
     }
@@ -298,7 +298,7 @@ class AddLoanActivity: BaseFormActivity() {
         loanHelper.createLoan(loan) {result, loanId ->
             if (result) {
                 displayCustomToast(getString(R.string.saved), R.drawable.bubble_3, this)
-                loan.notif?.let{NotificationManagement.createNotification(loanId, loan.product, mType, loan.recipient_id, getNotifDate(), this, this)}
+                loan.notif?.let{NotificationManagement.createNotification(loanId, loan.product, mType, loan.recipient, getNotifDate(), this, this)}
                 startLoanPagerActivity(Constant.STANDARD)
             } else {
                 displayCustomToast(getString(R.string.error_adding_loan), R.drawable.bubble_3, this)
@@ -308,7 +308,7 @@ class AddLoanActivity: BaseFormActivity() {
 
     private fun createLoanObjectFromUserInput(user: FirebaseUser?): Loan {
         val requestorId:String = user?.uid ?: ""
-        val recipientId:String = StringUtils.capitalizeWords(loan_recipient.text.toString(), FieldType.NAME)
+        val recipient:String = StringUtils.capitalizeWords(loan_recipient.text.toString(), FieldType.NAME)
         val product:String = StringUtils.capitalizeWords(loan_product.text.toString(), FieldType.PRODUCT)
         val categories: Array<String> = this.resources.getStringArray(R.array.product_category)
         val productCategory:String = categories[spinner_loan_categories.selectedItemPosition]
@@ -323,7 +323,7 @@ class AddLoanActivity: BaseFormActivity() {
             loan_notif_date.text.toString() != "" -> loan_notif_date.text.toString()
             else -> null
         }
-        return Loan("",requestorId, recipientId, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), notif, returnedDate)
+        return Loan("",requestorId, recipient, mType, product, productCategory, creationDate, getTimeStampFromString(dueDate), notif, returnedDate)
     }
 
     private fun getNotifDate(): LocalDate {

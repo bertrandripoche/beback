@@ -28,7 +28,7 @@ class Constant {
         const val NAME = "name"
         const val LOAN_ID = "loanId"
         const val REQUESTOR_ID = "requestor_id"
-        const val RECIPIENT_ID = "recipient_id"
+        const val RECIPIENT_ID = "recipient"
         const val RETURNED_DATE = "returned_date"
         const val DUE_DATE = "due_date"
         const val DUE_DATE_SET = "dueDateSet"

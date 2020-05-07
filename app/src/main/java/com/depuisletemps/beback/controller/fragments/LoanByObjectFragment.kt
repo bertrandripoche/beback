@@ -185,7 +185,7 @@ class LoanByObjectFragment: BaseFragment() {
                 if (loan.type == (LoanType.DELIVERY.type)) (activity as LoanPagerActivity).displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1, context!!)
                 else (activity as LoanPagerActivity).displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1, context!!)
                 mAdapter.notifyDataSetChanged()
-                NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id, activity as LoanPagerActivity, context!!)
+                NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient, activity as LoanPagerActivity, context!!)
             } else {
                 (activity as LoanPagerActivity).displayCustomToast(getString(R.string.error_undeleting_loan), R.drawable.bubble_3, context!!)
             }
@@ -223,7 +223,7 @@ class LoanByObjectFragment: BaseFragment() {
         loanHelper.deleteLoan(loan, -1) {result, loanId ->
             if (result) {
                 (activity as LoanPagerActivity).displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_4, context!!)
-                NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id, activity as LoanPagerActivity, context!!)
+                NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient, activity as LoanPagerActivity, context!!)
                 mAdapter.notifyDataSetChanged()
             } else {
                 Log.w(TAG, getString(R.string.transaction_failure))

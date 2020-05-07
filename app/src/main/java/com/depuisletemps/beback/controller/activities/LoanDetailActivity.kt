@@ -10,12 +10,14 @@ import android.view.View
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import com.depuisletemps.beback.R
+import com.depuisletemps.beback.model.FieldType
 import com.depuisletemps.beback.model.api.LoanHelper
 import com.depuisletemps.beback.model.Loan
 import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.view.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.NotificationManagement
 import com.depuisletemps.beback.utils.Constant
+import com.depuisletemps.beback.utils.StringUtils
 import com.depuisletemps.beback.utils.Utils
 import com.depuisletemps.beback.utils.Utils.getStringFromDate
 import com.google.android.material.snackbar.BaseTransientBottomBar
@@ -178,7 +180,7 @@ class LoanDetailActivity: BaseFormActivity() {
                 mBtnEdit.visibility = View.VISIBLE
                 if (getStringFromDate(loan.due_date?.toDate()) != Constant.FAR_AWAY_DATE && mFirstTime) setDueDate(getStringFromDate(loan.due_date?.toDate()))
                 if (mFirstTime) loan_product.setText(loan.product)
-                if (mFirstTime) loan_recipient.setText(loan.recipient_id)
+                if (mFirstTime) loan_recipient.setText(loan.recipient)
                 loan_creation_date.setTextColor(greyColor)
                 setNotifField(loan)
                 disableFloatButton(mBtnEdit, this)
@@ -266,7 +268,7 @@ class LoanDetailActivity: BaseFormActivity() {
         loan_returned_date.visibility = View.VISIBLE
         loan_returned_date.text = getStringFromDate(loan.returned_date?.toDate())
         loan_product.setText(loan.product)
-        loan_recipient.setText(loan.recipient_id)
+        loan_recipient.setText(loan.recipient)
         loan_notif_date.visibility = View.GONE
         loan_notif_title.visibility = View.GONE
         mBtnPick.visibility = View.GONE
@@ -326,7 +328,7 @@ class LoanDetailActivity: BaseFormActivity() {
                 mLoan = loan
                 mProductCategory = loan.product_category
                 mWhat = loan.product
-                mWho = loan.recipient_id
+                mWho = loan.recipient
                 mDue = getStringFromDate(loan.due_date?.toDate())
                 mNotif = loan.notif
             }
@@ -523,8 +525,8 @@ class LoanDetailActivity: BaseFormActivity() {
         }
 
         if (categories[spinner_loan_categories.selectedItemPosition] != mProductCategory) newLoan.product_category = categories[spinner_loan_categories.selectedItemPosition]
-        if (loan_recipient.text.toString() != mWho) newLoan.recipient_id = loan_recipient.text.toString()
-        if (loan_product.text.toString() != mWhat) newLoan.product= loan_product.text.toString()
+        if (loan_recipient.text.toString() != mWho) newLoan.recipient = StringUtils.capitalizeWords(loan_recipient.text.toString(), FieldType.NAME)
+        if (loan_product.text.toString() != mWhat) newLoan.product= StringUtils.capitalizeWords(loan_product.text.toString(), FieldType.PRODUCT)
         if (loan_due_date.text.toString() == "") newLoan.due_date = Utils.getTimeStampFromString(Constant.FAR_AWAY_DATE)
         if (loan_due_date.text.toString() != "") newLoan.due_date = Utils.getTimeStampFromString(loan_due_date.text.toString())
         if (loan_due_date.text.toString() != mDue || (currentNotif != mNotif || loan_due_date.text.toString() != mDue)) newLoan.notif = currentNotif
@@ -538,8 +540,8 @@ class LoanDetailActivity: BaseFormActivity() {
             if (result) {
                 displayCustomToast(getString(R.string.saved),R.drawable.bubble_3,this)
                 if (currentNotif != mNotif) {
-                    NotificationManagement.stopAlarm(mLoan!!.id, mLoan!!.product, mLoan!!.type, mLoan!!.recipient_id, this, this)
-                    NotificationManagement.createNotification(newLoan.id, newLoan.product, newLoan.type, newLoan.recipient_id, getNotifDate(), this, this)
+                    NotificationManagement.stopAlarm(mLoan!!.id, mLoan!!.product, mLoan!!.type, mLoan!!.recipient, this, this)
+                    NotificationManagement.createNotification(newLoan.id, newLoan.product, newLoan.type, newLoan.recipient, getNotifDate(), this, this)
                 }
                 startLoanPagerActivity(Constant.STANDARD)
             } else displayCustomToast(getString(R.string.transaction_failure), R.drawable.bubble_3, this)
@@ -573,7 +575,7 @@ class LoanDetailActivity: BaseFormActivity() {
         loanHelper.deleteLoan(loan, points) {result, loanId ->
             if (result) {
                 displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_3, this)
-                NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient_id, this, this)
+                NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient, this, this)
 
                 Snackbar.make(activity_loan_detail, loan.product, Snackbar.LENGTH_LONG)
                     .setAction(getString(R.string.undo)) {

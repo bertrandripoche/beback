@@ -1,96 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/login_activity_linear_layout"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/login_activity_constraint_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:background="@drawable/bg"
         tools:context=".controller.activities.LoginActivity">
 
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center_horizontal|top"
-            android:padding="20dp"
-            android:orientation="vertical"
-            android:background="@color/primaryColor"
-            >
-
         <TextView
+                android:id="@+id/be_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/extra"
                 android:text="@string/app_name"
                 android:textSize="@dimen/max_title_size"
                 android:textStyle="bold"
-                android:textColor="@color/primaryDarkColor"
-                android:shadowColor="@color/secondaryColor"
-                android:elevation="2dp"/>
+                android:textColor="@color/secondaryColor"
+                android:shadowColor="@color/primaryDarkColor"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"/>
 
         <TextView
+                android:id="@+id/be_back_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/login_description"
                 android:textAlignment="center"
                 android:gravity="top"
                 android:textSize="@dimen/default_title_size_small"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black"
+                app:layout_constraintTop_toBottomOf="@+id/be_back"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"/>
 
-    </LinearLayout>
-
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="bottom"
-            android:orientation="vertical"
-            android:background="@drawable/bg"
-            android:scaleType="centerCrop"
-            >
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/icon"
+                app:layout_constraintTop_toBottomOf="@+id/be_back_subtitle"
+                app:layout_constraintBottom_toTopOf="@+id/buttonMailLogin"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+            />
 
         <Button
                 android:id="@+id/buttonMailLogin"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
+                android:layout_margin="@dimen/default_margin"
+                android:padding="@dimen/default_large_margin"
                 android:text="@string/sign_in_mail"
                 android:textColor="@color/white"
                 android:textSize="@dimen/default_text_size"
                 android:textAllCaps="false"
                 android:background="@drawable/button_radius_mail"
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_margin="@dimen/default_margin"
-                android:padding="@dimen/default_large_margin"
-                android:elevation="2dp"
-                android:drawableStart="@drawable/ic_mail"/>
+                android:drawableStart="@drawable/ic_mail"
+                app:layout_constraintBottom_toTopOf="@+id/buttonFacebookLogin"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"/>
 
         <Button
                 android:id="@+id/buttonFacebookLogin"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
+                android:layout_margin="@dimen/default_margin"
+                android:padding="@dimen/default_large_margin"
                 android:text="@string/sign_in_facebook"
                 android:textColor="@color/white"
                 android:textSize="@dimen/default_text_size"
                 android:textAllCaps="false"
                 android:background="@drawable/button_radius_facebook"
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_margin="@dimen/default_margin"
-                android:padding="@dimen/default_large_margin"
-                android:elevation="2dp"
-                android:drawableStart="@drawable/ic_facebook"/>
+                android:drawableStart="@drawable/ic_facebook"
+                app:layout_constraintBottom_toTopOf="@+id/buttonGoogleLogin"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"/>
 
         <Button
                 android:id="@+id/buttonGoogleLogin"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
+                android:layout_margin="@dimen/default_margin"
+                android:padding="@dimen/default_large_margin"
                 android:text="@string/sign_in_google"
                 android:textColor="@color/white"
                 android:textSize="@dimen/default_text_size"
                 android:textAllCaps="false"
                 android:background="@drawable/button_radius_google"
                 style="?android:attr/borderlessButtonStyle"
-                android:layout_margin="@dimen/default_margin"
-                android:padding="@dimen/default_large_margin"
-                android:elevation="2dp"
-                android:drawableStart="@drawable/ic_google" />
-    </LinearLayout>
+                android:drawableStart="@drawable/ic_google"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"/>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

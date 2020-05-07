@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.LinearLayout
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.api.UserHelper
@@ -78,10 +79,10 @@ class LoginActivity : BaseActivity() {
                 checkAndCreateFirestoreUser()
             } else {
                 when {
-                    response == null ->  showSnackBar( login_activity_linear_layout, getString(R.string.error_authentication_canceled))
-                    response.error!!.errorCode == ErrorCodes.NO_NETWORK -> showSnackBar(login_activity_linear_layout, getString(R.string.error_no_internet))
-                    response.error!!.errorCode == ErrorCodes.UNKNOWN_ERROR ->  showSnackBar(login_activity_linear_layout, getString(R.string.error_unknown))
-                    else -> showSnackBar(login_activity_linear_layout, getString(R.string.error_undefined))
+                    response == null -> showSnackBar(login_activity_constraint_layout, getString(R.string.error_authentication_canceled))
+                    response.error!!.errorCode == ErrorCodes.NO_NETWORK -> showSnackBar(login_activity_constraint_layout, getString(R.string.error_no_internet))
+                    response.error!!.errorCode == ErrorCodes.UNKNOWN_ERROR ->  showSnackBar(login_activity_constraint_layout, getString(R.string.error_unknown))
+                    else -> showSnackBar(login_activity_constraint_layout, getString(R.string.error_undefined))
                 }
             }
         }
@@ -89,11 +90,11 @@ class LoginActivity : BaseActivity() {
 
     /**
      * Method allowing to display a snackbar message
-     * @param linearLayout is the element where the snackbar should be displayed
+     * @param view is the element where the snackbar should be displayed
      * @param message is the message we want to display
      */
-    private fun showSnackBar(linearLayout: LinearLayout, message: String) {
-        Snackbar.make(linearLayout, message, Snackbar.LENGTH_SHORT).show()
+    private fun showSnackBar(view: View, message: String) {
+        Snackbar.make(view, message, Snackbar.LENGTH_SHORT).show()
     }
 
      /**
