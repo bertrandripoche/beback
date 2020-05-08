@@ -28,6 +28,7 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
     val name: TextView = itemview.item_loaner_name
     val rateIcon: ImageView = itemview.item_loaner_rate
     val flexboxLayout: FlexboxLayout = itemview.findViewById(R.id.item_flexbox)
+
     /**
      * This method populates the date into the recyclerView ViewHolder
      */
@@ -132,7 +133,6 @@ class LoanerViewHolder(itemview: View): RecyclerView.ViewHolder(itemview) {
                     params.height = 0
                     itemView.layoutParams = params
                 } else {
-
                     if(position %2 == 0) {
                         if (mode == Constant.STANDARD) itemView.setBackgroundColor(primaryColor)
                         else itemView.setBackgroundColor(grey)

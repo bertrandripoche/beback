@@ -43,13 +43,12 @@ class LoanerHelper {
     fun getFilteredLoanerFirestoreRecylerOptions(requesterId: String, mode: String, activity: Activity): FirestoreRecyclerOptions<Loaner> {
         var query: Query
         val loanersRef = mDb.collection(Constant.USERS_COLLECTION).document(requesterId).collection(Constant.LOANERS_COLLECTION)
+        query = loanersRef
         if (mode == Constant.STANDARD) {
-            query = loanersRef
             if ((activity as LoanPagerActivity).mFilterRecipient != null)
                 query = query.whereEqualTo(Constant.NAME, (activity).mFilterRecipient)
             query = query.whereGreaterThanOrEqualTo(LoanStatus.PENDING.type, 1).orderBy(LoanStatus.PENDING.type, Query.Direction.DESCENDING)
         } else {
-            query = loanersRef
             if ((activity as LoanPagerActivity).mFilterRecipient != null)
                 query = query.whereEqualTo(Constant.NAME, (activity).mFilterRecipient)
             query = query.whereGreaterThanOrEqualTo(LoanStatus.ENDED.type, 1).orderBy(LoanStatus.ENDED.type, Query.Direction.DESCENDING)

@@ -221,6 +221,11 @@ class LoanPagerActivity: BaseActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        displayCorrectPage()
+    }
+
     /**
      * Switch from archive to standard / standard to archive mode
      */
@@ -229,7 +234,13 @@ class LoanPagerActivity: BaseActivity() {
             Constant.STANDARD -> enableArchiveMode()
             getString(R.string.archive) -> disableArchiveMode()
         }
+        displayCorrectPage()
+    }
 
+    /**
+     * Configure and displays the right page
+     */
+    private fun displayCorrectPage() {
         if (viewPager.currentItem == 0) {
             configurePager()
             viewPager.currentItem = 0
