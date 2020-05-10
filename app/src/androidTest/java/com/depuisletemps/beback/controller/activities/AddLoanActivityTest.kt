@@ -42,7 +42,7 @@ class AddLoanActivityTest {
         )
 
     @Test
-    fun GivenProductAndNameFilledShouldReturnYellowButtonTest() {
+    fun givenProductAndNameFilledShouldReturnYellowButtonTest() {
 
         val appCompatEditText = onView(
             allOf(
@@ -93,7 +93,7 @@ class AddLoanActivityTest {
     }
 
     @Test
-    fun GivenProductAndNameNotFilledShouldReturnGreyButtonTest() {
+    fun givenProductAndNameNotFilledShouldReturnGreyButtonTest() {
 
         val appCompatEditText = onView(
             allOf(
@@ -126,7 +126,7 @@ class AddLoanActivityTest {
     }
 
     @Test
-    fun GivenProductAndNameNotFilledAfterBeingFilledShouldReturnGreyButtonTest() {
+    fun givenProductAndNameNotFilledAfterBeingFilledShouldReturnGreyButtonTest() {
 
         val appCompatEditText = onView(
             allOf(
@@ -230,7 +230,7 @@ class AddLoanActivityTest {
         }
     }
 
-    fun buttonShouldHaveBackgroundColor(color: Int): Matcher<View?>? {
+    private fun buttonShouldHaveBackgroundColor(color: Int): Matcher<View?>? {
         Checks.checkNotNull(color)
         return object : BoundedMatcher<View?, FloatingActionButton>(
             FloatingActionButton::class.java

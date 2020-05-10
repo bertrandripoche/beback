@@ -25,17 +25,17 @@ import org.powermock.modules.junit4.PowerMockRunner
 @RunWith(PowerMockRunner::class)
 class UtilsTest {
 
-    lateinit var past: LocalDate
-    lateinit var pastString: String
-    lateinit var pastTimestamp: Timestamp
-    lateinit var today: LocalDate
-    lateinit var todayString: String
-    lateinit var todayTimestamp: Timestamp
-    lateinit var future: LocalDate
-    lateinit var futureString: String
-    lateinit var futureTimestamp: Timestamp
-    lateinit var nearFutureTimestamp: Timestamp
-    lateinit var farFutureTimestamp: Timestamp
+    private lateinit var past: LocalDate
+    private lateinit var pastString: String
+    private lateinit var pastTimestamp: Timestamp
+    private lateinit var today: LocalDate
+    private lateinit var todayString: String
+    private lateinit var todayTimestamp: Timestamp
+    private lateinit var future: LocalDate
+    private lateinit var futureString: String
+    private lateinit var futureTimestamp: Timestamp
+    private lateinit var nearFutureTimestamp: Timestamp
+    private lateinit var farFutureTimestamp: Timestamp
 
     @Before
     fun setup() {
@@ -82,7 +82,7 @@ class UtilsTest {
 
     @Test
     fun havingAReturnedDateBeforeDueDateShouldReturn1Point() {
-        var loan = mock<Loan>()
+        val loan = mock<Loan>()
         whenever(loan.due_date).doReturn(todayTimestamp)
         whenever(loan.returned_date).doReturn(pastTimestamp)
 
@@ -91,7 +91,7 @@ class UtilsTest {
 
     @Test
     fun havingAReturnedDateEqualToDueDateShouldReturn1Point() {
-        var loan = mock<Loan>()
+        val loan = mock<Loan>()
         whenever(loan.due_date).doReturn(todayTimestamp)
         whenever(loan.returned_date).doReturn(todayTimestamp)
 
@@ -100,7 +100,7 @@ class UtilsTest {
 
     @Test
     fun havingAReturnedDateJustAfterDueDateShouldReturn2Points() {
-        var loan = mock<Loan>()
+        val loan = mock<Loan>()
         whenever(loan.due_date).doReturn(todayTimestamp)
         whenever(loan.returned_date).doReturn(nearFutureTimestamp)
 
@@ -109,7 +109,7 @@ class UtilsTest {
 
     @Test
     fun havingAReturnedDateAbitAfterDueDateShouldReturn3Points() {
-        var loan = mock<Loan>()
+        val loan = mock<Loan>()
         whenever(loan.due_date).doReturn(todayTimestamp)
         whenever(loan.returned_date).doReturn(futureTimestamp)
 
@@ -118,7 +118,7 @@ class UtilsTest {
 
     @Test
     fun havingAReturnedDateLongAfterDueDateShouldReturn4Points() {
-        var loan = mock<Loan>()
+        val loan = mock<Loan>()
         whenever(loan.due_date).doReturn(todayTimestamp)
         whenever(loan.returned_date).doReturn(farFutureTimestamp)
 

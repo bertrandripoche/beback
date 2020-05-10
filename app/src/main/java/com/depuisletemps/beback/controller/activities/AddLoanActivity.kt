@@ -70,31 +70,7 @@ class AddLoanActivity: BaseFormActivity() {
      */
     private fun configureScreenFromType() {
         mType = getLoanType()
-        when (mType) {
-            (LoanType.LENDING.type) -> {
-                loan_type.setBackgroundColor(greenColor)
-                loan_type_pic.setBackgroundColor(greenColor)
-                loan_recipient_title.text = getString(R.string.whom)
-                loan_type.text = getString(R.string.i_lend)
-                loan_type_pic.setImageResource(R.drawable.ic_loan_black)
-            }
-            (LoanType.BORROWING.type) -> {
-                loan_type.setBackgroundColor(redColor)
-                loan_type_pic.setBackgroundColor(redColor)
-                loan_recipient_title.text = getString(R.string.who)
-                loan_type.text = getString(R.string.i_borrow)
-                loan_type_pic.setImageResource(R.drawable.ic_borrowing_black)
-            }
-            (LoanType.DELIVERY.type) -> {
-                loan_type.setBackgroundColor(yellowColor)
-                loan_type_pic.setBackgroundColor(yellowColor)
-                loan_recipient_title.text = getString(R.string.who)
-                loan_type.text = getString(R.string.i_wait)
-                loan_recipient.hint = getString(R.string.delivery_hint)
-                loan_type_pic.setImageResource(R.drawable.ic_delivery_black)
-            }
-        }
-
+        configureType(mType,false)
         disableFloatButton(mBtnSubmit, this)
     }
 

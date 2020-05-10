@@ -29,9 +29,6 @@ import kotlinx.android.synthetic.main.activity_loan_detail.loan_notif_date
 import kotlinx.android.synthetic.main.activity_loan_detail.loan_notif_title
 import kotlinx.android.synthetic.main.activity_loan_detail.loan_product
 import kotlinx.android.synthetic.main.activity_loan_detail.loan_recipient
-import kotlinx.android.synthetic.main.activity_loan_detail.loan_recipient_title
-import kotlinx.android.synthetic.main.activity_loan_detail.loan_type
-import kotlinx.android.synthetic.main.activity_loan_detail.loan_type_pic
 import kotlinx.android.synthetic.main.activity_loan_detail.mBtnCancelDate
 import kotlinx.android.synthetic.main.activity_loan_detail.mBtnCancelNotif
 import kotlinx.android.synthetic.main.activity_loan_detail.mBtnPick
@@ -61,6 +58,7 @@ class LoanDetailActivity: BaseFormActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_loan_detail)
+
         defineTheColors(this)
         mCategories = this.resources.getStringArray(R.array.product_category)
         mCategoriesIcons = this.resources.obtainTypedArray(R.array.product_category_icon)
@@ -170,7 +168,7 @@ class LoanDetailActivity: BaseFormActivity() {
      */
     private fun configureScreen(loan: Loan?) {
         if (loan != null) {
-            configureType(loan)
+            configureType(loan.type, true)
 
             if (loan.returned_date != null) {
                 setArchiveScreen(loan)
@@ -272,34 +270,6 @@ class LoanDetailActivity: BaseFormActivity() {
         loan_notif_date.visibility = View.GONE
         loan_notif_title.visibility = View.GONE
         mBtnPick.visibility = View.GONE
-    }
-
-    /**
-     * This method configures the Type title section
-     */
-    private fun configureType(loan: Loan) {
-        when (loan.type) {
-            LoanType.LENDING.type ->
-                setTypeScreen(greenColor,R.string.whom_no_star,R.string.i_lended,R.drawable.ic_loan_black)
-            LoanType.BORROWING.type ->
-                setTypeScreen(redColor,R.string.who_no_star,R.string.i_borrowed,R.drawable.ic_borrowing_black)
-            LoanType.DELIVERY.type -> {
-                setTypeScreen(yellowColor,R.string.who_no_star,R.string.delivery_for,R.drawable.ic_delivery_black)
-                loan_recipient.hint = getString(R.string.delivery_hint)
-                loan_creation_date_title.text = getString(R.string.since)
-            }
-        }
-    }
-
-    /**
-     * Sets the type title
-     */
-    private fun setTypeScreen(color: Int, recipient: Int, type: Int, img: Int) {
-        loan_type.setBackgroundColor(color)
-        loan_type_pic.setBackgroundColor(color)
-        loan_recipient_title.text = getString(recipient)
-        loan_type.text = getString(type)
-        loan_type_pic.setImageResource(img)
     }
 
     /**

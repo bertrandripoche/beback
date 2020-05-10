@@ -109,6 +109,7 @@
     <string name="error_undeleting_loan">Ouch, algo fallo !</string>
     <string name="invalid_filter">Hummm, nada que filtrar…\n</string>
     <string name="delivery_for">Entrega…</string>
+    <string name="unarchive">Desarchivar</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">

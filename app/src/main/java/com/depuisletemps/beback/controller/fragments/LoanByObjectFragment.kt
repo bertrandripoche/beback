@@ -22,10 +22,13 @@ import com.depuisletemps.beback.view.recyclerview.ItemClickSupport
 import com.depuisletemps.beback.view.recyclerview.LoanAdapter
 import com.depuisletemps.beback.utils.NotificationManagement
 import com.depuisletemps.beback.utils.Constant
+import com.depuisletemps.beback.utils.Utils
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.*
 import it.xabaras.android.recyclerview.swipedecorator.RecyclerViewSwipeDecorator
+import kotlinx.android.synthetic.main.activity_loan_detail.*
 import kotlinx.android.synthetic.main.fragment_loan_by_object.*
 
 class LoanByObjectFragment: BaseFragment() {
@@ -45,8 +48,7 @@ class LoanByObjectFragment: BaseFragment() {
         configureRecyclerView()
         configureOnClickRecyclerView()
         setBackgroundForRecyclerView(fragment_loan_by_object_recycler_view)
-
-        if (mMode == Constant.STANDARD) manageSwipeOnLoan()
+        manageSwipeOnLoan()
     }
 
     /**
@@ -71,9 +73,11 @@ class LoanByObjectFragment: BaseFragment() {
                     // Right : Delete
                     ItemTouchHelper.RIGHT -> deleteTheLoan(loan)
                     // Left : Archive
-                    ItemTouchHelper.LEFT -> archiveTheLoan(loan)
+                    ItemTouchHelper.LEFT -> if (mMode == Constant.STANDARD) archiveTheLoan(loan)
+                                            else unarchiveTheLoan(loan)
                     else -> return
                 }
+
             }
 
             /**
@@ -82,14 +86,22 @@ class LoanByObjectFragment: BaseFragment() {
             override fun onChildDraw(c: Canvas, recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, dX: Float, dY: Float, actionState: Int, isCurrentlyActive: Boolean ) {
                 val position = viewHolder.adapterPosition
                 var returnMessage = ""
+                var leftActionIcon = 0
                 if (position >= 0) {
                     val loan: Loan = mAdapter.getItem(position)
-                    returnMessage = if (loan.type == (LoanType.DELIVERY.type)) getString(R.string.received)
-                    else getString(R.string.returned)
+                    returnMessage = when {
+                        mMode == Constant.ARCHIVE -> getString(R.string.unarchive)
+                        loan.type == (LoanType.DELIVERY.type) -> getString(R.string.received)
+                        else -> getString(R.string.returned)
+                    }
+                    leftActionIcon = when (mMode){
+                        Constant.ARCHIVE -> R.drawable.ic_unarchive
+                        else -> R.drawable.ic_archive_color
+                    }
                 }
 
                 RecyclerViewSwipeDecorator.Builder(c,recyclerView,viewHolder,dX,dY,actionState,isCurrentlyActive)
-                    .addSwipeLeftActionIcon(R.drawable.ic_archive_color)
+                    .addSwipeLeftActionIcon(leftActionIcon)
                     .addSwipeLeftBackgroundColor(
                         ContextCompat.getColor(
                             context!!,
@@ -211,6 +223,27 @@ class LoanByObjectFragment: BaseFragment() {
                 (activity as LoanPagerActivity).displayCustomToast(getString(R.string.error_undeleting_loan), R.drawable.bubble_3, context!!)
             }
         }
+
+        if (mMode == Constant.ARCHIVE) {
+            Snackbar.make(fragment_loan_by_object_layout, loan.product, Snackbar.LENGTH_LONG)
+                .setAction(getString(R.string.undo)) {
+                    rearchiveTheLoan(loan)
+                }.show()
+        }
+    }
+
+    /**
+     * This method archives the selected item
+     * @param loan is a Loan representing the loan object
+     */
+    private fun rearchiveTheLoan(loan: Loan) {
+        val loanHelper = LoanHelper()
+        loanHelper.archiveLoan(loan) {result ->
+            if (result) {
+                if (loan.type == (LoanType.DELIVERY.type)) (activity as LoanPagerActivity).displayCustomToast(getString(R.string.received_message, loan.product), R.drawable.bubble_1, context!!)
+                else (activity as LoanPagerActivity).displayCustomToast(getString(R.string.archived_message, loan.product), R.drawable.bubble_1, context!!)
+            } else (activity as LoanPagerActivity).displayCustomToast(getString(R.string.error_undeleting_loan), R.drawable.bubble_3, context!!)
+        }
     }
 
     /**
@@ -220,7 +253,9 @@ class LoanByObjectFragment: BaseFragment() {
      */
     private fun deleteTheLoan(loan: Loan) {
         val loanHelper = LoanHelper()
-        loanHelper.deleteLoan(loan, -1) {result, loanId ->
+        var points: Long = -1
+        if (mMode == Constant.ARCHIVE) points = Utils.retrievePointsFromLoan(loan)
+        loanHelper.deleteLoan(loan, points) {result, loanId ->
             if (result) {
                 (activity as LoanPagerActivity).displayCustomToast(getString(R.string.deleted_message, loan.product), R.drawable.bubble_4, context!!)
                 NotificationManagement.stopAlarm(loan.id, loan.product, loan.type, loan.recipient, activity as LoanPagerActivity, context!!)

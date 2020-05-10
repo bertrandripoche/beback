@@ -16,7 +16,7 @@ class FirebaseTest {
 
     @Test
     fun testWrite() {
-        val future: CompletableFuture<String> = CompletableFuture()
+//        val future: CompletableFuture<String> = CompletableFuture()
         val app = FirebaseApp.initializeApp(context)!!
 
         val firestore = FirebaseFirestore.getInstance(app)
@@ -26,7 +26,7 @@ class FirebaseTest {
             .setPersistenceEnabled(false)
             .build()
 
-        firestore.collection("loans").document("abc").set(mapOf("product" to "car", "" to ""))
+        firestore.collection("loans").document("abc").set(mapOf("product" to "car", "recipient" to "bob"))
             .addOnSuccessListener {
                 throw Exception("success")
                 //future.complete("success")
@@ -38,7 +38,7 @@ class FirebaseTest {
                 throw Exception("canceled")
             }
         //future.get(1, TimeUnit.SECONDS)
-        Thread.sleep(10000)
+        Thread.sleep(3000)
 
     }
 

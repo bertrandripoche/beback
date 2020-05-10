@@ -114,6 +114,7 @@
     <string name="error_undeleting_loan">Ouch, something went terribly wrong !</string>
     <string name="invalid_filter">Hummm, what do you want me to filter…\nif there is no filter</string>
     <string name="delivery_for">Delivery…</string>
+    <string name="unarchive">Unarchive</string>
 
     <!--    PRODUCT CATEGORY-->
     <string-array name="product_category">

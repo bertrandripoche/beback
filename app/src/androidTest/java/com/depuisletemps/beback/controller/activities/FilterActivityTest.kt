@@ -50,7 +50,7 @@ class FilterActivityTest {
     }
 
     @Test
-    fun EnteringAProductShouldReturnYellowButtonTest() {
+    fun enteringAProductShouldReturnYellowButtonTest() {
         appCompatEditTextProduct.perform(
             ViewActions.replaceText("Car"),
             ViewActions.closeSoftKeyboard()
@@ -62,7 +62,7 @@ class FilterActivityTest {
     }
 
     @Test
-    fun EnteringARecipientShouldReturnYellowButtonTest() {
+    fun enteringARecipientShouldReturnYellowButtonTest() {
         val appCompatEditText = onView(withId(R.id.filter_recipient))
         appCompatEditText.perform(
             ViewActions.replaceText("Bob"),
@@ -75,7 +75,7 @@ class FilterActivityTest {
     }
 
     @Test
-    fun EnablingALoanTypeShouldReturnYellowButtonTest() {
+    fun enablingALoanTypeShouldReturnYellowButtonTest() {
         val appCompatToggleButton = onView(withId(R.id.toggle_borrowing))
         appCompatToggleButton.perform(click())
 
@@ -85,7 +85,7 @@ class FilterActivityTest {
     }
 
     @Test
-    fun EnablingALoanTypeAndEnteringAProductShouldReturnYellowButtonTest() {
+    fun enablingALoanTypeAndEnteringAProductShouldReturnYellowButtonTest() {
         val appCompatToggleButton = onView(withId(R.id.toggle_borrowing))
         appCompatToggleButton.perform(click())
 
@@ -100,7 +100,7 @@ class FilterActivityTest {
     }
 
     @Test
-    fun NotEnteringAnythingShouldReturnGreyButtonTest() {
+    fun notEnteringAnythingShouldReturnGreyButtonTest() {
         val appCompatToggleButton = onView(withId(R.id.toggle_borrowing))
         appCompatToggleButton.perform(click())
         appCompatToggleButton.perform(click())
@@ -128,7 +128,7 @@ class FilterActivityTest {
         )
     }
 
-    fun buttonShouldHaveBackgroundColor(color: Int): Matcher<View?>? {
+    private fun buttonShouldHaveBackgroundColor(color: Int): Matcher<View?>? {
         Checks.checkNotNull(color)
         return object : BoundedMatcher<View?, FloatingActionButton>(
             FloatingActionButton::class.java
