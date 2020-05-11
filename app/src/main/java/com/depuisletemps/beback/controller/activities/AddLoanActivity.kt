@@ -10,7 +10,6 @@ import com.depuisletemps.beback.R
 import com.depuisletemps.beback.model.api.LoanHelper
 import com.depuisletemps.beback.model.FieldType
 import com.depuisletemps.beback.model.Loan
-import com.depuisletemps.beback.model.LoanType
 import com.depuisletemps.beback.view.customview.CategoryAdapter
 import com.depuisletemps.beback.utils.*
 import com.depuisletemps.beback.utils.Utils.getTimeStampFromString
@@ -20,9 +19,6 @@ import kotlinx.android.synthetic.main.activity_add_loan.loan_due_date
 import kotlinx.android.synthetic.main.activity_add_loan.loan_notif_date
 import kotlinx.android.synthetic.main.activity_add_loan.loan_product
 import kotlinx.android.synthetic.main.activity_add_loan.loan_recipient
-import kotlinx.android.synthetic.main.activity_add_loan.loan_recipient_title
-import kotlinx.android.synthetic.main.activity_add_loan.loan_type
-import kotlinx.android.synthetic.main.activity_add_loan.loan_type_pic
 import kotlinx.android.synthetic.main.activity_add_loan.mBtnCancelDate
 import kotlinx.android.synthetic.main.activity_add_loan.mBtnCancelNotif
 import kotlinx.android.synthetic.main.activity_add_loan.mBtnSubmit

@@ -94,7 +94,7 @@
     <string name="about">About</string>
     <string name="notif_lending">Hey, you lent me, remember ?!</string>
     <string name="notif_borrowing">Hey, you borrowed me, remember ?!</string>
-    <string name="notif_delivery">Hey, I should have been delivered now ?!</string>
+    <string name="notif_delivery">Hey, I should have been delivered by now ?!</string>
     <string name="notif_message_lending">Me, %1$s, have been held hostage\nby %2$s for too much time now !</string>
     <string name="notif_message_borrowing">I\'m just a %1$s !\nBut if you don\'t give me back to my master,\n%2$s will find you back and… !</string>
     <string name="notif_message_delivery">Me, %1$s, should have been arrived in my new home.\nMight be time to drop a message to %2$s, isn\'t it ?</string>

@@ -7,8 +7,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.app.TaskStackBuilder
 import com.depuisletemps.beback.R
 import com.depuisletemps.beback.controller.activities.LoanDetailActivity
+import com.google.firebase.auth.FirebaseAuth
 
 
 class AlertReceiver: BroadcastReceiver() {
@@ -33,14 +35,20 @@ class AlertReceiver: BroadcastReceiver() {
             else -> context.resources.getString(R.string.notif_message_delivery, loanProduct, loanRecipient)
         }
 
-        val intent = Intent(context, LoanDetailActivity::class.java)
-        intent.putExtra(Constant.LOAN_ID, loanId)
-        val pendingIntent: PendingIntent =
-            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT)
+        var resultPendingIntent: PendingIntent? = null
+        if (FirebaseAuth.getInstance().currentUser != null) {
+            val resultIntent = Intent(context, LoanDetailActivity::class.java)
+            resultIntent.putExtra(Constant.LOAN_ID, loanId)
+            resultPendingIntent = TaskStackBuilder.create(context).run {
+                addNextIntentWithParentStack(resultIntent)
+                getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT)
+            }
+        }
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             mNotification = Notification.Builder(context, Constant.CHANNEL_ID)
-                .setContentIntent(pendingIntent)
+                .setContentIntent(resultPendingIntent)
                 .setSmallIcon(R.drawable.icon)
                 .setAutoCancel(true)
                 .setContentTitle(title)
@@ -48,7 +56,7 @@ class AlertReceiver: BroadcastReceiver() {
                 .setContentText(notifMessage).build()
         } else {
             mNotification = Notification.Builder(context)
-                .setContentIntent(pendingIntent)
+                .setContentIntent(resultPendingIntent)
                 .setSmallIcon(R.drawable.icon)
                 .setAutoCancel(true)
                 .setContentTitle(title)

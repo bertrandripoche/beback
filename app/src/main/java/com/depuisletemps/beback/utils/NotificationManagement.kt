@@ -30,7 +30,7 @@ object NotificationManagement {
     /**
      * This method start the notification via the alertReceiver class and alarmManager
      */
-    fun startAlarm(calendar: Calendar, loanId: String, loanProduct: String, loanType: String, loanRecipient: String, activity: Activity, context: Context) {
+    private fun startAlarm(calendar: Calendar, loanId: String, loanProduct: String, loanType: String, loanRecipient: String, activity: Activity, context: Context) {
         val alarmManager = activity.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val intent = Intent(context, AlertReceiver::class.java)
         intent.putExtra(Constant.LOAN_ID, loanId)
@@ -46,7 +46,7 @@ object NotificationManagement {
     }
 
     fun createNotification(loanId: String, loanProduct: String, loanType: String, loanRecipient: String, dateNotif: LocalDate, activity: Activity, context: Context){
-        if (Utils.getDifferenceDays(LocalDate.now(), dateNotif) > 0) {
+        if (Utils.getDifferenceDays(LocalDate.now(), dateNotif) >= 0) {
             val day: String = DateFormat.format("dd", dateNotif.toDate()).toString()
             val month: String = DateFormat.format("MM", dateNotif.toDate()).toString()
             val year: String = DateFormat.format("yyyy", dateNotif.toDate()).toString()
@@ -56,7 +56,7 @@ object NotificationManagement {
             calendar.set(Calendar.MONTH, monthForCalendar)
             calendar.set(Calendar.DAY_OF_MONTH, Integer.parseInt(day))
             calendar.set(Calendar.HOUR_OF_DAY, 10)
-            calendar.set(Calendar.MINUTE, 58)
+            calendar.set(Calendar.MINUTE, 0)
             calendar.set(Calendar.SECOND, 0)
             calendar.set(Calendar.AM_PM, Calendar.AM)
 
