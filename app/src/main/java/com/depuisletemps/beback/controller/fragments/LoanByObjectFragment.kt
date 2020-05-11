@@ -95,7 +95,7 @@ class LoanByObjectFragment: BaseFragment() {
                         else -> getString(R.string.returned)
                     }
                     leftActionIcon = when (mMode){
-                        Constant.ARCHIVE -> R.drawable.ic_unarchive
+                        Constant.ARCHIVE -> R.drawable.ic_unarchive_color
                         else -> R.drawable.ic_archive_color
                     }
                 }
