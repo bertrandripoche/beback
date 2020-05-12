@@ -45,7 +45,7 @@
     <string name="transported_by">Transporté par</string>
     <string name="standard">Standard</string>
     <string name="mode">Mode</string>
-    <string name="delete">Efface</string>
+    <string name="delete">Effacer</string>
     <string name="returned">Retourné !</string>
     <string name="undo">Annulé</string>
     <string name="deleted_message">%1$s ?\nOublie-ça !</string>
