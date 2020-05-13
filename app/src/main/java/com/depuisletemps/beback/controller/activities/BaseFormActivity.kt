@@ -78,11 +78,14 @@ abstract class BaseFormActivity: BaseActivity() {
     protected fun configureType(type: String, editMode: Boolean) {
         when (type) {
             LoanType.LENDING.type ->
-                setTypeScreen(greenColor,R.string.whom_no_star,R.string.i_lended,R.drawable.ic_loan_black)
+                if (editMode) setTypeScreen(greenColor,R.string.whom_no_star,R.string.i_lended,R.drawable.ic_loan_black)
+                else setTypeScreen(greenColor,R.string.whom,R.string.i_lended,R.drawable.ic_loan_black)
             LoanType.BORROWING.type ->
-                setTypeScreen(redColor,R.string.who_no_star,R.string.i_borrowed,R.drawable.ic_borrowing_black)
+                if (editMode) setTypeScreen(redColor,R.string.who_no_star,R.string.i_borrowed,R.drawable.ic_borrowing_black)
+                else setTypeScreen(redColor,R.string.who,R.string.i_borrowed,R.drawable.ic_borrowing_black)
             LoanType.DELIVERY.type -> {
-                setTypeScreen(yellowColor,R.string.who_no_star,R.string.delivery_for,R.drawable.ic_delivery_black)
+                if (editMode) setTypeScreen(yellowColor,R.string.who_no_star,R.string.delivery_for,R.drawable.ic_delivery_black)
+                else setTypeScreen(yellowColor,R.string.who,R.string.delivery_for,R.drawable.ic_delivery_black)
                 loan_recipient.hint = getString(R.string.delivery_hint)
                 if (editMode) loan_creation_date_title.text = getString(R.string.since)
             }
@@ -92,7 +95,7 @@ abstract class BaseFormActivity: BaseActivity() {
     /**
      * Sets the type title
      */
-    protected fun setTypeScreen(color: Int, recipient: Int, type: Int, img: Int) {
+    private fun setTypeScreen(color: Int, recipient: Int, type: Int, img: Int) {
         loan_type.setBackgroundColor(color)
         loan_type_pic.setBackgroundColor(color)
         loan_recipient_title.text = getString(recipient)
