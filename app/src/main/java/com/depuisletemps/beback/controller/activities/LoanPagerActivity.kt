@@ -40,18 +40,12 @@ class LoanPagerActivity: BaseActivity() {
         mBtnFilter.setOnClickListener{startFilterActivity()}
     }
 
-    /**
-     * This method overrides the onBackPressed method to change the behavior of the Back button
-     */
-    override fun onBackPressed() {
-    }
-
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        if (mIsLoanAlertDialogDisplayed) outState?.putBoolean(Constant.LOAN_ALERTDIALOG_DISPLAYED, true)
-        outState?.putString(Constant.FILTER_PRODUCT, mFilterProduct)
-        outState?.putString(Constant.FILTER_RECIPIENT, mFilterRecipient)
-        outState?.putString(Constant.FILTER_TYPE, mFilterType)
+        if (mIsLoanAlertDialogDisplayed) outState.putBoolean(Constant.LOAN_ALERTDIALOG_DISPLAYED, true)
+        outState.putString(Constant.FILTER_PRODUCT, mFilterProduct)
+        outState.putString(Constant.FILTER_RECIPIENT, mFilterRecipient)
+        outState.putString(Constant.FILTER_TYPE, mFilterType)
         outState.putString(Constant.MODE, mMode)
     }
 
@@ -221,10 +215,10 @@ class LoanPagerActivity: BaseActivity() {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        displayCorrectPage()
-    }
+//    override fun onResume() {
+//        super.onResume()
+//        displayCorrectPage()
+//    }
 
     /**
      * Switch from archive to standard / standard to archive mode
