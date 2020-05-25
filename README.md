@@ -4,9 +4,9 @@ With this application, you will remember who the hell you lended this stuff to/ 
 In other words, you can record loans and delivery on this small app.
 
 <h1>Screenshots</h1>
-<img src="readme_material/screenshot1.gif" width="200">
-<img src="readme_material/screenshot2.gif" width="200">
-<img src="readme_material/screenshot3.gif" width="200">
+<img src="readme_material/screenshot1.png" width="200">
+<img src="readme_material/screenshot2.png" width="200">
+<img src="readme_material/screenshot3.png" width="200">
 
 <h1>Motivation</h1>
 This application has been designed as a free project required for an android training.<br/>
