@@ -215,11 +215,6 @@ class LoanPagerActivity: BaseActivity() {
         }
     }
 
-//    override fun onResume() {
-//        super.onResume()
-//        displayCorrectPage()
-//    }
-
     /**
      * Switch from archive to standard / standard to archive mode
      */
