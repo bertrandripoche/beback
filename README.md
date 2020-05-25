@@ -50,13 +50,13 @@ Allows to record loans and expected deliveries.<br/>
 
 <h1>Technical considerations</h1>
 These libraries have been used to develop this app :<br/>
-Quick permissions :     implementation 'com.github.quickpermissions:quickpermissions-kotlin:0.4.0'
-Flexbox :     implementation 'com.google.android:flexbox:2.0.1'
+Quick permissions :     implementation 'com.github.quickpermissions:quickpermissions-kotlin:0.4.0'<br/>
+Flexbox :     implementation 'com.google.android:flexbox:2.0.1'<br/>
 Commons :     implementation 'org.apache.commons:commons-text:1.7'
 
 Firebase has been used for authentication and Firebase Firestore to save/store data.
 
 <h1>Credits</h1>
 The following resources have been used to make this app nicer :<br/>
-Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
+Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a><br/>
 Icons made by <a href="https://www.flaticon.com/authors/vectors-market" title="Vectors Market">Vectors Market</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>
